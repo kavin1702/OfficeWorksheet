@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkPulse - Conversation & Setup Guide</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #1e293b;
+      background: #f8fafc;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+    }
+    h1, h2, h3 { color: #0f172a; }
+    h1 { border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+    .badge {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1e40af;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 999px;
+      margin-bottom: 15px;
+    }
+    .message-box {
+      margin-bottom: 20px;
+      padding: 16px;
+      border-radius: 8px;
+    }
+    .user-msg {
+      background: #f1f5f9;
+      border-left: 4px solid #64748b;
+    }
+    .assistant-msg {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+    }
+    .msg-title {
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .user-msg .msg-title { color: #475569; }
+    .assistant-msg .msg-title { color: #1d4ed8; }
+    pre {
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 13px;
+    }
+    code {
+      font-family: monospace;
+      background: #e2e8f0;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th { background: #f1f5f9; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <span class="badge">Chat & Project Export</span>
+    <h1>WorkPulse — Office Daily Worksheet</h1>
+    <p><strong>Conversation Summary & Complete Project Overview</strong></p>
+
+    <hr style="border:0; border-top:1px solid #e2e8f0; margin: 20px 0;">
+
+    <div class="message-box user-msg">
+      <div class="msg-title">User Request</div>
+      <p>I need to make a web application to manage my office daily worksheet. I need to store the data online in the cloud to access it from both my phone and laptop, update work status daily, and include a full calendar view.</p>
+    </div>
+
+    <div class="message-box assistant-msg">
+      <div class="msg-title">What Was Built</div>
+      <ul>
+        <li><strong>Multi-Device Access:</strong> Responsive web application working on laptops, desktops, and mobile phones (iPhone/Android).</li>
+        <li><strong>Interactive Calendar View:</strong> Monthly calendar showing working days, daily hours, leave days, and task inspectors.</li>
+        <li><strong>Real-Time Cloud Sync:</strong> Instant sync room key and Supabase PostgreSQL support so changes on mobile reflect on laptop immediately.</li>
+        <li><strong>1-Click Reports:</strong> Generates formatted daily work reports ready to copy for WhatsApp/Slack.</li>
+        <li><strong>Preloaded Office Records:</strong> All 12 days of August 2026 work tasks and leave records are preloaded.</li>
+      </ul>
+    </div>
+
+    <h3>Preloaded Data Overview</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Project(s)</th>
+          <th>Work Done</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>03-Aug-2026</td><td>MDI_Manu_CleaningEthanol</td><td>Updated Grab Pose, Implemented audio changes</td><td>Completed</td></tr>
+        <tr><td>04-Aug-2026</td><td>MDI_Manu_CleaningEthanol</td><td>Tested 4 simulations in MDI</td><td>Completed</td></tr>
+        <tr><td>05-Aug-2026</td><td>Cleaning-of-Parisson-Area / Ethanol</td><td>Storyboard explanation & simulation package</td><td>Pending</td></tr>
+        <tr><td>06-Aug-2026</td><td>MDI Parisson / Ethanol / Purified Water</td><td>Step Wizard, Grab Pose, Audio triggers</td><td>In Progress</td></tr>
+        <tr><td>07-Aug-2026</td><td>MDI Manu / Setup & Ops / FFS</td><td>VIVE package update & Step Wizard setup</td><td>In Progress</td></tr>
+        <tr><td>08-Aug & 09-Aug</td><td>Leave / Weekend</td><td>Weekend / Off</td><td>Leave</td></tr>
+        <tr><td>10-Aug-2026</td><td>FFS_Cleaning Of Parisson Area</td><td>Completed Step Wizard & Detect Visual</td><td>Completed</td></tr>
+        <tr><td>11-Aug-2026</td><td>FFS - Cleaning of Parisson Area</td><td>Configured Step Events & behavior</td><td>In Progress</td></tr>
+        <tr><td>12-Aug-2026</td><td>MDI_Manu_Ethanol</td><td>Correction work & VR platform testing</td><td>In Progress</td></tr>
+        <tr><td>13-Aug & 14-Aug</td><td>Leave / Off</td><td>Official Leave</td><td>Leave</td></tr>
+      </tbody>
+    </table>
+
+    <h3>How to Open & Run</h3>
+    <ol>
+      <li>Open <code>index.html</code> or <code>app-standalone.html</code> in any browser.</li>
+      <li>To sync between phone and laptop, click <strong>Cloud Sync</strong> and enter a secret key (e.g. <code>office-2026</code>).</li>
+    </ol>
+  </div>
+</body>
+</html>

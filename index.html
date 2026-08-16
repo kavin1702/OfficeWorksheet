@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WorkPulse - Office Daily Worksheet & Task Tracker</title>
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#1e293b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WorkPulse">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- External Libraries -->
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js for analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Supabase JS Client for Real-time Cloud Database -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.min.js"></script>
+  <!-- PapaParse for CSV parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- SheetJS for Excel (.xlsx) export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- Canvas Confetti for completion celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body class="theme-light">
+  <div id="app" class="app-container">
+    
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="header-inner container">
+        <!-- Logo & Branding -->
+        <div class="brand-section">
+          <div class="brand-logo">
+            <i data-lucide="briefcase" class="brand-icon"></i>
+          </div>
+          <div class="brand-text">
+            <div class="brand-title-row">
+              <h1 class="brand-title">WorkPulse</h1>
+              <span class="badge-tag">Office Daily</span>
+            </div>
+            <p class="brand-subtitle">Daily Worksheet & Cloud Status Manager</p>
+          </div>
+        </div>
+
+        <!-- Cloud Sync & Status Bar -->
+        <div class="header-center-info">
+          <button id="btnCloudStatus" class="cloud-status-pill local" title="Click to configure Cloud Database">
+            <span class="status-dot"></span>
+            <span id="cloudStatusText" class="status-label">Local Mode</span>
+            <i data-lucide="cloud" class="icon-sm"></i>
+          </button>
+          <button id="btnSyncNow" class="btn-icon btn-icon-sm" title="Sync with Cloud Online Now" aria-label="Sync Now">
+            <i data-lucide="refresh-cw" id="syncIcon" class="icon-xs"></i>
+          </button>
+          <div class="current-date-pill" id="currentDateDisplay">
+            <i data-lucide="calendar" class="icon-sm"></i>
+            <span id="headerTodayText">Today, Aug 15</span>
+          </div>
+        </div>
+
+        <!-- Action Tools -->
+        <div class="header-actions">
+          <button id="btnOpenReport" class="btn btn-outline btn-sm" title="Generate formatted daily report for WhatsApp/Slack">
+            <i data-lucide="file-text"></i>
+            <span class="btn-text">Daily Report</span>
+          </button>
+          
+          <button id="btnOpenImportExport" class="btn btn-outline btn-sm" title="Import / Export Excel and CSV data">
+            <i data-lucide="arrow-up-down"></i>
+            <span class="btn-text">Import / Export</span>
+          </button>
+
+          <button id="btnOpenCloudModal" class="btn btn-outline btn-sm cloud-btn" title="Cloud Database Settings">
+            <i data-lucide="database"></i>
+            <span class="btn-text">Cloud Sync</span>
+          </button>
+
+          <button id="btnToggleTheme" class="btn-icon" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+            <i data-lucide="moon" id="themeIcon"></i>
+          </button>
+
+          <button id="btnNewWorksheetEntry" class="btn btn-primary btn-sm btn-glow">
+            <i data-lucide="plus-circle"></i>
+            <span>Log Work</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content container">
+      
+      <!-- Summary Metrics Bar -->
+      <section class="metrics-grid">
+        <div class="metric-card metric-total">
+          <div class="metric-icon-wrap bg-blue-light">
+            <i data-lucide="list-todo" class="text-blue"></i>
+          </div>
+          <div class="metric-details">
+            <span class="metric-label">Total Tasks</span>
+            <div class="metric-value-row">
+              <span class="metric-value" id="metricTotalTasks">0</span>
+              <span class="metric-sub" id="metricFilterContext">Filtered</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-completed">
+          <div class="metric-icon-wrap bg-emerald-light">
+            <i data-lucide="check-circle-2" class="text-emerald"></i>
+          </div>
+          <div class="metric-details">
+            <span class="metric-label">Completed</span>
+            <div class="metric-value-row">
+              <span class="metric-value" id="metricCompletedTasks">0</span>
+              <span class="metric-badge bg-emerald-badge" id="metricCompletionRate">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-progress">
+          <div class="metric-icon-wrap bg-sky-light">
+            <i data-lucide="clock" class="text-sky"></i>
+          </div>
+          <div class="metric-details">
+            <span class="metric-label">In Progress / Pending</span>
+            <div class="metric-value-row">
+              <span class="metric-value" id="metricInProgressTasks">0</span>
+              <span class="metric-sub" id="metricPendingSub">0 pending</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-hours">
+          <div class="metric-icon-wrap bg-amber-light">
+            <i data-lucide="timer" class="text-amber"></i>
+          </div>
+          <div class="metric-details">
+            <span class="metric-label">Hours Logged</span>
+            <div class="metric-value-row">
+              <span class="metric-value" id="metricTotalHours">0.0</span>
+              <span class="metric-sub">hrs</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Smart Filter & Control Bar -->
+      <section class="control-panel">
+        <div class="filters-row">
+          
+          <!-- Date Filter Pills -->
+          <div class="date-pills-group" id="dateFilterPills">
+            <button class="filter-pill active" data-date-filter="today">Today</button>
+            <button class="filter-pill" data-date-filter="yesterday">Yesterday</button>
+            <button class="filter-pill" data-date-filter="this-week">This Week</button>
+            <button class="filter-pill" data-date-filter="this-month">This Month</button>
+            <button class="filter-pill" data-date-filter="all">All Dates</button>
+            <button class="filter-pill" data-date-filter="custom" id="btnCustomDatePill">
+              <i data-lucide="calendar" class="icon-xs"></i>
+              <span>Custom Date</span>
+            </button>
+          </div>
+
+          <!-- Custom Date Range Picker (Hidden by default) -->
+          <div class="custom-date-container hidden" id="customDateContainer">
+            <div class="date-input-wrap">
+              <label for="filterStartDate">From</label>
+              <input type="date" id="filterStartDate" class="form-input-sm">
+            </div>
+            <div class="date-input-wrap">
+              <label for="filterEndDate">To</label>
+              <input type="date" id="filterEndDate" class="form-input-sm">
+            </div>
+            <button id="btnApplyCustomDate" class="btn btn-primary btn-xs">Apply</button>
+            <button id="btnCloseCustomDate" class="btn btn-ghost btn-xs"><i data-lucide="x"></i></button>
+          </div>
+
+          <!-- Quick Actions & Carry Forward -->
+          <div class="panel-secondary-actions">
+            <button id="btnCarryForward" class="btn btn-outline btn-sm btn-subtle" title="Bring unfinished tasks from yesterday into today's worksheet">
+              <i data-lucide="corner-down-right"></i>
+              <span class="btn-text">Carry Forward Pending</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="search-and-view-row">
+          <!-- Search input -->
+          <div class="search-input-wrap">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search project name, tasks, or remarks...">
+            <button id="btnClearSearch" class="btn-clear hidden" aria-label="Clear search">
+              <i data-lucide="x" class="icon-xs"></i>
+            </button>
+          </div>
+
+          <!-- Project Filter Dropdown -->
+          <div class="select-wrap">
+            <select id="filterProject" class="form-select-sm">
+              <option value="all">All Projects</option>
+            </select>
+          </div>
+
+          <!-- Status Filter Dropdown -->
+          <div class="select-wrap">
+            <select id="filterStatus" class="form-select-sm">
+              <option value="all">All Statuses</option>
+              <option value="Completed">Completed</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Pending">Pending</option>
+              <option value="Blocked">Blocked</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Leave">🏖️ Leave / Off</option>
+            </select>
+          </div>
+
+          <!-- View Mode Switcher -->
+          <div class="view-switcher" role="tablist">
+            <button class="view-btn active" data-view="table" title="Table View" aria-label="Table View">
+              <i data-lucide="table"></i>
+            </button>
+            <button class="view-btn" data-view="cards" title="Mobile / Card View" aria-label="Card View">
+              <i data-lucide="layout-grid"></i>
+            </button>
+            <button class="view-btn" data-view="calendar" title="Calendar View" aria-label="Calendar View">
+              <i data-lucide="calendar"></i>
+            </button>
+            <button class="view-btn" data-view="analytics" title="Analytics & Charts" aria-label="Analytics View">
+              <i data-lucide="bar-chart-3"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Views Container -->
+      <section class="content-view-area">
+        
+        <!-- 1. Table View (Desktop & Tablet Optimized) -->
+        <div id="tableViewContainer" class="view-panel active">
+          <div class="table-responsive-card">
+            <table class="worksheet-table" id="worksheetTable">
+              <thead>
+                <tr>
+                  <th class="col-date" data-sort="date">
+                    <div class="th-content">Date <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                  </th>
+                  <th class="col-project" data-sort="projectName">
+                    <div class="th-content">Project Name <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                  </th>
+                  <th class="col-work">Work Description & Notes</th>
+                  <th class="col-status" data-sort="status">
+                    <div class="th-content">Status <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                  </th>
+                  <th class="col-hours" data-sort="hours">
+                    <div class="th-content">Hours <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                  </th>
+                  <th class="col-priority">Priority</th>
+                  <th class="col-actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="worksheetTableBody">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 2. Mobile Cards View (Phone Optimized) -->
+        <div id="cardsViewContainer" class="view-panel hidden">
+          <div class="cards-grid" id="worksheetCardsGrid">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <!-- 3. Calendar View (Interactive Monthly View) -->
+        <div id="calendarViewContainer" class="view-panel hidden">
+          <div class="calendar-card">
+            <!-- Month Header & Controls -->
+            <div class="calendar-header-bar">
+              <div class="calendar-nav-left">
+                <button id="btnPrevMonth" class="btn btn-outline btn-sm btn-icon-sm" aria-label="Previous Month" title="Previous Month">
+                  <i data-lucide="chevron-left"></i>
+                </button>
+                <h2 id="calendarMonthTitle" class="calendar-month-title">August 2026</h2>
+                <button id="btnNextMonth" class="btn btn-outline btn-sm btn-icon-sm" aria-label="Next Month" title="Next Month">
+                  <i data-lucide="chevron-right"></i>
+                </button>
+                <button id="btnCalendarToday" class="btn btn-outline btn-xs">Today</button>
+              </div>
+
+              <!-- Month Summary Stats Strip -->
+              <div class="calendar-month-stats">
+                <div class="cstat-item">
+                  <span class="cstat-val text-blue" id="calStatWorkingDays">0</span>
+                  <span class="cstat-lbl">Work Days</span>
+                </div>
+                <div class="cstat-item">
+                  <span class="cstat-val text-emerald" id="calStatCompleted">0</span>
+                  <span class="cstat-lbl">Completed</span>
+                </div>
+                <div class="cstat-item">
+                  <span class="cstat-val text-amber" id="calStatHours">0.0h</span>
+                  <span class="cstat-lbl">Hours</span>
+                </div>
+                <div class="cstat-item">
+                  <span class="cstat-val text-muted" id="calStatLeave">0</span>
+                  <span class="cstat-lbl">Leaves</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calendar Days Header (Mon-Sun) -->
+            <div class="calendar-weekdays-grid">
+              <div class="weekday-cell">Mon</div>
+              <div class="weekday-cell">Tue</div>
+              <div class="weekday-cell">Wed</div>
+              <div class="weekday-cell">Thu</div>
+              <div class="weekday-cell">Fri</div>
+              <div class="weekday-cell weekend">Sat</div>
+              <div class="weekday-cell weekend">Sun</div>
+            </div>
+
+            <!-- Calendar Days Grid (Populated dynamically) -->
+            <div class="calendar-days-grid" id="calendarDaysGrid">
+              <!-- Dynamically generated via UI renderer -->
+            </div>
+          </div>
+
+          <!-- Day Inspector Drawer / Details below calendar -->
+          <div id="calendarDayDetails" class="day-inspector-card hidden">
+            <div class="day-inspector-header">
+              <div class="day-inspector-title-wrap">
+                <i data-lucide="calendar-check" class="text-blue"></i>
+                <h3 id="inspectorDateTitle" class="inspector-date-title">Tasks for 06 Aug 2026</h3>
+              </div>
+              <div class="day-inspector-actions">
+                <button id="btnAddForSelectedDate" class="btn btn-primary btn-xs">
+                  <i data-lucide="plus"></i> Add Log For This Day
+                </button>
+                <button id="btnCloseDayInspector" class="btn-action" aria-label="Close details">
+                  <i data-lucide="x"></i>
+                </button>
+              </div>
+            </div>
+            <div id="inspectorTasksList" class="inspector-tasks-list"></div>
+          </div>
+        </div>
+
+        <!-- 4. Analytics View -->
+        <div id="analyticsViewContainer" class="view-panel hidden">
+          <div class="analytics-charts-grid">
+            <div class="chart-card">
+              <div class="chart-header">
+                <h3 class="chart-title">Status Breakdown</h3>
+                <span class="chart-subtitle">Distribution of tasks by status</span>
+              </div>
+              <div class="chart-body-donut">
+                <canvas id="statusDonutChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-header">
+                <h3 class="chart-title">Hours by Project</h3>
+                <span class="chart-subtitle">Total time logged across active projects</span>
+              </div>
+              <div class="chart-body-bar">
+                <canvas id="projectHoursBarChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State (When no tasks match) -->
+        <div id="emptyState" class="empty-state-card hidden">
+          <div class="empty-icon-wrap">
+            <i data-lucide="clipboard-list"></i>
+          </div>
+          <h3 class="empty-title">No worksheet entries found</h3>
+          <p class="empty-desc" id="emptyStateDesc">There are no work records matching your selected date or filters.</p>
+          <div class="empty-actions">
+            <button id="btnEmptyAdd" class="btn btn-primary">
+              <i data-lucide="plus"></i> Add Work Log
+            </button>
+            <button id="btnLoadSampleData" class="btn btn-outline">
+              <i data-lucide="sparkles"></i> Load Sample Data
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Mobile Floating Action Button (FAB) -->
+    <button id="mobileFabAdd" class="mobile-fab" aria-label="Add new work entry">
+      <i data-lucide="plus"></i>
+    </button>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="mobile-bottom-nav">
+      <button class="mob-nav-item active" data-mob-filter="today">
+        <i data-lucide="sun"></i>
+        <span>Today</span>
+      </button>
+      <button class="mob-nav-item" data-mob-filter="this-week">
+        <i data-lucide="calendar"></i>
+        <span>Week</span>
+      </button>
+      <button class="mob-nav-item" id="mobNavAdd">
+        <div class="mob-nav-add-icon">
+          <i data-lucide="plus"></i>
+        </div>
+        <span>Log Work</span>
+      </button>
+      <button class="mob-nav-item" id="mobNavCalendar">
+        <i data-lucide="calendar-days"></i>
+        <span>Calendar</span>
+      </button>
+      <button class="mob-nav-item" id="mobNavAnalytics">
+        <i data-lucide="bar-chart-2"></i>
+        <span>Analytics</span>
+      </button>
+      <button class="mob-nav-item" id="mobNavCloud">
+        <i data-lucide="cloud"></i>
+        <span>Cloud</span>
+      </button>
+    </nav>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. Add / Edit Work Log Modal -->
+    <div class="modal-overlay hidden" id="workModal">
+      <div class="modal-container modal-md" role="dialog" aria-labelledby="workModalTitle">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <i data-lucide="edit-3" class="modal-header-icon"></i>
+            <h2 id="workModalTitle" class="modal-title">Log Daily Work</h2>
+          </div>
+          <button class="btn-close-modal" id="btnCloseWorkModal" aria-label="Close modal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <form id="workEntryForm" class="modal-form">
+          <input type="hidden" id="workEntryId">
+
+          <!-- Date & Quick Selectors -->
+          <div class="form-group">
+            <div class="form-label-row">
+              <label for="workDate" class="form-label required">Work Date</label>
+              <div class="quick-date-chips">
+                <button type="button" class="chip-btn" id="chipToday">Today</button>
+                <button type="button" class="chip-btn" id="chipYesterday">Yesterday</button>
+              </div>
+            </div>
+            <input type="date" id="workDate" class="form-input" required>
+          </div>
+
+          <!-- Project Name with Autocomplete Suggestions -->
+          <div class="form-group">
+            <label for="projectNameInput" class="form-label required">Project Name / Client</label>
+            <div class="input-autocomplete-wrapper">
+              <input type="text" id="projectNameInput" class="form-input" placeholder="e.g. Website Redesign, Client Portal, CRM" required autocomplete="off">
+              <div id="projectSuggestions" class="suggestions-dropdown hidden"></div>
+            </div>
+            <div class="project-tags-quick" id="projectQuickTags">
+              <!-- Dynamically populated recent projects -->
+            </div>
+          </div>
+
+          <!-- Work Done / Tasks Description -->
+          <div class="form-group">
+            <div class="form-label-row">
+              <label for="workDescription" class="form-label required">Work Description & Tasks Completed</label>
+              <span class="form-hint">Be specific (what was achieved / next steps)</span>
+            </div>
+            <textarea id="workDescription" class="form-textarea" rows="4" placeholder="Describe the work done, tasks completed, meetings attended, or issues solved..." required></textarea>
+          </div>
+
+          <!-- Status & Hours Row -->
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="workStatus" class="form-label required">Work Status</label>
+              <select id="workStatus" class="form-select" required>
+                <option value="Completed">✅ Completed</option>
+                <option value="In Progress" selected>🔄 In Progress</option>
+                <option value="Pending">⏳ Pending</option>
+                <option value="Blocked">🛑 Blocked</option>
+                <option value="Under Review">🔍 Under Review</option>
+                <option value="Leave">🏖️ Leave / Off</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="workHours" class="form-label">Hours Spent</label>
+              <div class="input-unit-wrap">
+                <input type="number" id="workHours" class="form-input" min="0" max="24" step="0.5" placeholder="e.g. 3.5">
+                <span class="unit-text">hrs</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Priority & Remarks Row -->
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="workPriority" class="form-label">Priority</label>
+              <select id="workPriority" class="form-select">
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+                <option value="Urgent">Urgent</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="workRemarks" class="form-label">Remarks / Blockers (Optional)</label>
+              <input type="text" id="workRemarks" class="form-input" placeholder="e.g. Waiting on client API keys">
+            </div>
+          </div>
+
+          <!-- Modal Footer Actions -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="btnCancelWorkModal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="btnSaveWorkEntry">
+              <i data-lucide="save"></i>
+              <span id="saveBtnText">Save Work Log</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 2. Cloud Server & Database Settings Modal -->
+    <div class="modal-overlay hidden" id="cloudModal">
+      <div class="modal-container modal-lg" role="dialog" aria-labelledby="cloudModalTitle">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <i data-lucide="cloud-cog" class="modal-header-icon text-sky"></i>
+            <h2 id="cloudModalTitle" class="modal-title">Cloud Database & Online Storage</h2>
+          </div>
+          <button class="btn-close-modal" id="btnCloseCloudModal" aria-label="Close modal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body scrollable-modal-body">
+          <div class="cloud-info-banner">
+            <i data-lucide="shield-check" class="banner-icon"></i>
+            <div>
+              <strong>Access From Anywhere (Laptop & Mobile Phone)</strong>
+              <p>Store your worksheet data in a 100% free online cloud database (Supabase PostgreSQL). Any work you update on your phone or laptop syncs instantly.</p>
+            </div>
+          </div>
+
+          <!-- Storage Provider Options -->
+          <div class="storage-mode-selector">
+            <label class="mode-card active" data-mode="instant">
+              <input type="radio" name="storageProvider" value="instant" checked>
+              <div class="mode-content">
+                <div class="mode-title-row">
+                  <span class="mode-title">Instant Cloud Sync Key</span>
+                  <span class="badge-recommended">⚡ 1-Click Zero Setup</span>
+                </div>
+                <p class="mode-desc">Sync effortlessly between Phone & Laptop by sharing a simple secret Sync Key. No database creation needed!</p>
+              </div>
+            </label>
+
+            <label class="mode-card" data-mode="supabase">
+              <input type="radio" name="storageProvider" value="supabase">
+              <div class="mode-content">
+                <div class="mode-title-row">
+                  <span class="mode-title">Supabase Cloud Database (PostgreSQL)</span>
+                  <span class="badge-recommended" style="background-color: #3b82f6;">Permanent SQL</span>
+                </div>
+                <p class="mode-desc">Direct PostgreSQL cloud database. Permanent dedicated storage with SQL query control.</p>
+              </div>
+            </label>
+
+            <label class="mode-card" data-mode="rest">
+              <input type="radio" name="storageProvider" value="rest">
+              <div class="mode-content">
+                <div class="mode-title-row">
+                  <span class="mode-title">Custom REST API / Cloud Server</span>
+                </div>
+                <p class="mode-desc">Connect to your own custom backend endpoint (Node.js, Express, Python FastAPI, or JSON server).</p>
+              </div>
+            </label>
+
+            <label class="mode-card" data-mode="local">
+              <input type="radio" name="storageProvider" value="local">
+              <div class="mode-content">
+                <div class="mode-title-row">
+                  <span class="mode-title">Local Browser Storage (Offline Only)</span>
+                </div>
+                <p class="mode-desc">Saves strictly inside this browser. (Data won't sync to other devices).</p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Instant Cloud Sync Config Section -->
+          <div id="instantConfigSection" class="config-form-section">
+            <h4 class="section-title">Secret Sync Key (Shared Room)</h4>
+            <div class="form-group">
+              <label for="syncKeyInput" class="form-label required">Your Secret Sync Key</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="syncKeyInput" class="form-input" placeholder="e.g. office-work-2026 or my-team-worksheet" style="flex: 1;">
+                <button type="button" id="btnGenerateSyncKey" class="btn btn-outline btn-sm" style="white-space: nowrap;">🎲 Generate</button>
+              </div>
+              <span class="form-hint">Type any custom passcode or secret key here. Enter the <strong>exact same key on your mobile phone</strong> and both devices sync automatically!</span>
+            </div>
+          </div>
+
+          <!-- Supabase Config Section -->
+          <div id="supabaseConfigSection" class="config-form-section">
+            <h4 class="section-title">Supabase Credentials</h4>
+            <div class="form-group">
+              <label for="supabaseUrl" class="form-label required">Supabase Project URL</label>
+              <input type="url" id="supabaseUrl" class="form-input" placeholder="https://your-project-id.supabase.co">
+            </div>
+
+            <div class="form-group">
+              <label for="supabaseAnonKey" class="form-label required">Supabase Anon Public API Key</label>
+              <input type="password" id="supabaseAnonKey" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+            </div>
+
+            <!-- Quick SQL Setup Accordion -->
+            <details class="setup-details">
+              <summary class="setup-summary">
+                <i data-lucide="help-circle" class="icon-sm"></i>
+                <span>How to set up free Supabase cloud in 2 minutes (Click to expand)</span>
+              </summary>
+              <div class="setup-content">
+                <ol class="setup-steps">
+                  <li>Go to <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a> and sign up / create a free project.</li>
+                  <li>In your Supabase dashboard, click <strong>SQL Editor</strong> on the left.</li>
+                  <li>Click <strong>New Query</strong>, paste the SQL below, and click <strong>Run</strong>:</li>
+                </ol>
+                <div class="code-box">
+                  <pre><code>-- Create office daily worksheet table
+CREATE TABLE IF NOT EXISTS daily_worksheets (
+  id TEXT PRIMARY KEY,
+  date DATE NOT NULL,
+  project_name TEXT NOT NULL,
+  work TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'In Progress',
+  hours_worked NUMERIC DEFAULT 0,
+  priority TEXT DEFAULT 'Medium',
+  remarks TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable Row Level Security & Public Access for your worksheet
+ALTER TABLE daily_worksheets ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true) WITH CHECK (true);
+</code></pre>
+                  <button type="button" id="btnCopySql" class="btn btn-xs btn-outline btn-copy">
+                    <i data-lucide="copy"></i> Copy SQL
+                  </button>
+                </div>
+                <p class="step-footer">4. Go to <strong>Project Settings -> API</strong>, copy your <strong>Project URL</strong> and <strong>anon public key</strong>, and paste them above!</p>
+              </div>
+            </details>
+          </div>
+
+          <!-- REST API Config Section -->
+          <div id="restConfigSection" class="config-form-section hidden">
+            <h4 class="section-title">REST API Server Endpoint</h4>
+            <div class="form-group">
+              <label for="restApiUrl" class="form-label required">Server Base URL</label>
+              <input type="url" id="restApiUrl" class="form-input" placeholder="https://api.yourcompany.com/api/worksheet">
+            </div>
+            <div class="form-group">
+              <label for="restAuthToken" class="form-label">Authorization Token (Optional)</label>
+              <input type="password" id="restAuthToken" class="form-input" placeholder="Bearer your-token-here">
+            </div>
+          </div>
+
+          <!-- Connection Test Feedback -->
+          <div id="cloudTestResult" class="test-result-box hidden"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btnTestCloudConnection" class="btn btn-outline">
+            <i data-lucide="activity"></i> Test Connection
+          </button>
+          <button type="button" id="btnSaveCloudSettings" class="btn btn-primary">
+            <i data-lucide="check"></i> Save & Sync Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Import & Export Modal -->
+    <div class="modal-overlay hidden" id="importExportModal">
+      <div class="modal-container modal-md" role="dialog" aria-labelledby="ieModalTitle">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <i data-lucide="arrow-up-down" class="modal-header-icon"></i>
+            <h2 id="ieModalTitle" class="modal-title">Import & Export Worksheet Data</h2>
+          </div>
+          <button class="btn-close-modal" id="btnCloseIEModal" aria-label="Close modal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="ie-tabs" role="tablist">
+            <button class="ie-tab active" data-ietab="export">Export Data</button>
+            <button class="ie-tab" data-ietab="import">Import Data</button>
+          </div>
+
+          <!-- Export Tab -->
+          <div id="tabExportContent" class="ie-tab-content active">
+            <p class="tab-desc">Export your filtered or complete daily worksheet records to submit for office reports or backups.</p>
+            
+            <div class="export-options-grid">
+              <button id="btnExportExcel" class="export-card-btn">
+                <div class="export-icon-box bg-emerald-light">
+                  <i data-lucide="sheet" class="text-emerald"></i>
+                </div>
+                <div class="export-card-info">
+                  <strong>Excel Spreadsheet (.xlsx)</strong>
+                  <span>Formatted spreadsheet with columns & headers</span>
+                </div>
+              </button>
+
+              <button id="btnExportCsv" class="export-card-btn">
+                <div class="export-icon-box bg-blue-light">
+                  <i data-lucide="file-spreadsheet" class="text-blue"></i>
+                </div>
+                <div class="export-card-info">
+                  <strong>CSV File (.csv)</strong>
+                  <span>Universal format for Google Sheets & Excel</span>
+                </div>
+              </button>
+
+              <button id="btnExportJson" class="export-card-btn">
+                <div class="export-icon-box bg-amber-light">
+                  <i data-lucide="file-code" class="text-amber"></i>
+                </div>
+                <div class="export-card-info">
+                  <strong>JSON Backup (.json)</strong>
+                  <span>Full structured backup for cloud migration</span>
+                </div>
+              </button>
+
+              <button id="btnPrintWorksheet" class="export-card-btn">
+                <div class="export-icon-box bg-purple-light">
+                  <i data-lucide="printer" class="text-purple"></i>
+                </div>
+                <div class="export-card-info">
+                  <strong>Print / Save PDF Report</strong>
+                  <span>Clean printable daily office timesheet</span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Import Tab -->
+          <div id="tabImportContent" class="ie-tab-content hidden">
+            <p class="tab-desc">Upload a CSV or Excel file to instantly import all your past office worksheet data.</p>
+            
+            <div class="drop-zone" id="fileDropZone">
+              <i data-lucide="upload-cloud" class="drop-icon"></i>
+              <p class="drop-title">Drag & Drop your CSV or Excel file here</p>
+              <p class="drop-sub">or click to browse files from your computer</p>
+              <input type="file" id="importFileInput" accept=".csv, .xlsx, .xls, .json" class="hidden">
+              <button type="button" class="btn btn-outline btn-sm" id="btnBrowseFile">Choose File</button>
+            </div>
+
+            <div class="import-format-guide">
+              <span class="guide-title">Supported Columns in CSV / Excel:</span>
+              <p class="guide-sample"><code>Date, Project Name, Work Description, Status, Hours, Priority, Remarks</code></p>
+            </div>
+
+            <div id="importPreviewArea" class="import-preview-box hidden">
+              <div class="preview-header">
+                <span id="importPreviewCount">0 rows found</span>
+                <button type="button" id="btnConfirmImport" class="btn btn-primary btn-sm">Confirm Import</button>
+              </div>
+              <div class="preview-table-wrap" id="previewTableWrap"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="btnCloseIEFooter">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Daily Status Report Generator Modal (For WhatsApp / Slack / Email) -->
+    <div class="modal-overlay hidden" id="reportModal">
+      <div class="modal-container modal-md" role="dialog" aria-labelledby="reportModalTitle">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <i data-lucide="message-square" class="modal-header-icon text-emerald"></i>
+            <h2 id="reportModalTitle" class="modal-title">Daily Office Status Report</h2>
+          </div>
+          <button class="btn-close-modal" id="btnCloseReportModal" aria-label="Close modal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="report-header-controls">
+            <label for="reportDateSelect" class="form-label-inline">Report Date:</label>
+            <select id="reportDateSelect" class="form-select-sm"></select>
+            <div class="report-format-toggle">
+              <button class="btn-xs format-btn active" data-format="standard">Standard</button>
+              <button class="btn-xs format-btn" data-format="compact">Compact</button>
+              <button class="btn-xs format-btn" data-format="bullets">Bullets</button>
+            </div>
+          </div>
+
+          <div class="report-preview-box">
+            <textarea id="dailyReportText" class="report-textarea" rows="12" readonly></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="btnCloseReportFooter">Close</button>
+          <button type="button" class="btn btn-primary" id="btnCopyDailyReport">
+            <i data-lucide="clipboard-copy"></i>
+            <span>Copy to Clipboard</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  </div>
+
+  <!-- Application JavaScript Modules -->
+  <script src="js/sampleData.js"></script>
+  <script src="js/cloudStorage.js"></script>
+  <script src="js/worksheetManager.js"></script>
+  <script src="js/uiRenderer.js"></script>
+  <script src="js/importExport.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('WorkPulse PWA Service Worker registered:', reg.scope))
+          .catch(err => console.log('Service Worker registration skipped:', err));
+      });
+    }
+  </script>
+</body>
+</html>
