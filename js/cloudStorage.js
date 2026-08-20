@@ -269,6 +269,8 @@ class CloudStorageService {
           if (Array.isArray(sheetData) && sheetData.length > 0) {
             entries = sheetData.map((item, idx) => ({
               id: item.id || `sheet-row-${idx}`,
+              userId: item.userId || item.user_id || (item.user ? 'user_' + String(item.user).toLowerCase().replace(/\s+/g, '_') : 'user_kavin'),
+              userName: item.userName || item.user_name || item.user || 'Kavin',
               date: this.normalizeDate(item.date),
               projectName: item.projectName || 'General',
               work: item.work || '',
@@ -604,6 +606,8 @@ class CloudStorageService {
   mapToSupabaseRow(entry) {
     return {
       id: entry.id,
+      user_id: entry.userId || 'user_kavin',
+      user_name: entry.userName || 'Kavin',
       date: entry.date,
       project_name: entry.projectName,
       work: entry.work,
@@ -619,6 +623,8 @@ class CloudStorageService {
   mapFromSupabaseRow(row) {
     return {
       id: row.id,
+      userId: row.user_id || row.userId || 'user_kavin',
+      userName: row.user_name || row.userName || 'Kavin',
       date: this.normalizeDate(row.date),
       projectName: row.project_name || row.projectName || 'General',
       work: row.work || '',

@@ -5,6 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Initialize Core Services
+  const auth = window.authManager;
   const cloud = window.cloudStorage;
   const manager = new window.WorksheetManager(cloud);
   const ui = window.uiRenderer;
@@ -22,7 +23,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 2. Initialize Theme
   initTheme();
 
-  // 3. Initialize Cloud Sync Status Listener & Real-time Remote Sync
+  // 3. User Authentication Change Listener
+  if (auth) {
+    auth.onUserChange((user) => {
+      ui.renderUserProfileHeader(user);
+      renderApp();
+    });
+  }
+
+  // 4. Initialize Cloud Sync Status Listener & Real-time Remote Sync
   cloud.onStatusChange((status, message) => {
     updateCloudStatusBadge(status, message);
   });
@@ -33,12 +42,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderApp();
   });
 
-  // 4. Load Data & Render
+  // 5. Load Data & Render
   await manager.initialize();
   renderApp();
 
-  // 5. Setup UI Event Listeners
+  // 6. Setup UI Event Listeners
   bindHeaderEvents();
+  bindAuthEvents();
   bindFilterEvents();
   bindViewSwitching();
   bindCalendarEvents();
@@ -52,9 +62,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Master Render Function
   // -------------------------------------------------------------
   function renderApp() {
+    const currentUser = auth ? auth.getCurrentUser() : null;
+    if (currentUser) {
+      ui.renderUserProfileHeader(currentUser);
+    }
+
     const entries = manager.getFilteredEntries();
     const metrics = manager.getMetrics(entries);
     const projects = manager.getUniqueProjects();
+    const showUserBadge = manager.filters.userScope === 'all';
 
     // Context label for metrics
     let dateContext = 'Filtered';
@@ -76,7 +92,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       handleStatusChange,
       handleEditEntry,
       handleDuplicateEntry,
-      handleDeleteEntry
+      handleDeleteEntry,
+      showUserBadge
     );
 
     // Render Mobile Cards View
@@ -85,7 +102,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       handleStatusChange,
       handleEditEntry,
       handleDuplicateEntry,
-      handleDeleteEntry
+      handleDeleteEntry,
+      showUserBadge
     );
 
     // Render Calendar View
@@ -261,6 +279,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Filter & Search Events
   // -------------------------------------------------------------
   function bindFilterEvents() {
+    // User Scope Pills (My Worksheet vs Team Overview)
+    const scopePills = document.querySelectorAll('.filter-pill[data-user-scope]');
+    scopePills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        const scope = pill.dataset.userScope;
+        scopePills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        manager.setFilter('userScope', scope);
+        renderApp();
+      });
+    });
+
     // Date Pills
     const datePills = document.querySelectorAll('.filter-pill[data-date-filter]');
     datePills.forEach(pill => {
@@ -930,6 +960,110 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
         ui.showToast('Failed to copy text', 'error');
       });
     });
+  }
+
+  // -------------------------------------------------------------
+  // Multi-User Authentication & Profile Events
+  // -------------------------------------------------------------
+  function bindAuthEvents() {
+    if (!auth) return;
+
+    const btnUserProfile = document.getElementById('btnUserProfile');
+    const userDropdownMenu = document.getElementById('userDropdownMenu');
+    const userAuthModal = document.getElementById('userAuthModal');
+    const btnCloseUserModal = document.getElementById('btnCloseUserModal');
+    const btnDropdownSwitchUser = document.getElementById('btnDropdownSwitchUser');
+    const btnDropdownAddUser = document.getElementById('btnDropdownAddUser');
+
+    const tabBtnSwitchUser = document.getElementById('tabBtnSwitchUser');
+    const tabBtnNewUser = document.getElementById('tabBtnNewUser');
+    const tabContentSwitchUser = document.getElementById('tabContentSwitchUser');
+    const tabContentNewUser = document.getElementById('tabContentNewUser');
+    const newUserForm = document.getElementById('newUserForm');
+
+    // Toggle dropdown
+    if (btnUserProfile && userDropdownMenu) {
+      btnUserProfile.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdownMenu.classList.toggle('hidden');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!btnUserProfile.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+          userDropdownMenu.classList.add('hidden');
+        }
+      });
+    }
+
+    function openAuthModal(tab = 'switch') {
+      if (userDropdownMenu) userDropdownMenu.classList.add('hidden');
+      if (userAuthModal) {
+        userAuthModal.classList.remove('hidden');
+        switchAuthTab(tab);
+        refreshUserList();
+      }
+    }
+
+    function closeAuthModal() {
+      if (userAuthModal) userAuthModal.classList.add('hidden');
+    }
+
+    function switchAuthTab(tab) {
+      if (tab === 'switch') {
+        tabBtnSwitchUser.classList.add('active');
+        tabBtnNewUser.classList.remove('active');
+        tabContentSwitchUser.classList.remove('hidden');
+        tabContentNewUser.classList.add('hidden');
+      } else {
+        tabBtnSwitchUser.classList.remove('active');
+        tabBtnNewUser.classList.add('active');
+        tabContentSwitchUser.classList.add('hidden');
+        tabContentNewUser.classList.remove('hidden');
+      }
+    }
+
+    function refreshUserList() {
+      const users = auth.getAllUsers();
+      const currentUser = auth.getCurrentUser();
+      ui.renderUserSwitcher(users, currentUser.id, (selectedId) => {
+        try {
+          const switched = auth.switchUser(selectedId);
+          ui.showToast(`Switched account to ${switched.name}`, 'success');
+          closeAuthModal();
+        } catch (err) {
+          ui.showToast(err.message, 'error');
+        }
+      });
+    }
+
+    if (btnDropdownSwitchUser) btnDropdownSwitchUser.addEventListener('click', () => openAuthModal('switch'));
+    if (btnDropdownAddUser) btnDropdownAddUser.addEventListener('click', () => openAuthModal('new'));
+    if (btnCloseUserModal) btnCloseUserModal.addEventListener('click', closeAuthModal);
+
+    if (tabBtnSwitchUser) tabBtnSwitchUser.addEventListener('click', () => switchAuthTab('switch'));
+    if (tabBtnNewUser) tabBtnNewUser.addEventListener('click', () => switchAuthTab('new'));
+
+    // Handle new user creation
+    if (newUserForm) {
+      newUserForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('newUserName').value;
+        const username = document.getElementById('newUserUsername').value;
+        const role = document.getElementById('newUserRole').value;
+        const colorRadio = document.querySelector('input[name="userColor"]:checked');
+        const color = colorRadio ? colorRadio.value : '#3b82f6';
+
+        try {
+          const newUser = auth.registerUser(name, username, role, '', color);
+          ui.showToast(`Welcome, ${newUser.name}! Profile created and activated.`, 'success');
+          newUserForm.reset();
+          closeAuthModal();
+        } catch (err) {
+          ui.showToast(err.message, 'error');
+        }
+      });
+    }
   }
 
   // -------------------------------------------------------------

@@ -74,6 +74,33 @@
 
         <!-- Action Tools -->
         <div class="header-actions">
+          <!-- User Profile Chip & Switcher -->
+          <div class="user-profile-wrapper">
+            <button id="btnUserProfile" class="user-profile-btn" title="Click to switch account or add friend profile">
+              <span class="user-avatar-badge" id="headerUserAvatar" style="background-color: #3b82f6;">K</span>
+              <span class="user-name-label" id="headerUserName">Kavin</span>
+              <i data-lucide="chevron-down" class="icon-xs"></i>
+            </button>
+            <div class="user-dropdown-menu hidden" id="userDropdownMenu">
+              <div class="user-dropdown-header">
+                <div class="user-avatar-large" id="dropdownUserAvatar" style="background-color: #3b82f6;">K</div>
+                <div>
+                  <div class="dropdown-user-name" id="dropdownUserName">Kavin</div>
+                  <div class="dropdown-user-role" id="dropdownUserRole">Lead Developer</div>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item" id="btnDropdownSwitchUser">
+                <i data-lucide="users" class="icon-sm"></i>
+                <span>Switch User Account</span>
+              </button>
+              <button class="dropdown-item" id="btnDropdownAddUser">
+                <i data-lucide="user-plus" class="icon-sm"></i>
+                <span>Add Friend / New Profile</span>
+              </button>
+            </div>
+          </div>
+
           <button id="btnOpenReport" class="btn btn-outline btn-sm" title="Generate formatted daily report for WhatsApp/Slack">
             <i data-lucide="file-text"></i>
             <span class="btn-text">Daily Report</span>
@@ -163,6 +190,18 @@
       <section class="control-panel">
         <div class="filters-row">
           
+          <!-- User Workspace Scope Selector -->
+          <div class="date-pills-group" id="userScopePills">
+            <button class="filter-pill active" data-user-scope="me" id="pillScopeMe">
+              <i data-lucide="user" class="icon-xs"></i>
+              <span id="labelMyWorksheet">My Worksheet</span>
+            </button>
+            <button class="filter-pill" data-user-scope="all" id="pillScopeAll">
+              <i data-lucide="users" class="icon-xs"></i>
+              <span>All Friends / Team</span>
+            </button>
+          </div>
+
           <!-- Date Filter Pills -->
           <div class="date-pills-group" id="dateFilterPills">
             <button class="filter-pill active" data-date-filter="today">Today</button>
@@ -946,12 +985,84 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       </div>
     </div>
 
+    <!-- 5. User Account Switcher & Profile Modal -->
+    <div class="modal-overlay hidden" id="userAuthModal">
+      <div class="modal-container modal-md" role="dialog" aria-labelledby="userModalTitle">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <i data-lucide="users" class="modal-header-icon text-blue"></i>
+            <h2 id="userModalTitle" class="modal-title">User Accounts & Profiles</h2>
+          </div>
+          <button class="btn-close-modal" id="btnCloseUserModal" aria-label="Close modal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="user-tabs-nav">
+            <button class="user-tab-btn active" id="tabBtnSwitchUser">👥 Switch User</button>
+            <button class="user-tab-btn" id="tabBtnNewUser">➕ New Profile</button>
+          </div>
+
+          <!-- Tab 1: Switch Account -->
+          <div id="tabContentSwitchUser" class="user-tab-pane">
+            <p class="section-hint" style="margin-bottom: 0.85rem; font-size: 0.8125rem; color: var(--text-muted);">
+              Select an account below to view their personal worksheet or separate records:
+            </p>
+            <div class="users-list-grid" id="usersListContainer">
+              <!-- Dynamically populated user profile cards -->
+            </div>
+          </div>
+
+          <!-- Tab 2: Register New Profile -->
+          <div id="tabContentNewUser" class="user-tab-pane hidden">
+            <form id="newUserForm" class="modal-form">
+              <div class="form-group">
+                <label for="newUserName" class="form-label required">Display Name</label>
+                <input type="text" id="newUserName" class="form-input" placeholder="e.g. Rahul Sharma, Priya" required>
+              </div>
+
+              <div class="form-group">
+                <label for="newUserUsername" class="form-label required">Username (Unique ID)</label>
+                <input type="text" id="newUserUsername" class="form-input" placeholder="e.g. rahul, priya_dev" required>
+              </div>
+
+              <div class="form-group">
+                <label for="newUserRole" class="form-label">Role / Designation</label>
+                <input type="text" id="newUserRole" class="form-input" placeholder="e.g. Frontend Developer, QA Engineer">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Profile Avatar Color</label>
+                <div class="color-picker-row">
+                  <label class="color-circle" style="background-color: #3b82f6;"><input type="radio" name="userColor" value="#3b82f6" checked></label>
+                  <label class="color-circle" style="background-color: #10b981;"><input type="radio" name="userColor" value="#10b981"></label>
+                  <label class="color-circle" style="background-color: #8b5cf6;"><input type="radio" name="userColor" value="#8b5cf6"></label>
+                  <label class="color-circle" style="background-color: #f59e0b;"><input type="radio" name="userColor" value="#f59e0b"></label>
+                  <label class="color-circle" style="background-color: #ec4899;"><input type="radio" name="userColor" value="#ec4899"></label>
+                  <label class="color-circle" style="background-color: #06b6d4;"><input type="radio" name="userColor" value="#06b6d4"></label>
+                </div>
+              </div>
+
+              <div class="modal-footer" style="padding-top: 1rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  <i data-lucide="user-check"></i>
+                  <span>Create & Switch to Profile</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   </div>
 
   <!-- Application JavaScript Modules -->
+  <script src="js/authManager.js"></script>
   <script src="js/sampleData.js"></script>
   <script src="js/cloudStorage.js"></script>
   <script src="js/worksheetManager.js"></script>

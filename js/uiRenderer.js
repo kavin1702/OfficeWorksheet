@@ -68,7 +68,7 @@ class UIRenderer {
   }
 
   // Render Table View (Desktop & Tablet)
-  renderTable(entries, onStatusChange, onEdit, onDuplicate, onDelete) {
+  renderTable(entries, onStatusChange, onEdit, onDuplicate, onDelete, showUserBadge = false) {
     const tbody = document.getElementById('worksheetTableBody');
     const emptyState = document.getElementById('emptyState');
     tbody.innerHTML = '';
@@ -92,6 +92,7 @@ class UIRenderer {
           <strong>${formattedDate}</strong>
         </td>
         <td class="col-project">
+          ${(showUserBadge && entry.userName) ? `<span class="user-badge-pill" style="background-color: ${this.getUserColor(entry.userName)};"><i data-lucide="user" class="icon-xs"></i> ${this.escapeHtml(entry.userName)}</span>` : ''}
           <span class="project-pill">${this.escapeHtml(entry.projectName)}</span>
         </td>
         <td class="col-work">
@@ -151,7 +152,7 @@ class UIRenderer {
   }
 
   // Render Mobile Cards View (Phones)
-  renderCards(entries, onStatusChange, onEdit, onDuplicate, onDelete) {
+  renderCards(entries, onStatusChange, onEdit, onDuplicate, onDelete, showUserBadge = false) {
     const grid = document.getElementById('worksheetCardsGrid');
     grid.innerHTML = '';
 
@@ -170,7 +171,10 @@ class UIRenderer {
           <span class="priority-pill ${priorityCls}">${entry.priority || 'Medium'}</span>
         </div>
 
-        <div class="card-project-title">${this.escapeHtml(entry.projectName)}</div>
+        <div class="card-project-title">
+          ${(showUserBadge && entry.userName) ? `<span class="user-badge-pill" style="background-color: ${this.getUserColor(entry.userName)}; font-size: 0.68rem;"><i data-lucide="user" class="icon-xs"></i> ${this.escapeHtml(entry.userName)}</span>` : ''}
+          ${this.escapeHtml(entry.projectName)}
+        </div>
         <div class="card-work-desc">${this.escapeHtml(entry.work).replace(/\n/g, '<br>')}</div>
 
         ${entry.remarks ? `<div class="work-remarks"><i data-lucide="info" class="icon-xs"></i> ${this.escapeHtml(entry.remarks)}</div>` : ''}
@@ -205,6 +209,89 @@ class UIRenderer {
       card.querySelector('.btn-action.delete').addEventListener('click', () => onDelete(entry.id));
 
       grid.appendChild(card);
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // Get dynamic hash color for user name badge
+  getUserColor(name) {
+    if (!name) return '#3b82f6';
+    const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#f97316'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  // Render Top Header User Profile Chip
+  renderUserProfileHeader(user) {
+    if (!user) return;
+    const avatarBadge = document.getElementById('headerUserAvatar');
+    const nameLabel = document.getElementById('headerUserName');
+    const dropAvatar = document.getElementById('dropdownUserAvatar');
+    const dropName = document.getElementById('dropdownUserName');
+    const dropRole = document.getElementById('dropdownUserRole');
+    const myLabel = document.getElementById('labelMyWorksheet');
+
+    const initial = (user.name || 'U').charAt(0).toUpperCase();
+    const color = user.color || this.getUserColor(user.name);
+
+    if (avatarBadge) {
+      avatarBadge.textContent = initial;
+      avatarBadge.style.backgroundColor = color;
+    }
+    if (nameLabel) nameLabel.textContent = user.name;
+    if (dropAvatar) {
+      dropAvatar.textContent = initial;
+      dropAvatar.style.backgroundColor = color;
+    }
+    if (dropName) dropName.textContent = user.name;
+    if (dropRole) dropRole.textContent = user.role || 'Team Member';
+    if (myLabel) myLabel.textContent = `${user.name}'s Worksheet`;
+  }
+
+  // Render User Accounts List in Modal
+  renderUserSwitcher(users, activeUserId, onSelectUser, onDeleteUser) {
+    const container = document.getElementById('usersListContainer');
+    if (!container) return;
+
+    container.innerHTML = '';
+    if (!users || users.length === 0) {
+      container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; padding: 1rem 0;">No user profiles found.</p>';
+      return;
+    }
+
+    users.forEach(user => {
+      const card = document.createElement('div');
+      card.className = `user-profile-card ${user.id === activeUserId ? 'active' : ''}`;
+      const initial = (user.name || 'U').charAt(0).toUpperCase();
+      const color = user.color || this.getUserColor(user.name);
+
+      card.innerHTML = `
+        <div class="user-card-info">
+          <div class="user-avatar-large" style="background-color: ${color}; width: 34px; height: 34px; font-size: 0.85rem;">${initial}</div>
+          <div>
+            <div class="user-card-name">${this.escapeHtml(user.name)} ${user.id === activeUserId ? '<span style="font-size: 0.72rem; color: var(--brand-primary); font-weight: normal;">(Active)</span>' : ''}</div>
+            <div class="user-card-role">@${this.escapeHtml(user.username)} • ${this.escapeHtml(user.role || 'Member')}</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <button class="btn btn-xs ${user.id === activeUserId ? 'btn-primary' : 'btn-outline'} btn-select-user">
+            ${user.id === activeUserId ? '✓ Selected' : 'Switch'}
+          </button>
+        </div>
+      `;
+
+      card.querySelector('.btn-select-user').addEventListener('click', (e) => {
+        e.stopPropagation();
+        onSelectUser(user.id);
+      });
+
+      card.addEventListener('click', () => {
+        onSelectUser(user.id);
+      });
+
+      container.appendChild(card);
     });
 
     if (window.lucide) window.lucide.createIcons();

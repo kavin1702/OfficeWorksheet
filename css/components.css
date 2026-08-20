@@ -1884,3 +1884,248 @@
   gap: 0.5rem;
   flex-shrink: 0;
 }
+
+/* ==========================================================================
+   Multi-User Profile, Switcher & Authentication Styles
+   ========================================================================== */
+
+.user-profile-wrapper {
+  position: relative;
+}
+
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.65rem 0.25rem 0.35rem;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-primary);
+}
+
+.user-profile-btn:hover {
+  background-color: var(--bg-surface);
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-xs);
+}
+
+.user-avatar-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-name-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 0.75rem;
+  z-index: 200;
+  animation: dropdownSlideIn 0.2s ease;
+}
+
+@keyframes dropdownSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.user-avatar-large {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.dropdown-user-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.dropdown-user-role {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0.5rem 0;
+}
+
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+/* User Tabs in Modal */
+.user-tabs-nav {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.user-tab-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.user-tab-btn.active {
+  background-color: var(--brand-primary);
+  color: #ffffff;
+}
+
+.users-list-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.user-profile-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-subtle);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.user-profile-card:hover {
+  background-color: var(--bg-surface);
+  border-color: var(--brand-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
+}
+
+.user-profile-card.active {
+  border-color: var(--brand-primary);
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+.user-card-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-card-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-card-role {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+}
+
+.color-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.color-circle input {
+  opacity: 0;
+  position: absolute;
+}
+
+.color-circle:hover {
+  transform: scale(1.1);
+}
+
+.color-circle:has(input:checked) {
+  border-color: var(--text-primary);
+  transform: scale(1.15);
+}
+
+.user-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-right: 0.4rem;
+}
+

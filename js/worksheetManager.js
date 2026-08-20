@@ -1,6 +1,6 @@
 /**
- * Worksheet State & Business Logic Manager
- * Handles data mutations, filtering, sorting, statistics, and pending task carry-forward.
+ * Worksheet State & Business Logic Manager (WorkPulse)
+ * Handles multi-user data segregation, filtering, sorting, stats, and pending task carry-forward.
  */
 
 class WorksheetManager {
@@ -13,7 +13,8 @@ class WorksheetManager {
       customEndDate: null,
       project: 'all',
       status: 'all',
-      search: ''
+      search: '',
+      userScope: 'me' // 'me' (current user) | 'all' (all team members) | specific userId
     };
     this.sort = {
       field: 'date',
@@ -52,10 +53,13 @@ class WorksheetManager {
     return WorksheetManager.formatDateIso(d);
   }
 
-  // Add new worksheet entry
+  // Add new worksheet entry (tagged with active user)
   async addEntry(data) {
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
     const newEntry = {
       id: this.generateId(),
+      userId: data.userId || (currentUser ? currentUser.id : 'user_kavin'),
+      userName: data.userName || (currentUser ? currentUser.name : 'Kavin'),
       date: data.date || WorksheetManager.getTodayStr(),
       projectName: (data.projectName || 'General').trim(),
       work: (data.work || '').trim(),
@@ -103,50 +107,66 @@ class WorksheetManager {
     return true;
   }
 
-  // Duplicate an existing task into today
+  // Duplicate an entry into today's log
   async duplicateEntry(id) {
     const source = this.entries.find(e => e.id === id);
-    if (!source) return null;
+    if (!source) throw new Error('Source entry not found');
+
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
     const cloned = {
+      ...source,
+      id: this.generateId(),
+      userId: currentUser ? currentUser.id : (source.userId || 'user_kavin'),
+      userName: currentUser ? currentUser.name : (source.userName || 'Kavin'),
       date: WorksheetManager.getTodayStr(),
-      projectName: source.projectName,
-      work: source.work,
-      status: 'In Progress',
-      hoursWorked: source.hoursWorked,
-      priority: source.priority,
-      remarks: source.remarks ? `Continuation: ${source.remarks}` : 'Continuation'
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
-    return await this.addEntry(cloned);
+    this.entries.unshift(cloned);
+    await this.storage.saveEntry(cloned);
+    return cloned;
   }
 
-  // Carry forward all unfinished (In Progress, Pending, Blocked) tasks from yesterday to today
+  // Carry Forward all unfinished tasks from yesterday to today
   async carryForwardPendingTasks() {
     const yesterdayStr = WorksheetManager.getYesterdayStr();
     const todayStr = WorksheetManager.getTodayStr();
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
-    // Find unfinished tasks from yesterday
-    const unfinishedYesterday = this.entries.filter(e => 
-      e.date === yesterdayStr && (e.status === 'In Progress' || e.status === 'Pending' || e.status === 'Blocked')
-    );
+    // Find incomplete tasks
+    const incompleteYesterday = this.entries.filter(e => {
+      const isYesterday = e.date === yesterdayStr;
+      const isIncomplete = e.status === 'In Progress' || e.status === 'Pending' || e.status === 'Blocked';
+      const isUserMatch = !currentUser || this.isEntryBelongsToUser(e, currentUser);
+      return isYesterday && isIncomplete && isUserMatch;
+    });
 
-    if (unfinishedYesterday.length === 0) {
-      return { count: 0, message: 'No unfinished tasks found from yesterday.' };
+    if (incompleteYesterday.length === 0) {
+      return { count: 0, message: "No unfinished tasks found from yesterday." };
     }
 
     let addedCount = 0;
-    for (const task of unfinishedYesterday) {
-      // Check if already added today with same work description
-      const alreadyExists = this.entries.some(e => e.date === todayStr && e.projectName === task.projectName && e.work === task.work);
-      if (!alreadyExists) {
+    for (const task of incompleteYesterday) {
+      // Check if already logged today
+      const alreadyLogged = this.entries.some(e => 
+        e.date === todayStr && 
+        e.projectName === task.projectName && 
+        e.work === task.work &&
+        (!currentUser || this.isEntryBelongsToUser(e, currentUser))
+      );
+
+      if (!alreadyLogged) {
         await this.addEntry({
           date: todayStr,
+          userId: currentUser ? currentUser.id : task.userId,
+          userName: currentUser ? currentUser.name : task.userName,
           projectName: task.projectName,
           work: task.work,
-          status: task.status,
-          hoursWorked: 0, // Reset hours for today
-          priority: task.priority,
+          status: 'In Progress',
+          hoursWorked: 0,
+          priority: task.priority || 'Medium',
           remarks: `Carried forward from yesterday`
         });
         addedCount++;
@@ -159,6 +179,15 @@ class WorksheetManager {
         ? `Successfully carried forward ${addedCount} unfinished task(s) to today's worksheet!`
         : `All yesterday's unfinished tasks are already in today's worksheet.`
     };
+  }
+
+  // Helper: check if entry belongs to a user
+  isEntryBelongsToUser(entry, user) {
+    if (!user) return true;
+    if (entry.userId === user.id) return true;
+    if (entry.userName && entry.userName.toLowerCase() === user.name.toLowerCase()) return true;
+    if (!entry.userId && user.username === 'kavin') return true; // legacy data belongs to default user Kavin
+    return false;
   }
 
   // Set filter value
@@ -179,7 +208,12 @@ class WorksheetManager {
   // Get distinct list of project names for filter dropdown & auto-suggestions
   getUniqueProjects() {
     const set = new Set();
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+
     this.entries.forEach(e => {
+      if (this.filters.userScope === 'me' && currentUser && !this.isEntryBelongsToUser(e, currentUser)) {
+        return;
+      }
       if (e.projectName && e.projectName.trim()) {
         set.add(e.projectName.trim());
       }
@@ -190,7 +224,12 @@ class WorksheetManager {
   // Get distinct list of all dates in records
   getUniqueDates() {
     const set = new Set();
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+
     this.entries.forEach(e => {
+      if (this.filters.userScope === 'me' && currentUser && !this.isEntryBelongsToUser(e, currentUser)) {
+        return;
+      }
       if (e.date) set.add(e.date);
     });
     return Array.from(set).sort().reverse();
@@ -200,6 +239,7 @@ class WorksheetManager {
   getFilteredEntries() {
     const todayStr = WorksheetManager.getTodayStr();
     const yesterdayStr = WorksheetManager.getYesterdayStr();
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
     // Date range boundaries
     let startDate = null;
@@ -213,8 +253,8 @@ class WorksheetManager {
       endDate = yesterdayStr;
     } else if (this.filters.dateRange === 'this-week') {
       const now = new Date();
-      const day = now.getDay(); // 0 is Sun, 1 is Mon...
-      const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Monday
+      const day = now.getDay();
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
       const monday = new Date(now.setDate(diff));
       startDate = WorksheetManager.formatDateIso(monday);
       
@@ -233,30 +273,35 @@ class WorksheetManager {
     }
 
     const filtered = this.entries.filter(entry => {
-      // Date filter
+      // 1. User Isolation Filter
+      if (this.filters.userScope === 'me' && currentUser) {
+        if (!this.isEntryBelongsToUser(entry, currentUser)) return false;
+      } else if (this.filters.userScope !== 'all' && this.filters.userScope) {
+        if (entry.userId !== this.filters.userScope) return false;
+      }
+
+      // 2. Date filter
       if (startDate && entry.date < startDate) return false;
       if (endDate && entry.date > endDate) return false;
 
-      // Project filter
+      // 3. Project filter
       if (this.filters.project !== 'all' && entry.projectName !== this.filters.project) {
         return false;
       }
 
-      // Status filter
+      // 4. Status filter
       if (this.filters.status !== 'all' && entry.status !== this.filters.status) {
         return false;
       }
 
-      // Search keyword
+      // 5. Search keyword
       if (this.filters.search) {
-        const query = this.filters.search.toLowerCase();
-        const matchProject = entry.projectName.toLowerCase().includes(query);
-        const matchWork = entry.work.toLowerCase().includes(query);
-        const matchRemarks = (entry.remarks || '').toLowerCase().includes(query);
-        const matchStatus = entry.status.toLowerCase().includes(query);
-        if (!matchProject && !matchWork && !matchRemarks && !matchStatus) {
-          return false;
-        }
+        const q = this.filters.search.toLowerCase().trim();
+        const inProject = (entry.projectName || '').toLowerCase().includes(q);
+        const inWork = (entry.work || '').toLowerCase().includes(q);
+        const inRemarks = (entry.remarks || '').toLowerCase().includes(q);
+        const inUser = (entry.userName || '').toLowerCase().includes(q);
+        if (!inProject && !inWork && !inRemarks && !inUser) return false;
       }
 
       return true;
@@ -267,125 +312,139 @@ class WorksheetManager {
       let valA = a[this.sort.field];
       let valB = b[this.sort.field];
 
-      if (this.sort.field === 'hours') {
-        valA = a.hoursWorked || 0;
-        valB = b.hoursWorked || 0;
+      if (this.sort.field === 'date') {
+        valA = valA || '';
+        valB = valB || '';
+        return this.sort.direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
       }
 
-      if (valA === undefined || valA === null) valA = '';
-      if (valB === undefined || valB === null) valB = '';
+      if (this.sort.field === 'hoursWorked') {
+        valA = parseFloat(valA) || 0;
+        valB = parseFloat(valB) || 0;
+        return this.sort.direction === 'asc' ? valA - valB : valB - valA;
+      }
 
       if (typeof valA === 'string') {
-        const cmp = valA.localeCompare(valB);
-        return this.sort.direction === 'asc' ? cmp : -cmp;
+        valA = valA.toLowerCase();
+        valB = (valB || '').toLowerCase();
+        return this.sort.direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
       }
 
-      return this.sort.direction === 'asc' ? (valA - valB) : (valB - valA);
+      return 0;
     });
 
     return filtered;
   }
 
-  // Calculate high-level summary metrics for filtered set
-  getMetrics(entries = this.getFilteredEntries()) {
-    const totalTasks = entries.length;
-    let completedCount = 0;
-    let inProgressCount = 0;
-    let pendingCount = 0;
-    let blockedCount = 0;
-    let underReviewCount = 0;
-    let leaveCount = 0;
-    let totalHours = 0;
-    const projectHoursMap = {};
+  // Monthly breakdown for calendar
+  getEntriesForMonth(year, month) {
+    const monthMap = {};
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
-    entries.forEach(e => {
-      if (e.status === 'Completed') completedCount++;
-      else if (e.status === 'In Progress') inProgressCount++;
-      else if (e.status === 'Pending') pendingCount++;
-      else if (e.status === 'Blocked') blockedCount++;
-      else if (e.status === 'Under Review') underReviewCount++;
-      else if (e.status === 'Leave') leaveCount++;
-
-      const hrs = parseFloat(e.hoursWorked) || 0;
-      totalHours += hrs;
-
-      const pName = e.projectName || 'General';
-      projectHoursMap[pName] = (projectHoursMap[pName] || 0) + hrs;
+    this.entries.forEach(entry => {
+      if (this.filters.userScope === 'me' && currentUser && !this.isEntryBelongsToUser(entry, currentUser)) {
+        return;
+      }
+      if (!entry.date) return;
+      const parts = entry.date.split('-');
+      if (parts.length >= 3) {
+        const eYear = parseInt(parts[0], 10);
+        const eMonth = parseInt(parts[1], 10) - 1; // 0-indexed
+        if (eYear === year && eMonth === month) {
+          if (!monthMap[entry.date]) {
+            monthMap[entry.date] = [];
+          }
+          monthMap[entry.date].push(entry);
+        }
+      }
     });
 
-    const activeTasks = totalTasks - leaveCount;
-    const completionRate = activeTasks > 0 ? Math.round((completedCount / activeTasks) * 100) : (completedCount > 0 ? 100 : 0);
+    return monthMap;
+  }
+
+  // Get entries for specific date
+  getEntriesForDate(dateStr) {
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+    return this.entries.filter(e => {
+      if (this.filters.userScope === 'me' && currentUser && !this.isEntryBelongsToUser(e, currentUser)) {
+        return false;
+      }
+      return e.date === dateStr;
+    });
+  }
+
+  // Calculate monthly stats for calendar summary
+  getMonthStats(year, month) {
+    const entriesMap = this.getEntriesForMonth(year, month);
+    const dateKeys = Object.keys(entriesMap);
+    
+    let totalHours = 0;
+    let completedCount = 0;
+    let leaveDaysCount = 0;
+    let workingDaysSet = new Set();
+
+    dateKeys.forEach(dateStr => {
+      const dayTasks = entriesMap[dateStr];
+      let dayHasWork = false;
+      let dayIsLeave = false;
+
+      dayTasks.forEach(task => {
+        const hrs = parseFloat(task.hoursWorked) || 0;
+        totalHours += hrs;
+        if (task.status === 'Completed') completedCount++;
+        if (task.status === 'Leave') dayIsLeave = true;
+        if (task.status !== 'Leave') dayHasWork = true;
+      });
+
+      if (dayHasWork) workingDaysSet.add(dateStr);
+      if (dayIsLeave && !dayHasWork) leaveDaysCount++;
+    });
 
     return {
-      totalTasks,
+      workingDaysCount: workingDaysSet.size,
       completedCount,
-      inProgressCount,
-      pendingCount,
-      blockedCount,
-      underReviewCount,
-      leaveCount,
-      completionRate,
-      totalHours: parseFloat(totalHours.toFixed(1)),
-      projectHoursMap,
-      statusCounts: {
-        'Completed': completedCount,
-        'In Progress': inProgressCount,
-        'Pending': pendingCount,
-        'Blocked': blockedCount,
-        'Under Review': underReviewCount,
-        'Leave': leaveCount
-      }
+      totalHours: totalHours.toFixed(1),
+      leaveDaysCount
     };
   }
 
-  // Get entries mapped by date string for a specific month (year, month 0-11)
-  getEntriesForMonth(year, month) {
-    const monthStr = String(month + 1).padStart(2, '0');
-    const prefix = `${year}-${monthStr}`;
-    const dateMap = {};
-
-    this.entries.forEach(entry => {
-      if (entry.date && entry.date.startsWith(prefix)) {
-        if (!dateMap[entry.date]) dateMap[entry.date] = [];
-        dateMap[entry.date].push(entry);
-      }
-    });
-
-    return dateMap;
-  }
-
-  // Get all entries for a specific day YYYY-MM-DD
-  getEntriesForDate(dateStr) {
-    return this.entries.filter(e => e.date === dateStr);
-  }
-
-  // Get Month Summary Stats
-  getMonthStats(year, month) {
-    const monthStr = String(month + 1).padStart(2, '0');
-    const prefix = `${year}-${monthStr}`;
-    const monthEntries = this.entries.filter(e => e.date && e.date.startsWith(prefix));
-    
-    const uniqueDays = new Set();
+  // Compute aggregate dashboard metrics
+  getMetrics(entries = this.getFilteredEntries()) {
     let totalHours = 0;
-    let completedCount = 0;
-    let leaveDays = new Set();
+    let completed = 0;
+    let inProgress = 0;
+    let pending = 0;
+    let blocked = 0;
+    let leave = 0;
+    const projectHours = {};
 
-    monthEntries.forEach(e => {
-      if (e.status === 'Leave') {
-        leaveDays.add(e.date);
-      } else {
-        uniqueDays.add(e.date);
-        totalHours += (parseFloat(e.hoursWorked) || 0);
-        if (e.status === 'Completed') completedCount++;
-      }
+    entries.forEach(e => {
+      const hours = parseFloat(e.hoursWorked) || 0;
+      totalHours += hours;
+
+      if (e.status === 'Completed') completed++;
+      else if (e.status === 'In Progress') inProgress++;
+      else if (e.status === 'Pending') pending++;
+      else if (e.status === 'Blocked') blocked++;
+      else if (e.status === 'Leave') leave++;
+
+      const pName = e.projectName || 'General';
+      projectHours[pName] = (projectHours[pName] || 0) + hours;
     });
+
+    const totalTasks = entries.length;
+    const completionRate = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
 
     return {
-      totalEntries: monthEntries.length,
-      workingDaysCount: uniqueDays.size,
-      leaveDaysCount: leaveDays.size,
-      totalHours: parseFloat(totalHours.toFixed(1)),
-      completedCount
+      totalTasks,
+      totalHours: totalHours.toFixed(1),
+      completed,
+      inProgress,
+      pending,
+      blocked,
+      leave,
+      completionRate,
+      projectHours
     };
   }
 }

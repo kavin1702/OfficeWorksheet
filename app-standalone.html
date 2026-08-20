@@ -2144,6 +2144,251 @@ code {
   flex-shrink: 0;
 }
 
+/* ==========================================================================
+   Multi-User Profile, Switcher & Authentication Styles
+   ========================================================================== */
+
+.user-profile-wrapper {
+  position: relative;
+}
+
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.65rem 0.25rem 0.35rem;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-primary);
+}
+
+.user-profile-btn:hover {
+  background-color: var(--bg-surface);
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-xs);
+}
+
+.user-avatar-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-name-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 0.75rem;
+  z-index: 200;
+  animation: dropdownSlideIn 0.2s ease;
+}
+
+@keyframes dropdownSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.user-avatar-large {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.dropdown-user-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.dropdown-user-role {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0.5rem 0;
+}
+
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+/* User Tabs in Modal */
+.user-tabs-nav {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.user-tab-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.user-tab-btn.active {
+  background-color: var(--brand-primary);
+  color: #ffffff;
+}
+
+.users-list-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.user-profile-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-subtle);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.user-profile-card:hover {
+  background-color: var(--bg-surface);
+  border-color: var(--brand-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
+}
+
+.user-profile-card.active {
+  border-color: var(--brand-primary);
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+.user-card-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-card-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-card-role {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+}
+
+.color-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.color-circle input {
+  opacity: 0;
+  position: absolute;
+}
+
+.color-circle:hover {
+  transform: scale(1.1);
+}
+
+.color-circle:has(input:checked) {
+  border-color: var(--text-primary);
+  transform: scale(1.15);
+}
+
+.user-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-right: 0.4rem;
+}
+
+
 /* =========================================================
    WorkPulse - Responsive & Mobile-First Styling
    ========================================================= */
@@ -2569,6 +2814,33 @@ code {
 
         <!-- Action Tools -->
         <div class="header-actions">
+          <!-- User Profile Chip & Switcher -->
+          <div class="user-profile-wrapper">
+            <button id="btnUserProfile" class="user-profile-btn" title="Click to switch account or add friend profile">
+              <span class="user-avatar-badge" id="headerUserAvatar" style="background-color: #3b82f6;">K</span>
+              <span class="user-name-label" id="headerUserName">Kavin</span>
+              <i data-lucide="chevron-down" class="icon-xs"></i>
+            </button>
+            <div class="user-dropdown-menu hidden" id="userDropdownMenu">
+              <div class="user-dropdown-header">
+                <div class="user-avatar-large" id="dropdownUserAvatar" style="background-color: #3b82f6;">K</div>
+                <div>
+                  <div class="dropdown-user-name" id="dropdownUserName">Kavin</div>
+                  <div class="dropdown-user-role" id="dropdownUserRole">Lead Developer</div>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item" id="btnDropdownSwitchUser">
+                <i data-lucide="users" class="icon-sm"></i>
+                <span>Switch User Account</span>
+              </button>
+              <button class="dropdown-item" id="btnDropdownAddUser">
+                <i data-lucide="user-plus" class="icon-sm"></i>
+                <span>Add Friend / New Profile</span>
+              </button>
+            </div>
+          </div>
+
           <button id="btnOpenReport" class="btn btn-outline btn-sm" title="Generate formatted daily report for WhatsApp/Slack">
             <i data-lucide="file-text"></i>
             <span class="btn-text">Daily Report</span>
@@ -2658,6 +2930,18 @@ code {
       <section class="control-panel">
         <div class="filters-row">
           
+          <!-- User Workspace Scope Selector -->
+          <div class="date-pills-group" id="userScopePills">
+            <button class="filter-pill active" data-user-scope="me" id="pillScopeMe">
+              <i data-lucide="user" class="icon-xs"></i>
+              <span id="labelMyWorksheet">My Worksheet</span>
+            </button>
+            <button class="filter-pill" data-user-scope="all" id="pillScopeAll">
+              <i data-lucide="users" class="icon-xs"></i>
+              <span>All Friends / Team</span>
+            </button>
+          </div>
+
           <!-- Date Filter Pills -->
           <div class="date-pills-group" id="dateFilterPills">
             <button class="filter-pill active" data-date-filter="today">Today</button>
@@ -3441,6 +3725,77 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       </div>
     </div>
 
+    <!-- 5. User Account Switcher & Profile Modal -->
+    <div class="modal-overlay hidden" id="userAuthModal">
+      <div class="modal-container modal-md" role="dialog" aria-labelledby="userModalTitle">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <i data-lucide="users" class="modal-header-icon text-blue"></i>
+            <h2 id="userModalTitle" class="modal-title">User Accounts & Profiles</h2>
+          </div>
+          <button class="btn-close-modal" id="btnCloseUserModal" aria-label="Close modal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="user-tabs-nav">
+            <button class="user-tab-btn active" id="tabBtnSwitchUser">ðŸ‘¥ Switch User</button>
+            <button class="user-tab-btn" id="tabBtnNewUser">âž• New Profile</button>
+          </div>
+
+          <!-- Tab 1: Switch Account -->
+          <div id="tabContentSwitchUser" class="user-tab-pane">
+            <p class="section-hint" style="margin-bottom: 0.85rem; font-size: 0.8125rem; color: var(--text-muted);">
+              Select an account below to view their personal worksheet or separate records:
+            </p>
+            <div class="users-list-grid" id="usersListContainer">
+              <!-- Dynamically populated user profile cards -->
+            </div>
+          </div>
+
+          <!-- Tab 2: Register New Profile -->
+          <div id="tabContentNewUser" class="user-tab-pane hidden">
+            <form id="newUserForm" class="modal-form">
+              <div class="form-group">
+                <label for="newUserName" class="form-label required">Display Name</label>
+                <input type="text" id="newUserName" class="form-input" placeholder="e.g. Rahul Sharma, Priya" required>
+              </div>
+
+              <div class="form-group">
+                <label for="newUserUsername" class="form-label required">Username (Unique ID)</label>
+                <input type="text" id="newUserUsername" class="form-input" placeholder="e.g. rahul, priya_dev" required>
+              </div>
+
+              <div class="form-group">
+                <label for="newUserRole" class="form-label">Role / Designation</label>
+                <input type="text" id="newUserRole" class="form-input" placeholder="e.g. Frontend Developer, QA Engineer">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Profile Avatar Color</label>
+                <div class="color-picker-row">
+                  <label class="color-circle" style="background-color: #3b82f6;"><input type="radio" name="userColor" value="#3b82f6" checked></label>
+                  <label class="color-circle" style="background-color: #10b981;"><input type="radio" name="userColor" value="#10b981"></label>
+                  <label class="color-circle" style="background-color: #8b5cf6;"><input type="radio" name="userColor" value="#8b5cf6"></label>
+                  <label class="color-circle" style="background-color: #f59e0b;"><input type="radio" name="userColor" value="#f59e0b"></label>
+                  <label class="color-circle" style="background-color: #ec4899;"><input type="radio" name="userColor" value="#ec4899"></label>
+                  <label class="color-circle" style="background-color: #06b6d4;"><input type="radio" name="userColor" value="#06b6d4"></label>
+                </div>
+              </div>
+
+              <div class="modal-footer" style="padding-top: 1rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  <i data-lucide="user-check"></i>
+                  <span>Create & Switch to Profile</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
@@ -3448,6 +3803,145 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
 
   <!-- Application JavaScript Modules -->
   <script>
+/**
+ * Auth & Multi-User Manager (WorkPulse)
+ * Handles user profiles, authentication, user switching, and separate data workspaces.
+ */
+
+class AuthManager {
+  constructor() {
+    this.usersKey = 'workpulse_users_list';
+    this.currentUserIdKey = 'workpulse_active_user_id';
+    this.listeners = [];
+
+    this.initUsers();
+  }
+
+  // Initialize with default profiles
+  initUsers() {
+    let users = this.getAllUsers();
+    if (!users || users.length === 0) {
+      const defaultUser = {
+        id: 'user_kavin',
+        username: 'kavin',
+        name: 'Kavin',
+        email: 'kavin@office.com',
+        role: 'Developer',
+        color: '#3b82f6', // blue
+        avatar: 'K',
+        createdAt: '2026-08-01T00:00:00Z'
+      };
+      users = [defaultUser];
+      localStorage.setItem(this.usersKey, JSON.stringify(users));
+      localStorage.setItem(this.currentUserIdKey, defaultUser.id);
+    }
+  }
+
+  // Get all registered users
+  getAllUsers() {
+    try {
+      const data = localStorage.getItem(this.usersKey);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // Get active logged-in user
+  getCurrentUser() {
+    const users = this.getAllUsers();
+    const activeId = localStorage.getItem(this.currentUserIdKey);
+    const found = users.find(u => u.id === activeId);
+    return found || users[0] || {
+      id: 'user_guest',
+      username: 'guest',
+      name: 'Guest User',
+      email: '',
+      role: 'Member',
+      color: '#64748b',
+      avatar: 'G'
+    };
+  }
+
+  // Switch active user
+  switchUser(userId) {
+    const users = this.getAllUsers();
+    const user = users.find(u => u.id === userId || u.username.toLowerCase() === userId.toLowerCase());
+    if (user) {
+      localStorage.setItem(this.currentUserIdKey, user.id);
+      this.notifyListeners(user);
+      return user;
+    }
+    throw new Error('User not found.');
+  }
+
+  // Register / Add new friend or user profile
+  registerUser(name, username, role = 'Team Member', email = '', color = null) {
+    if (!name || !name.trim()) throw new Error('Please enter a display name.');
+    if (!username || !username.trim()) throw new Error('Please enter a username.');
+
+    const cleanUsername = username.trim().toLowerCase().replace(/\s+/g, '_');
+    const users = this.getAllUsers();
+
+    if (users.some(u => u.username.toLowerCase() === cleanUsername)) {
+      throw new Error(`Username "${cleanUsername}" is already taken. Please choose another.`);
+    }
+
+    const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#f97316'];
+    const chosenColor = color || colors[users.length % colors.length];
+
+    const newUser = {
+      id: 'user_' + cleanUsername + '_' + Math.random().toString(36).substring(2, 6),
+      username: cleanUsername,
+      name: name.trim(),
+      email: email ? email.trim() : `${cleanUsername}@office.com`,
+      role: role.trim() || 'Team Member',
+      color: chosenColor,
+      avatar: name.trim().charAt(0).toUpperCase(),
+      createdAt: new Date().toISOString()
+    };
+
+    users.push(newUser);
+    localStorage.setItem(this.usersKey, JSON.stringify(users));
+
+    // Automatically switch to new user
+    localStorage.setItem(this.currentUserIdKey, newUser.id);
+    this.notifyListeners(newUser);
+
+    return newUser;
+  }
+
+  // Delete user profile
+  deleteUser(userId) {
+    let users = this.getAllUsers();
+    if (users.length <= 1) {
+      throw new Error('Cannot delete the only user profile.');
+    }
+
+    users = users.filter(u => u.id !== userId);
+    localStorage.setItem(this.usersKey, JSON.stringify(users));
+
+    if (localStorage.getItem(this.currentUserIdKey) === userId) {
+      localStorage.setItem(this.currentUserIdKey, users[0].id);
+      this.notifyListeners(users[0]);
+    }
+    return true;
+  }
+
+  // Listen to user switch events
+  onUserChange(callback) {
+    this.listeners.push(callback);
+  }
+
+  notifyListeners(user) {
+    this.listeners.forEach(cb => {
+      try { cb(user); } catch (e) { console.error('User listener error:', e); }
+    });
+  }
+}
+
+window.authManager = new AuthManager();
+
 /**
  * Actual Office Daily Worksheet Data (Aug 2026)
  * Preloaded with your provided office daily records.
@@ -3933,6 +4427,8 @@ class CloudStorageService {
           if (Array.isArray(sheetData) && sheetData.length > 0) {
             entries = sheetData.map((item, idx) => ({
               id: item.id || `sheet-row-${idx}`,
+              userId: item.userId || item.user_id || (item.user ? 'user_' + String(item.user).toLowerCase().replace(/\s+/g, '_') : 'user_kavin'),
+              userName: item.userName || item.user_name || item.user || 'Kavin',
               date: this.normalizeDate(item.date),
               projectName: item.projectName || 'General',
               work: item.work || '',
@@ -4268,6 +4764,8 @@ class CloudStorageService {
   mapToSupabaseRow(entry) {
     return {
       id: entry.id,
+      user_id: entry.userId || 'user_kavin',
+      user_name: entry.userName || 'Kavin',
       date: entry.date,
       project_name: entry.projectName,
       work: entry.work,
@@ -4283,6 +4781,8 @@ class CloudStorageService {
   mapFromSupabaseRow(row) {
     return {
       id: row.id,
+      userId: row.user_id || row.userId || 'user_kavin',
+      userName: row.user_name || row.userName || 'Kavin',
       date: this.normalizeDate(row.date),
       projectName: row.project_name || row.projectName || 'General',
       work: row.work || '',
@@ -4314,8 +4814,8 @@ class CloudStorageService {
 window.cloudStorage = new CloudStorageService();
 
 /**
- * Worksheet State & Business Logic Manager
- * Handles data mutations, filtering, sorting, statistics, and pending task carry-forward.
+ * Worksheet State & Business Logic Manager (WorkPulse)
+ * Handles multi-user data segregation, filtering, sorting, stats, and pending task carry-forward.
  */
 
 class WorksheetManager {
@@ -4328,7 +4828,8 @@ class WorksheetManager {
       customEndDate: null,
       project: 'all',
       status: 'all',
-      search: ''
+      search: '',
+      userScope: 'me' // 'me' (current user) | 'all' (all team members) | specific userId
     };
     this.sort = {
       field: 'date',
@@ -4367,10 +4868,13 @@ class WorksheetManager {
     return WorksheetManager.formatDateIso(d);
   }
 
-  // Add new worksheet entry
+  // Add new worksheet entry (tagged with active user)
   async addEntry(data) {
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
     const newEntry = {
       id: this.generateId(),
+      userId: data.userId || (currentUser ? currentUser.id : 'user_kavin'),
+      userName: data.userName || (currentUser ? currentUser.name : 'Kavin'),
       date: data.date || WorksheetManager.getTodayStr(),
       projectName: (data.projectName || 'General').trim(),
       work: (data.work || '').trim(),
@@ -4418,50 +4922,66 @@ class WorksheetManager {
     return true;
   }
 
-  // Duplicate an existing task into today
+  // Duplicate an entry into today's log
   async duplicateEntry(id) {
     const source = this.entries.find(e => e.id === id);
-    if (!source) return null;
+    if (!source) throw new Error('Source entry not found');
+
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
     const cloned = {
+      ...source,
+      id: this.generateId(),
+      userId: currentUser ? currentUser.id : (source.userId || 'user_kavin'),
+      userName: currentUser ? currentUser.name : (source.userName || 'Kavin'),
       date: WorksheetManager.getTodayStr(),
-      projectName: source.projectName,
-      work: source.work,
-      status: 'In Progress',
-      hoursWorked: source.hoursWorked,
-      priority: source.priority,
-      remarks: source.remarks ? `Continuation: ${source.remarks}` : 'Continuation'
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
-    return await this.addEntry(cloned);
+    this.entries.unshift(cloned);
+    await this.storage.saveEntry(cloned);
+    return cloned;
   }
 
-  // Carry forward all unfinished (In Progress, Pending, Blocked) tasks from yesterday to today
+  // Carry Forward all unfinished tasks from yesterday to today
   async carryForwardPendingTasks() {
     const yesterdayStr = WorksheetManager.getYesterdayStr();
     const todayStr = WorksheetManager.getTodayStr();
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
-    // Find unfinished tasks from yesterday
-    const unfinishedYesterday = this.entries.filter(e => 
-      e.date === yesterdayStr && (e.status === 'In Progress' || e.status === 'Pending' || e.status === 'Blocked')
-    );
+    // Find incomplete tasks
+    const incompleteYesterday = this.entries.filter(e => {
+      const isYesterday = e.date === yesterdayStr;
+      const isIncomplete = e.status === 'In Progress' || e.status === 'Pending' || e.status === 'Blocked';
+      const isUserMatch = !currentUser || this.isEntryBelongsToUser(e, currentUser);
+      return isYesterday && isIncomplete && isUserMatch;
+    });
 
-    if (unfinishedYesterday.length === 0) {
-      return { count: 0, message: 'No unfinished tasks found from yesterday.' };
+    if (incompleteYesterday.length === 0) {
+      return { count: 0, message: "No unfinished tasks found from yesterday." };
     }
 
     let addedCount = 0;
-    for (const task of unfinishedYesterday) {
-      // Check if already added today with same work description
-      const alreadyExists = this.entries.some(e => e.date === todayStr && e.projectName === task.projectName && e.work === task.work);
-      if (!alreadyExists) {
+    for (const task of incompleteYesterday) {
+      // Check if already logged today
+      const alreadyLogged = this.entries.some(e => 
+        e.date === todayStr && 
+        e.projectName === task.projectName && 
+        e.work === task.work &&
+        (!currentUser || this.isEntryBelongsToUser(e, currentUser))
+      );
+
+      if (!alreadyLogged) {
         await this.addEntry({
           date: todayStr,
+          userId: currentUser ? currentUser.id : task.userId,
+          userName: currentUser ? currentUser.name : task.userName,
           projectName: task.projectName,
           work: task.work,
-          status: task.status,
-          hoursWorked: 0, // Reset hours for today
-          priority: task.priority,
+          status: 'In Progress',
+          hoursWorked: 0,
+          priority: task.priority || 'Medium',
           remarks: `Carried forward from yesterday`
         });
         addedCount++;
@@ -4474,6 +4994,15 @@ class WorksheetManager {
         ? `Successfully carried forward ${addedCount} unfinished task(s) to today's worksheet!`
         : `All yesterday's unfinished tasks are already in today's worksheet.`
     };
+  }
+
+  // Helper: check if entry belongs to a user
+  isEntryBelongsToUser(entry, user) {
+    if (!user) return true;
+    if (entry.userId === user.id) return true;
+    if (entry.userName && entry.userName.toLowerCase() === user.name.toLowerCase()) return true;
+    if (!entry.userId && user.username === 'kavin') return true; // legacy data belongs to default user Kavin
+    return false;
   }
 
   // Set filter value
@@ -4494,7 +5023,12 @@ class WorksheetManager {
   // Get distinct list of project names for filter dropdown & auto-suggestions
   getUniqueProjects() {
     const set = new Set();
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+
     this.entries.forEach(e => {
+      if (this.filters.userScope === 'me' && currentUser && !this.isEntryBelongsToUser(e, currentUser)) {
+        return;
+      }
       if (e.projectName && e.projectName.trim()) {
         set.add(e.projectName.trim());
       }
@@ -4505,7 +5039,12 @@ class WorksheetManager {
   // Get distinct list of all dates in records
   getUniqueDates() {
     const set = new Set();
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+
     this.entries.forEach(e => {
+      if (this.filters.userScope === 'me' && currentUser && !this.isEntryBelongsToUser(e, currentUser)) {
+        return;
+      }
       if (e.date) set.add(e.date);
     });
     return Array.from(set).sort().reverse();
@@ -4515,6 +5054,7 @@ class WorksheetManager {
   getFilteredEntries() {
     const todayStr = WorksheetManager.getTodayStr();
     const yesterdayStr = WorksheetManager.getYesterdayStr();
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
     // Date range boundaries
     let startDate = null;
@@ -4528,8 +5068,8 @@ class WorksheetManager {
       endDate = yesterdayStr;
     } else if (this.filters.dateRange === 'this-week') {
       const now = new Date();
-      const day = now.getDay(); // 0 is Sun, 1 is Mon...
-      const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Monday
+      const day = now.getDay();
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
       const monday = new Date(now.setDate(diff));
       startDate = WorksheetManager.formatDateIso(monday);
       
@@ -4548,30 +5088,35 @@ class WorksheetManager {
     }
 
     const filtered = this.entries.filter(entry => {
-      // Date filter
+      // 1. User Isolation Filter
+      if (this.filters.userScope === 'me' && currentUser) {
+        if (!this.isEntryBelongsToUser(entry, currentUser)) return false;
+      } else if (this.filters.userScope !== 'all' && this.filters.userScope) {
+        if (entry.userId !== this.filters.userScope) return false;
+      }
+
+      // 2. Date filter
       if (startDate && entry.date < startDate) return false;
       if (endDate && entry.date > endDate) return false;
 
-      // Project filter
+      // 3. Project filter
       if (this.filters.project !== 'all' && entry.projectName !== this.filters.project) {
         return false;
       }
 
-      // Status filter
+      // 4. Status filter
       if (this.filters.status !== 'all' && entry.status !== this.filters.status) {
         return false;
       }
 
-      // Search keyword
+      // 5. Search keyword
       if (this.filters.search) {
-        const query = this.filters.search.toLowerCase();
-        const matchProject = entry.projectName.toLowerCase().includes(query);
-        const matchWork = entry.work.toLowerCase().includes(query);
-        const matchRemarks = (entry.remarks || '').toLowerCase().includes(query);
-        const matchStatus = entry.status.toLowerCase().includes(query);
-        if (!matchProject && !matchWork && !matchRemarks && !matchStatus) {
-          return false;
-        }
+        const q = this.filters.search.toLowerCase().trim();
+        const inProject = (entry.projectName || '').toLowerCase().includes(q);
+        const inWork = (entry.work || '').toLowerCase().includes(q);
+        const inRemarks = (entry.remarks || '').toLowerCase().includes(q);
+        const inUser = (entry.userName || '').toLowerCase().includes(q);
+        if (!inProject && !inWork && !inRemarks && !inUser) return false;
       }
 
       return true;
@@ -4582,125 +5127,139 @@ class WorksheetManager {
       let valA = a[this.sort.field];
       let valB = b[this.sort.field];
 
-      if (this.sort.field === 'hours') {
-        valA = a.hoursWorked || 0;
-        valB = b.hoursWorked || 0;
+      if (this.sort.field === 'date') {
+        valA = valA || '';
+        valB = valB || '';
+        return this.sort.direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
       }
 
-      if (valA === undefined || valA === null) valA = '';
-      if (valB === undefined || valB === null) valB = '';
+      if (this.sort.field === 'hoursWorked') {
+        valA = parseFloat(valA) || 0;
+        valB = parseFloat(valB) || 0;
+        return this.sort.direction === 'asc' ? valA - valB : valB - valA;
+      }
 
       if (typeof valA === 'string') {
-        const cmp = valA.localeCompare(valB);
-        return this.sort.direction === 'asc' ? cmp : -cmp;
+        valA = valA.toLowerCase();
+        valB = (valB || '').toLowerCase();
+        return this.sort.direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
       }
 
-      return this.sort.direction === 'asc' ? (valA - valB) : (valB - valA);
+      return 0;
     });
 
     return filtered;
   }
 
-  // Calculate high-level summary metrics for filtered set
-  getMetrics(entries = this.getFilteredEntries()) {
-    const totalTasks = entries.length;
-    let completedCount = 0;
-    let inProgressCount = 0;
-    let pendingCount = 0;
-    let blockedCount = 0;
-    let underReviewCount = 0;
-    let leaveCount = 0;
-    let totalHours = 0;
-    const projectHoursMap = {};
+  // Monthly breakdown for calendar
+  getEntriesForMonth(year, month) {
+    const monthMap = {};
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
-    entries.forEach(e => {
-      if (e.status === 'Completed') completedCount++;
-      else if (e.status === 'In Progress') inProgressCount++;
-      else if (e.status === 'Pending') pendingCount++;
-      else if (e.status === 'Blocked') blockedCount++;
-      else if (e.status === 'Under Review') underReviewCount++;
-      else if (e.status === 'Leave') leaveCount++;
-
-      const hrs = parseFloat(e.hoursWorked) || 0;
-      totalHours += hrs;
-
-      const pName = e.projectName || 'General';
-      projectHoursMap[pName] = (projectHoursMap[pName] || 0) + hrs;
+    this.entries.forEach(entry => {
+      if (this.filters.userScope === 'me' && currentUser && !this.isEntryBelongsToUser(entry, currentUser)) {
+        return;
+      }
+      if (!entry.date) return;
+      const parts = entry.date.split('-');
+      if (parts.length >= 3) {
+        const eYear = parseInt(parts[0], 10);
+        const eMonth = parseInt(parts[1], 10) - 1; // 0-indexed
+        if (eYear === year && eMonth === month) {
+          if (!monthMap[entry.date]) {
+            monthMap[entry.date] = [];
+          }
+          monthMap[entry.date].push(entry);
+        }
+      }
     });
 
-    const activeTasks = totalTasks - leaveCount;
-    const completionRate = activeTasks > 0 ? Math.round((completedCount / activeTasks) * 100) : (completedCount > 0 ? 100 : 0);
+    return monthMap;
+  }
+
+  // Get entries for specific date
+  getEntriesForDate(dateStr) {
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+    return this.entries.filter(e => {
+      if (this.filters.userScope === 'me' && currentUser && !this.isEntryBelongsToUser(e, currentUser)) {
+        return false;
+      }
+      return e.date === dateStr;
+    });
+  }
+
+  // Calculate monthly stats for calendar summary
+  getMonthStats(year, month) {
+    const entriesMap = this.getEntriesForMonth(year, month);
+    const dateKeys = Object.keys(entriesMap);
+    
+    let totalHours = 0;
+    let completedCount = 0;
+    let leaveDaysCount = 0;
+    let workingDaysSet = new Set();
+
+    dateKeys.forEach(dateStr => {
+      const dayTasks = entriesMap[dateStr];
+      let dayHasWork = false;
+      let dayIsLeave = false;
+
+      dayTasks.forEach(task => {
+        const hrs = parseFloat(task.hoursWorked) || 0;
+        totalHours += hrs;
+        if (task.status === 'Completed') completedCount++;
+        if (task.status === 'Leave') dayIsLeave = true;
+        if (task.status !== 'Leave') dayHasWork = true;
+      });
+
+      if (dayHasWork) workingDaysSet.add(dateStr);
+      if (dayIsLeave && !dayHasWork) leaveDaysCount++;
+    });
 
     return {
-      totalTasks,
+      workingDaysCount: workingDaysSet.size,
       completedCount,
-      inProgressCount,
-      pendingCount,
-      blockedCount,
-      underReviewCount,
-      leaveCount,
-      completionRate,
-      totalHours: parseFloat(totalHours.toFixed(1)),
-      projectHoursMap,
-      statusCounts: {
-        'Completed': completedCount,
-        'In Progress': inProgressCount,
-        'Pending': pendingCount,
-        'Blocked': blockedCount,
-        'Under Review': underReviewCount,
-        'Leave': leaveCount
-      }
+      totalHours: totalHours.toFixed(1),
+      leaveDaysCount
     };
   }
 
-  // Get entries mapped by date string for a specific month (year, month 0-11)
-  getEntriesForMonth(year, month) {
-    const monthStr = String(month + 1).padStart(2, '0');
-    const prefix = `${year}-${monthStr}`;
-    const dateMap = {};
-
-    this.entries.forEach(entry => {
-      if (entry.date && entry.date.startsWith(prefix)) {
-        if (!dateMap[entry.date]) dateMap[entry.date] = [];
-        dateMap[entry.date].push(entry);
-      }
-    });
-
-    return dateMap;
-  }
-
-  // Get all entries for a specific day YYYY-MM-DD
-  getEntriesForDate(dateStr) {
-    return this.entries.filter(e => e.date === dateStr);
-  }
-
-  // Get Month Summary Stats
-  getMonthStats(year, month) {
-    const monthStr = String(month + 1).padStart(2, '0');
-    const prefix = `${year}-${monthStr}`;
-    const monthEntries = this.entries.filter(e => e.date && e.date.startsWith(prefix));
-    
-    const uniqueDays = new Set();
+  // Compute aggregate dashboard metrics
+  getMetrics(entries = this.getFilteredEntries()) {
     let totalHours = 0;
-    let completedCount = 0;
-    let leaveDays = new Set();
+    let completed = 0;
+    let inProgress = 0;
+    let pending = 0;
+    let blocked = 0;
+    let leave = 0;
+    const projectHours = {};
 
-    monthEntries.forEach(e => {
-      if (e.status === 'Leave') {
-        leaveDays.add(e.date);
-      } else {
-        uniqueDays.add(e.date);
-        totalHours += (parseFloat(e.hoursWorked) || 0);
-        if (e.status === 'Completed') completedCount++;
-      }
+    entries.forEach(e => {
+      const hours = parseFloat(e.hoursWorked) || 0;
+      totalHours += hours;
+
+      if (e.status === 'Completed') completed++;
+      else if (e.status === 'In Progress') inProgress++;
+      else if (e.status === 'Pending') pending++;
+      else if (e.status === 'Blocked') blocked++;
+      else if (e.status === 'Leave') leave++;
+
+      const pName = e.projectName || 'General';
+      projectHours[pName] = (projectHours[pName] || 0) + hours;
     });
+
+    const totalTasks = entries.length;
+    const completionRate = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
 
     return {
-      totalEntries: monthEntries.length,
-      workingDaysCount: uniqueDays.size,
-      leaveDaysCount: leaveDays.size,
-      totalHours: parseFloat(totalHours.toFixed(1)),
-      completedCount
+      totalTasks,
+      totalHours: totalHours.toFixed(1),
+      completed,
+      inProgress,
+      pending,
+      blocked,
+      leave,
+      completionRate,
+      projectHours
     };
   }
 }
@@ -4777,7 +5336,7 @@ class UIRenderer {
   }
 
   // Render Table View (Desktop & Tablet)
-  renderTable(entries, onStatusChange, onEdit, onDuplicate, onDelete) {
+  renderTable(entries, onStatusChange, onEdit, onDuplicate, onDelete, showUserBadge = false) {
     const tbody = document.getElementById('worksheetTableBody');
     const emptyState = document.getElementById('emptyState');
     tbody.innerHTML = '';
@@ -4801,6 +5360,7 @@ class UIRenderer {
           <strong>${formattedDate}</strong>
         </td>
         <td class="col-project">
+          ${(showUserBadge && entry.userName) ? `<span class="user-badge-pill" style="background-color: ${this.getUserColor(entry.userName)};"><i data-lucide="user" class="icon-xs"></i> ${this.escapeHtml(entry.userName)}</span>` : ''}
           <span class="project-pill">${this.escapeHtml(entry.projectName)}</span>
         </td>
         <td class="col-work">
@@ -4860,7 +5420,7 @@ class UIRenderer {
   }
 
   // Render Mobile Cards View (Phones)
-  renderCards(entries, onStatusChange, onEdit, onDuplicate, onDelete) {
+  renderCards(entries, onStatusChange, onEdit, onDuplicate, onDelete, showUserBadge = false) {
     const grid = document.getElementById('worksheetCardsGrid');
     grid.innerHTML = '';
 
@@ -4879,7 +5439,10 @@ class UIRenderer {
           <span class="priority-pill ${priorityCls}">${entry.priority || 'Medium'}</span>
         </div>
 
-        <div class="card-project-title">${this.escapeHtml(entry.projectName)}</div>
+        <div class="card-project-title">
+          ${(showUserBadge && entry.userName) ? `<span class="user-badge-pill" style="background-color: ${this.getUserColor(entry.userName)}; font-size: 0.68rem;"><i data-lucide="user" class="icon-xs"></i> ${this.escapeHtml(entry.userName)}</span>` : ''}
+          ${this.escapeHtml(entry.projectName)}
+        </div>
         <div class="card-work-desc">${this.escapeHtml(entry.work).replace(/\n/g, '<br>')}</div>
 
         ${entry.remarks ? `<div class="work-remarks"><i data-lucide="info" class="icon-xs"></i> ${this.escapeHtml(entry.remarks)}</div>` : ''}
@@ -4914,6 +5477,89 @@ class UIRenderer {
       card.querySelector('.btn-action.delete').addEventListener('click', () => onDelete(entry.id));
 
       grid.appendChild(card);
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // Get dynamic hash color for user name badge
+  getUserColor(name) {
+    if (!name) return '#3b82f6';
+    const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#f97316'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  // Render Top Header User Profile Chip
+  renderUserProfileHeader(user) {
+    if (!user) return;
+    const avatarBadge = document.getElementById('headerUserAvatar');
+    const nameLabel = document.getElementById('headerUserName');
+    const dropAvatar = document.getElementById('dropdownUserAvatar');
+    const dropName = document.getElementById('dropdownUserName');
+    const dropRole = document.getElementById('dropdownUserRole');
+    const myLabel = document.getElementById('labelMyWorksheet');
+
+    const initial = (user.name || 'U').charAt(0).toUpperCase();
+    const color = user.color || this.getUserColor(user.name);
+
+    if (avatarBadge) {
+      avatarBadge.textContent = initial;
+      avatarBadge.style.backgroundColor = color;
+    }
+    if (nameLabel) nameLabel.textContent = user.name;
+    if (dropAvatar) {
+      dropAvatar.textContent = initial;
+      dropAvatar.style.backgroundColor = color;
+    }
+    if (dropName) dropName.textContent = user.name;
+    if (dropRole) dropRole.textContent = user.role || 'Team Member';
+    if (myLabel) myLabel.textContent = `${user.name}'s Worksheet`;
+  }
+
+  // Render User Accounts List in Modal
+  renderUserSwitcher(users, activeUserId, onSelectUser, onDeleteUser) {
+    const container = document.getElementById('usersListContainer');
+    if (!container) return;
+
+    container.innerHTML = '';
+    if (!users || users.length === 0) {
+      container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; padding: 1rem 0;">No user profiles found.</p>';
+      return;
+    }
+
+    users.forEach(user => {
+      const card = document.createElement('div');
+      card.className = `user-profile-card ${user.id === activeUserId ? 'active' : ''}`;
+      const initial = (user.name || 'U').charAt(0).toUpperCase();
+      const color = user.color || this.getUserColor(user.name);
+
+      card.innerHTML = `
+        <div class="user-card-info">
+          <div class="user-avatar-large" style="background-color: ${color}; width: 34px; height: 34px; font-size: 0.85rem;">${initial}</div>
+          <div>
+            <div class="user-card-name">${this.escapeHtml(user.name)} ${user.id === activeUserId ? '<span style="font-size: 0.72rem; color: var(--brand-primary); font-weight: normal;">(Active)</span>' : ''}</div>
+            <div class="user-card-role">@${this.escapeHtml(user.username)} â€¢ ${this.escapeHtml(user.role || 'Member')}</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <button class="btn btn-xs ${user.id === activeUserId ? 'btn-primary' : 'btn-outline'} btn-select-user">
+            ${user.id === activeUserId ? 'âœ“ Selected' : 'Switch'}
+          </button>
+        </div>
+      `;
+
+      card.querySelector('.btn-select-user').addEventListener('click', (e) => {
+        e.stopPropagation();
+        onSelectUser(user.id);
+      });
+
+      card.addEventListener('click', () => {
+        onSelectUser(user.id);
+      });
+
+      container.appendChild(card);
     });
 
     if (window.lucide) window.lucide.createIcons();
@@ -5674,6 +6320,7 @@ window.ImportExportManager = ImportExportManager;
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Initialize Core Services
+  const auth = window.authManager;
   const cloud = window.cloudStorage;
   const manager = new window.WorksheetManager(cloud);
   const ui = window.uiRenderer;
@@ -5691,7 +6338,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 2. Initialize Theme
   initTheme();
 
-  // 3. Initialize Cloud Sync Status Listener & Real-time Remote Sync
+  // 3. User Authentication Change Listener
+  if (auth) {
+    auth.onUserChange((user) => {
+      ui.renderUserProfileHeader(user);
+      renderApp();
+    });
+  }
+
+  // 4. Initialize Cloud Sync Status Listener & Real-time Remote Sync
   cloud.onStatusChange((status, message) => {
     updateCloudStatusBadge(status, message);
   });
@@ -5702,12 +6357,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderApp();
   });
 
-  // 4. Load Data & Render
+  // 5. Load Data & Render
   await manager.initialize();
   renderApp();
 
-  // 5. Setup UI Event Listeners
+  // 6. Setup UI Event Listeners
   bindHeaderEvents();
+  bindAuthEvents();
   bindFilterEvents();
   bindViewSwitching();
   bindCalendarEvents();
@@ -5721,9 +6377,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Master Render Function
   // -------------------------------------------------------------
   function renderApp() {
+    const currentUser = auth ? auth.getCurrentUser() : null;
+    if (currentUser) {
+      ui.renderUserProfileHeader(currentUser);
+    }
+
     const entries = manager.getFilteredEntries();
     const metrics = manager.getMetrics(entries);
     const projects = manager.getUniqueProjects();
+    const showUserBadge = manager.filters.userScope === 'all';
 
     // Context label for metrics
     let dateContext = 'Filtered';
@@ -5745,7 +6407,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       handleStatusChange,
       handleEditEntry,
       handleDuplicateEntry,
-      handleDeleteEntry
+      handleDeleteEntry,
+      showUserBadge
     );
 
     // Render Mobile Cards View
@@ -5754,7 +6417,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       handleStatusChange,
       handleEditEntry,
       handleDuplicateEntry,
-      handleDeleteEntry
+      handleDeleteEntry,
+      showUserBadge
     );
 
     // Render Calendar View
@@ -5930,6 +6594,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Filter & Search Events
   // -------------------------------------------------------------
   function bindFilterEvents() {
+    // User Scope Pills (My Worksheet vs Team Overview)
+    const scopePills = document.querySelectorAll('.filter-pill[data-user-scope]');
+    scopePills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        const scope = pill.dataset.userScope;
+        scopePills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        manager.setFilter('userScope', scope);
+        renderApp();
+      });
+    });
+
     // Date Pills
     const datePills = document.querySelectorAll('.filter-pill[data-date-filter]');
     datePills.forEach(pill => {
@@ -6599,6 +7275,110 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
         ui.showToast('Failed to copy text', 'error');
       });
     });
+  }
+
+  // -------------------------------------------------------------
+  // Multi-User Authentication & Profile Events
+  // -------------------------------------------------------------
+  function bindAuthEvents() {
+    if (!auth) return;
+
+    const btnUserProfile = document.getElementById('btnUserProfile');
+    const userDropdownMenu = document.getElementById('userDropdownMenu');
+    const userAuthModal = document.getElementById('userAuthModal');
+    const btnCloseUserModal = document.getElementById('btnCloseUserModal');
+    const btnDropdownSwitchUser = document.getElementById('btnDropdownSwitchUser');
+    const btnDropdownAddUser = document.getElementById('btnDropdownAddUser');
+
+    const tabBtnSwitchUser = document.getElementById('tabBtnSwitchUser');
+    const tabBtnNewUser = document.getElementById('tabBtnNewUser');
+    const tabContentSwitchUser = document.getElementById('tabContentSwitchUser');
+    const tabContentNewUser = document.getElementById('tabContentNewUser');
+    const newUserForm = document.getElementById('newUserForm');
+
+    // Toggle dropdown
+    if (btnUserProfile && userDropdownMenu) {
+      btnUserProfile.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdownMenu.classList.toggle('hidden');
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!btnUserProfile.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+          userDropdownMenu.classList.add('hidden');
+        }
+      });
+    }
+
+    function openAuthModal(tab = 'switch') {
+      if (userDropdownMenu) userDropdownMenu.classList.add('hidden');
+      if (userAuthModal) {
+        userAuthModal.classList.remove('hidden');
+        switchAuthTab(tab);
+        refreshUserList();
+      }
+    }
+
+    function closeAuthModal() {
+      if (userAuthModal) userAuthModal.classList.add('hidden');
+    }
+
+    function switchAuthTab(tab) {
+      if (tab === 'switch') {
+        tabBtnSwitchUser.classList.add('active');
+        tabBtnNewUser.classList.remove('active');
+        tabContentSwitchUser.classList.remove('hidden');
+        tabContentNewUser.classList.add('hidden');
+      } else {
+        tabBtnSwitchUser.classList.remove('active');
+        tabBtnNewUser.classList.add('active');
+        tabContentSwitchUser.classList.add('hidden');
+        tabContentNewUser.classList.remove('hidden');
+      }
+    }
+
+    function refreshUserList() {
+      const users = auth.getAllUsers();
+      const currentUser = auth.getCurrentUser();
+      ui.renderUserSwitcher(users, currentUser.id, (selectedId) => {
+        try {
+          const switched = auth.switchUser(selectedId);
+          ui.showToast(`Switched account to ${switched.name}`, 'success');
+          closeAuthModal();
+        } catch (err) {
+          ui.showToast(err.message, 'error');
+        }
+      });
+    }
+
+    if (btnDropdownSwitchUser) btnDropdownSwitchUser.addEventListener('click', () => openAuthModal('switch'));
+    if (btnDropdownAddUser) btnDropdownAddUser.addEventListener('click', () => openAuthModal('new'));
+    if (btnCloseUserModal) btnCloseUserModal.addEventListener('click', closeAuthModal);
+
+    if (tabBtnSwitchUser) tabBtnSwitchUser.addEventListener('click', () => switchAuthTab('switch'));
+    if (tabBtnNewUser) tabBtnNewUser.addEventListener('click', () => switchAuthTab('new'));
+
+    // Handle new user creation
+    if (newUserForm) {
+      newUserForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('newUserName').value;
+        const username = document.getElementById('newUserUsername').value;
+        const role = document.getElementById('newUserRole').value;
+        const colorRadio = document.querySelector('input[name="userColor"]:checked');
+        const color = colorRadio ? colorRadio.value : '#3b82f6';
+
+        try {
+          const newUser = auth.registerUser(name, username, role, '', color);
+          ui.showToast(`Welcome, ${newUser.name}! Profile created and activated.`, 'success');
+          newUserForm.reset();
+          closeAuthModal();
+        } catch (err) {
+          ui.showToast(err.message, 'error');
+        }
+      });
+    }
   }
 
   // -------------------------------------------------------------
