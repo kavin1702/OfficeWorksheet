@@ -1054,7 +1054,6 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     const tabContentNewUser = document.getElementById('tabContentNewUser');
     const newUserForm = document.getElementById('newUserForm');
 
-    const btnQuickDemoLogin = document.getElementById('btnQuickDemoLogin');
     const authPortalAlert = document.getElementById('authPortalAlert');
     const authPortalAlertText = document.getElementById('authPortalAlertText');
 
@@ -1094,19 +1093,6 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     if (portalTabBtnSignUp) portalTabBtnSignUp.addEventListener('click', switchToSignUpTab);
     if (btnSwitchToSignUp) btnSwitchToSignUp.addEventListener('click', switchToSignUpTab);
     if (btnSwitchToSignIn) btnSwitchToSignIn.addEventListener('click', switchToSignInTab);
-
-    // Quick 1-Click Demo Login
-    if (btnQuickDemoLogin) {
-      btnQuickDemoLogin.addEventListener('click', () => {
-        try {
-          hideAuthAlert();
-          const logged = auth.login('kavin@office.com', 'password123');
-          ui.showToast(`Logged in as ${logged.name}!`, 'success');
-        } catch (err) {
-          showAuthAlert(err.message);
-        }
-      });
-    }
 
     // 2. Password Visibility Toggle Buttons
     document.querySelectorAll('.btn-toggle-pwd').forEach(btn => {

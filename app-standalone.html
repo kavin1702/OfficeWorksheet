@@ -5,6 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>WorkPulse - Office Daily Worksheet & Task Tracker</title>
   
+  <!-- Primary SEO Meta Tags for Google Search -->
+  <meta name="description" content="WorkPulse is a modern, real-time office daily worksheet and task tracker with Google Sheets sync, interactive monthly calendar, and multi-user authentication.">
+  <meta name="keywords" content="Office Daily Worksheet, WorkPulse, Office Worksheet, Task Tracker, Daily Work Log, Google Sheets Sync, Excel Sync, Daily Status Report, Multi-user Worksheet">
+  <meta name="author" content="Kavin">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="canonical" href="https://office-worksheet.vercel.app/">
+
+  <!-- Open Graph / Facebook / WhatsApp SEO -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://office-worksheet.vercel.app/">
+  <meta property="og:title" content="WorkPulse - Office Daily Worksheet & Task Tracker">
+  <meta property="og:description" content="Manage and sync your daily work logs across phone and PC with Google Sheets integration and multi-user login.">
+  <meta property="og:site_name" content="WorkPulse">
+
+  <!-- Twitter Card SEO -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="WorkPulse - Office Daily Worksheet & Task Tracker">
+  <meta name="twitter:description" content="Office daily worksheet, real-time task manager, and daily status report generator with Google Sheets cloud sync.">
+
+  <!-- Schema.org JSON-LD Structured Data for Google Indexing -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "WorkPulse Office Daily Worksheet",
+    "url": "https://office-worksheet.vercel.app/",
+    "description": "Multi-user office daily worksheet, task tracker, and status report manager with Google Sheets cloud sync.",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "All",
+    "author": {
+      "@type": "Person",
+      "name": "Kavin"
+    }
+  }
+  </script>
+  
   <!-- PWA & Mobile Meta Tags -->
   <meta name="theme-color" content="#1e293b">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3180,11 +3216,6 @@ code {
           <button type="submit" class="btn btn-primary btn-block btn-glow">
             <i data-lucide="log-in"></i>
             <span>Sign In to My Worksheet</span>
-          </button>
-
-          <button type="button" id="btnQuickDemoLogin" class="btn btn-outline btn-block" style="margin-top: 0.5rem; border-color: rgba(59,130,246,0.4); color: #93c5fd;">
-            <i data-lucide="zap" class="icon-xs text-amber"></i>
-            <span>âš¡ Instant Sign In as Kavin</span>
           </button>
 
           <div class="auth-switch-link">
@@ -7904,7 +7935,6 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     const tabContentNewUser = document.getElementById('tabContentNewUser');
     const newUserForm = document.getElementById('newUserForm');
 
-    const btnQuickDemoLogin = document.getElementById('btnQuickDemoLogin');
     const authPortalAlert = document.getElementById('authPortalAlert');
     const authPortalAlertText = document.getElementById('authPortalAlertText');
 
@@ -7944,19 +7974,6 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     if (portalTabBtnSignUp) portalTabBtnSignUp.addEventListener('click', switchToSignUpTab);
     if (btnSwitchToSignUp) btnSwitchToSignUp.addEventListener('click', switchToSignUpTab);
     if (btnSwitchToSignIn) btnSwitchToSignIn.addEventListener('click', switchToSignInTab);
-
-    // Quick 1-Click Demo Login
-    if (btnQuickDemoLogin) {
-      btnQuickDemoLogin.addEventListener('click', () => {
-        try {
-          hideAuthAlert();
-          const logged = auth.login('kavin@office.com', 'password123');
-          ui.showToast(`Logged in as ${logged.name}!`, 'success');
-        } catch (err) {
-          showAuthAlert(err.message);
-        }
-      });
-    }
 
     // 2. Password Visibility Toggle Buttons
     document.querySelectorAll('.btn-toggle-pwd').forEach(btn => {
