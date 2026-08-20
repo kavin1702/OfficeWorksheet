@@ -23,11 +23,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 2. Initialize Theme
   initTheme();
 
-  // 3. User Authentication Change Listener
-  if (auth) {
-    auth.onUserChange((user) => {
-      ui.renderUserProfileHeader(user);
+  // 3. User Authentication Gatekeeper & Session Listener
+  const authPortal = document.getElementById('authPortal');
+  const appContainer = document.getElementById('app');
+
+  function updateAuthGate() {
+    const loggedIn = auth ? auth.isLoggedIn() : true;
+    if (loggedIn) {
+      if (authPortal) authPortal.classList.add('hidden');
+      if (appContainer) appContainer.classList.remove('hidden');
       renderApp();
+    } else {
+      if (authPortal) authPortal.classList.remove('hidden');
+      if (appContainer) appContainer.classList.add('hidden');
+      renderPortalUsers();
+    }
+  }
+
+  if (auth) {
+    auth.onUserChange(({ event, user }) => {
+      updateAuthGate();
     });
   }
 
@@ -42,9 +57,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderApp();
   });
 
-  // 5. Load Data & Render
+  // 5. Load Data & Initialize Gatekeeper
   await manager.initialize();
-  renderApp();
+  updateAuthGate();
 
   // 6. Setup UI Event Listeners
   bindHeaderEvents();
@@ -965,15 +980,71 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
   // -------------------------------------------------------------
   // Multi-User Authentication & Profile Events
   // -------------------------------------------------------------
+  function renderPortalUsers() {
+    const container = document.getElementById('portalUsersList');
+    if (!container) return;
+    const users = auth.getAllUsers();
+    container.innerHTML = '';
+
+    if (users.length === 0) {
+      container.innerHTML = '<p style="color: #94a3b8; font-size: 0.8rem; text-align: center; padding: 0.5rem 0;">No accounts yet. Click Create Account above!</p>';
+      return;
+    }
+
+    users.forEach(user => {
+      const card = document.createElement('div');
+      card.className = 'portal-user-card';
+      const initial = (user.name || 'U').charAt(0).toUpperCase();
+      const color = user.color || '#3b82f6';
+
+      card.innerHTML = `
+        <div class="portal-user-card-info">
+          <div class="portal-user-avatar" style="background-color: ${color};">${initial}</div>
+          <div>
+            <div class="portal-user-name">${ui.escapeHtml(user.name)}</div>
+            <div class="portal-user-role">@${ui.escapeHtml(user.username)} • ${ui.escapeHtml(user.role || 'Member')}</div>
+          </div>
+        </div>
+        <button class="btn btn-xs btn-primary">
+          <span>Enter</span>
+          <i data-lucide="arrow-right" class="icon-xs"></i>
+        </button>
+      `;
+
+      card.addEventListener('click', () => {
+        try {
+          auth.login(user.id);
+          ui.showToast(`Welcome back, ${user.name}!`, 'success');
+        } catch (err) {
+          ui.showToast(err.message, 'error');
+        }
+      });
+
+      container.appendChild(card);
+    });
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
   function bindAuthEvents() {
     if (!auth) return;
 
+    // Portal Landing Screen Elements
+    const portalTabBtnSignIn = document.getElementById('portalTabBtnSignIn');
+    const portalTabBtnSignUp = document.getElementById('portalTabBtnSignUp');
+    const portalPaneSignIn = document.getElementById('portalPaneSignIn');
+    const portalPaneSignUp = document.getElementById('portalPaneSignUp');
+    const portalSignInForm = document.getElementById('portalSignInForm');
+    const portalSignUpForm = document.getElementById('portalSignUpForm');
+
+    // Inside App Elements
     const btnUserProfile = document.getElementById('btnUserProfile');
     const userDropdownMenu = document.getElementById('userDropdownMenu');
     const userAuthModal = document.getElementById('userAuthModal');
     const btnCloseUserModal = document.getElementById('btnCloseUserModal');
     const btnDropdownSwitchUser = document.getElementById('btnDropdownSwitchUser');
     const btnDropdownAddUser = document.getElementById('btnDropdownAddUser');
+    const btnDropdownLogout = document.getElementById('btnDropdownLogout');
 
     const tabBtnSwitchUser = document.getElementById('tabBtnSwitchUser');
     const tabBtnNewUser = document.getElementById('tabBtnNewUser');
@@ -981,7 +1052,60 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     const tabContentNewUser = document.getElementById('tabContentNewUser');
     const newUserForm = document.getElementById('newUserForm');
 
-    // Toggle dropdown
+    // 1. Landing Portal Tabs
+    if (portalTabBtnSignIn && portalTabBtnSignUp) {
+      portalTabBtnSignIn.addEventListener('click', () => {
+        portalTabBtnSignIn.classList.add('active');
+        portalTabBtnSignUp.classList.remove('active');
+        portalPaneSignIn.classList.remove('hidden');
+        portalPaneSignUp.classList.add('hidden');
+        renderPortalUsers();
+      });
+
+      portalTabBtnSignUp.addEventListener('click', () => {
+        portalTabBtnSignUp.classList.add('active');
+        portalTabBtnSignIn.classList.remove('active');
+        portalPaneSignUp.classList.remove('hidden');
+        portalPaneSignIn.classList.add('hidden');
+      });
+    }
+
+    // 2. Portal Sign In Form
+    if (portalSignInForm) {
+      portalSignInForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = document.getElementById('portalSignInUsername').value;
+        try {
+          const logged = auth.login(username);
+          ui.showToast(`Welcome back, ${logged.name}!`, 'success');
+          portalSignInForm.reset();
+        } catch (err) {
+          ui.showToast(err.message, 'error');
+        }
+      });
+    }
+
+    // 3. Portal Sign Up Form (Create Account)
+    if (portalSignUpForm) {
+      portalSignUpForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('portalSignUpName').value;
+        const username = document.getElementById('portalSignUpUsername').value;
+        const role = document.getElementById('portalSignUpRole').value;
+        const colorRadio = document.querySelector('input[name="portalUserColor"]:checked');
+        const color = colorRadio ? colorRadio.value : '#3b82f6';
+
+        try {
+          const newUser = auth.registerUser(name, username, role, '', color);
+          ui.showToast(`Account created! Welcome, ${newUser.name}.`, 'success');
+          portalSignUpForm.reset();
+        } catch (err) {
+          ui.showToast(err.message, 'error');
+        }
+      });
+    }
+
+    // 4. Header Dropdown Toggle
     if (btnUserProfile && userDropdownMenu) {
       btnUserProfile.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -993,6 +1117,15 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
         if (!btnUserProfile.contains(e.target) && !userDropdownMenu.contains(e.target)) {
           userDropdownMenu.classList.add('hidden');
         }
+      });
+    }
+
+    // 5. Logout Button
+    if (btnDropdownLogout) {
+      btnDropdownLogout.addEventListener('click', () => {
+        userDropdownMenu.classList.add('hidden');
+        auth.logout();
+        ui.showToast('You have been logged out.', 'info');
       });
     }
 
@@ -1026,7 +1159,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     function refreshUserList() {
       const users = auth.getAllUsers();
       const currentUser = auth.getCurrentUser();
-      ui.renderUserSwitcher(users, currentUser.id, (selectedId) => {
+      ui.renderUserSwitcher(users, currentUser ? currentUser.id : null, (selectedId) => {
         try {
           const switched = auth.switchUser(selectedId);
           ui.showToast(`Switched account to ${switched.name}`, 'success');
@@ -1044,7 +1177,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     if (tabBtnSwitchUser) tabBtnSwitchUser.addEventListener('click', () => switchAuthTab('switch'));
     if (tabBtnNewUser) tabBtnNewUser.addEventListener('click', () => switchAuthTab('new'));
 
-    // Handle new user creation
+    // Handle new user creation inside modal
     if (newUserForm) {
       newUserForm.addEventListener('submit', (e) => {
         e.preventDefault();

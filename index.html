@@ -37,6 +37,118 @@
   <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body class="theme-light">
+  <!-- =========================================================================
+       Full-Screen Landing & Authentication Gatekeeper (Sign In / Create Account)
+       ========================================================================= -->
+  <div id="authPortal" class="auth-portal-screen">
+    <div class="auth-portal-card">
+      <!-- Brand & Welcome Header -->
+      <div class="auth-portal-header">
+        <div class="auth-brand-badge">
+          <i data-lucide="briefcase" class="brand-icon-lg"></i>
+        </div>
+        <h1 class="auth-portal-title">WorkPulse</h1>
+        <p class="auth-portal-subtitle">Office Daily Worksheet & Multi-User Tracker</p>
+        <div class="auth-sync-status">
+          <span class="status-dot online"></span>
+          <span>Google Sheets & Cloud Connected</span>
+        </div>
+      </div>
+
+      <!-- Auth Navigation Tabs -->
+      <div class="auth-portal-tabs">
+        <button id="portalTabBtnSignIn" class="auth-tab-btn active">
+          <i data-lucide="log-in" class="icon-xs"></i>
+          <span>Sign In</span>
+        </button>
+        <button id="portalTabBtnSignUp" class="auth-tab-btn">
+          <i data-lucide="user-plus" class="icon-xs"></i>
+          <span>Create Account</span>
+        </button>
+      </div>
+
+      <!-- Tab 1: Sign In -->
+      <div id="portalPaneSignIn" class="auth-tab-pane">
+        <div class="portal-section-label">Select profile to enter:</div>
+        <div id="portalUsersList" class="portal-users-grid">
+          <!-- Dynamically populated profile cards -->
+        </div>
+
+        <div class="auth-or-divider">
+          <span>OR SIGN IN BY USERNAME</span>
+        </div>
+
+        <form id="portalSignInForm" class="portal-form">
+          <div class="form-group">
+            <label for="portalSignInUsername" class="form-label">Username</label>
+            <div class="input-with-icon">
+              <i data-lucide="user" class="input-icon"></i>
+              <input type="text" id="portalSignInUsername" class="form-input" placeholder="e.g. kavin, rahul" required autocomplete="username">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-glow">
+            <i data-lucide="arrow-right"></i>
+            <span>Sign In to Worksheet</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Tab 2: Create Account -->
+      <div id="portalPaneSignUp" class="auth-tab-pane hidden">
+        <p class="portal-section-label">Create a personal profile to start your worksheet:</p>
+        <form id="portalSignUpForm" class="portal-form">
+          <div class="form-group">
+            <label for="portalSignUpName" class="form-label required">Display Name</label>
+            <div class="input-with-icon">
+              <i data-lucide="user-check" class="input-icon"></i>
+              <input type="text" id="portalSignUpName" class="form-input" placeholder="e.g. Rahul Sharma, Priya" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="portalSignUpUsername" class="form-label required">Username (Unique)</label>
+            <div class="input-with-icon">
+              <i data-lucide="at-sign" class="input-icon"></i>
+              <input type="text" id="portalSignUpUsername" class="form-input" placeholder="e.g. rahul, priya_dev" required autocomplete="username">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="portalSignUpRole" class="form-label">Role / Designation</label>
+            <div class="input-with-icon">
+              <i data-lucide="briefcase" class="input-icon"></i>
+              <input type="text" id="portalSignUpRole" class="form-input" placeholder="e.g. Frontend Developer, QA Engineer">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Profile Avatar Color</label>
+            <div class="color-picker-row">
+              <label class="color-circle" style="background-color: #3b82f6;"><input type="radio" name="portalUserColor" value="#3b82f6" checked></label>
+              <label class="color-circle" style="background-color: #10b981;"><input type="radio" name="portalUserColor" value="#10b981"></label>
+              <label class="color-circle" style="background-color: #8b5cf6;"><input type="radio" name="portalUserColor" value="#8b5cf6"></label>
+              <label class="color-circle" style="background-color: #f59e0b;"><input type="radio" name="portalUserColor" value="#f59e0b"></label>
+              <label class="color-circle" style="background-color: #ec4899;"><input type="radio" name="portalUserColor" value="#ec4899"></label>
+              <label class="color-circle" style="background-color: #06b6d4;"><input type="radio" name="portalUserColor" value="#06b6d4"></label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-glow">
+            <i data-lucide="user-plus"></i>
+            <span>Create Account & Enter</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Features Footer -->
+      <div class="auth-features-footer">
+        <div class="feature-item"><i data-lucide="shield-check" class="icon-xs text-emerald"></i> Separate Workspaces</div>
+        <div class="feature-item"><i data-lucide="calendar" class="icon-xs text-blue"></i> Interactive Calendar</div>
+        <div class="feature-item"><i data-lucide="smartphone" class="icon-xs text-purple"></i> Phone & PC Sync</div>
+      </div>
+    </div>
+  </div>
+
   <div id="app" class="app-container">
     
     <!-- Top Navigation Header -->
@@ -97,6 +209,11 @@
               <button class="dropdown-item" id="btnDropdownAddUser">
                 <i data-lucide="user-plus" class="icon-sm"></i>
                 <span>Add Friend / New Profile</span>
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item" id="btnDropdownLogout" style="color: #ef4444;">
+                <i data-lucide="log-out" class="icon-sm"></i>
+                <span>Log Out</span>
               </button>
             </div>
           </div>

@@ -1,12 +1,13 @@
 /**
  * Auth & Multi-User Manager (WorkPulse)
- * Handles user profiles, authentication, user switching, and separate data workspaces.
+ * Handles user profiles, authentication session state, registration, login, logout, and separate data workspaces.
  */
 
 class AuthManager {
   constructor() {
     this.usersKey = 'workpulse_users_list';
     this.currentUserIdKey = 'workpulse_active_user_id';
+    this.sessionKey = 'workpulse_auth_session_active';
     this.listeners = [];
 
     this.initUsers();
@@ -22,7 +23,7 @@ class AuthManager {
         name: 'Kavin',
         email: 'kavin@office.com',
         role: 'Developer',
-        color: '#3b82f6', // blue
+        color: '#3b82f6',
         avatar: 'K',
         createdAt: '2026-08-01T00:00:00Z'
       };
@@ -30,6 +31,38 @@ class AuthManager {
       localStorage.setItem(this.usersKey, JSON.stringify(users));
       localStorage.setItem(this.currentUserIdKey, defaultUser.id);
     }
+  }
+
+  // Check if a session is currently active
+  isLoggedIn() {
+    const session = localStorage.getItem(this.sessionKey);
+    const activeUser = this.getCurrentUser();
+    return session === 'true' && !!activeUser;
+  }
+
+  // Login a user
+  login(usernameOrId) {
+    if (!usernameOrId || !usernameOrId.trim()) {
+      throw new Error('Please enter a username or select an account.');
+    }
+    const clean = usernameOrId.trim().toLowerCase();
+    const users = this.getAllUsers();
+    const found = users.find(u => u.id === clean || u.username.toLowerCase() === clean);
+
+    if (!found) {
+      throw new Error(`Account "${usernameOrId}" not found. Please create an account.`);
+    }
+
+    localStorage.setItem(this.currentUserIdKey, found.id);
+    localStorage.setItem(this.sessionKey, 'true');
+    this.notifyListeners({ event: 'login', user: found });
+    return found;
+  }
+
+  // Logout current user
+  logout() {
+    localStorage.setItem(this.sessionKey, 'false');
+    this.notifyListeners({ event: 'logout', user: null });
   }
 
   // Get all registered users
@@ -42,20 +75,12 @@ class AuthManager {
     }
   }
 
-  // Get active logged-in user
+  // Get active user
   getCurrentUser() {
     const users = this.getAllUsers();
     const activeId = localStorage.getItem(this.currentUserIdKey);
     const found = users.find(u => u.id === activeId);
-    return found || users[0] || {
-      id: 'user_guest',
-      username: 'guest',
-      name: 'Guest User',
-      email: '',
-      role: 'Member',
-      color: '#64748b',
-      avatar: 'G'
-    };
+    return found || users[0] || null;
   }
 
   // Switch active user
@@ -64,7 +89,8 @@ class AuthManager {
     const user = users.find(u => u.id === userId || u.username.toLowerCase() === userId.toLowerCase());
     if (user) {
       localStorage.setItem(this.currentUserIdKey, user.id);
-      this.notifyListeners(user);
+      localStorage.setItem(this.sessionKey, 'true');
+      this.notifyListeners({ event: 'switch', user });
       return user;
     }
     throw new Error('User not found.');
@@ -72,8 +98,8 @@ class AuthManager {
 
   // Register / Add new friend or user profile
   registerUser(name, username, role = 'Team Member', email = '', color = null) {
-    if (!name || !name.trim()) throw new Error('Please enter a display name.');
-    if (!username || !username.trim()) throw new Error('Please enter a username.');
+    if (!name || !name.trim()) throw new Error('Please enter your display name.');
+    if (!username || !username.trim()) throw new Error('Please choose a username.');
 
     const cleanUsername = username.trim().toLowerCase().replace(/\s+/g, '_');
     const users = this.getAllUsers();
@@ -99,9 +125,10 @@ class AuthManager {
     users.push(newUser);
     localStorage.setItem(this.usersKey, JSON.stringify(users));
 
-    // Automatically switch to new user
+    // Automatically login and switch to new user
     localStorage.setItem(this.currentUserIdKey, newUser.id);
-    this.notifyListeners(newUser);
+    localStorage.setItem(this.sessionKey, 'true');
+    this.notifyListeners({ event: 'register', user: newUser });
 
     return newUser;
   }
@@ -118,19 +145,19 @@ class AuthManager {
 
     if (localStorage.getItem(this.currentUserIdKey) === userId) {
       localStorage.setItem(this.currentUserIdKey, users[0].id);
-      this.notifyListeners(users[0]);
+      this.notifyListeners({ event: 'switch', user: users[0] });
     }
     return true;
   }
 
-  // Listen to user switch events
+  // Listen to auth events
   onUserChange(callback) {
     this.listeners.push(callback);
   }
 
-  notifyListeners(user) {
+  notifyListeners(payload) {
     this.listeners.forEach(cb => {
-      try { cb(user); } catch (e) { console.error('User listener error:', e); }
+      try { cb(payload); } catch (e) { console.error('Auth listener error:', e); }
     });
   }
 }
