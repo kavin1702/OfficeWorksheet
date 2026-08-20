@@ -8,7 +8,7 @@ class WorksheetManager {
     this.storage = cloudService;
     this.entries = [];
     this.filters = {
-      dateRange: 'today', // 'today' | 'yesterday' | 'this-week' | 'this-month' | 'all' | 'custom'
+      dateRange: 'this-month', // 'today' | 'yesterday' | 'this-week' | 'this-month' | 'all' | 'custom'
       customStartDate: null,
       customEndDate: null,
       project: 'all',

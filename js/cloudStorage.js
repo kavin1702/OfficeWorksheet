@@ -254,6 +254,38 @@ class CloudStorageService {
     return { success: true, message: 'Local storage mode is active.' };
   }
 
+  // Deduplicate entries by normalized (date, projectName, work)
+  deduplicateEntries(entries) {
+    if (!entries || !Array.isArray(entries)) return [];
+    const seen = new Map();
+    const result = [];
+
+    entries.forEach(item => {
+      if (!item) return;
+      const normDate = this.normalizeDate(item.date);
+      const cleanProject = (item.projectName || '').trim().toLowerCase();
+      const cleanWork = (item.work || '').trim().toLowerCase();
+      const key = `${normDate}__${cleanProject}__${cleanWork}`;
+
+      item.date = normDate;
+
+      if (!seen.has(key)) {
+        seen.set(key, item);
+        result.push(item);
+      } else {
+        const existing = seen.get(key);
+        if ((!existing.remarks || existing.remarks.length === 0) && item.remarks) {
+          existing.remarks = item.remarks;
+        }
+        if (!existing.hoursWorked && item.hoursWorked) {
+          existing.hoursWorked = item.hoursWorked;
+        }
+      }
+    });
+
+    return result;
+  }
+
   // Fetch all records (Cloud First -> fallback to LocalStorage)
   async fetchAll() {
     let entries = [];
@@ -279,6 +311,7 @@ class CloudStorageService {
               priority: item.priority || 'Medium',
               remarks: item.remarks || ''
             }));
+            entries = this.deduplicateEntries(entries);
             localStorage.setItem(this.storageKey, JSON.stringify(entries));
             this.setStatus('connected', '📊 Google Sheets Synced');
             return entries;
@@ -639,17 +672,22 @@ class CloudStorageService {
 
   normalizeDate(d) {
     if (!d) return '';
-    if (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.trim())) return d.trim();
+    let str = String(d).trim();
+    if (str.startsWith('2001-08-') || str.startsWith('2001-8-')) {
+      str = '2026-08-' + str.substring(str.lastIndexOf('-') + 1).padStart(2, '0');
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
     try {
       const dt = new Date(d);
       if (!isNaN(dt.getTime())) {
-        const yr = dt.getFullYear();
+        let yr = dt.getFullYear();
+        if (yr === 2001) yr = 2026;
         const mo = String(dt.getMonth() + 1).padStart(2, '0');
         const da = String(dt.getDate()).padStart(2, '0');
         return `${yr}-${mo}-${da}`;
       }
     } catch (e) {}
-    return String(d).substring(0, 10);
+    return str.substring(0, 10);
   }
 }
 
