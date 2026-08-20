@@ -593,6 +593,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       radio.closest('.mode-card').classList.toggle('active', radio.value === config.provider);
     });
 
+    document.getElementById('googleSheetUrl').value = config.googleSheetUrl || '';
     document.getElementById('syncKeyInput').value = config.syncKey || '';
     document.getElementById('supabaseUrl').value = config.supabaseUrl || '';
     document.getElementById('supabaseAnonKey').value = config.supabaseAnonKey || '';
@@ -610,10 +611,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function updateCloudConfigUI(provider) {
+    const sheetsSec = document.getElementById('sheetsConfigSection');
     const instantSec = document.getElementById('instantConfigSection');
     const supabaseSec = document.getElementById('supabaseConfigSection');
     const restSec = document.getElementById('restConfigSection');
 
+    if (sheetsSec) sheetsSec.classList.toggle('hidden', provider !== 'sheets');
     if (instantSec) instantSec.classList.toggle('hidden', provider !== 'instant');
     if (supabaseSec) supabaseSec.classList.toggle('hidden', provider !== 'supabase');
     if (restSec) restSec.classList.toggle('hidden', provider !== 'rest');
@@ -650,6 +653,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
       const testConfig = {
         provider: activeProvider,
+        googleSheetUrl: document.getElementById('googleSheetUrl').value,
         syncKey: document.getElementById('syncKeyInput').value,
         supabaseUrl: document.getElementById('supabaseUrl').value,
         supabaseAnonKey: document.getElementById('supabaseAnonKey').value,
@@ -672,6 +676,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
       const newConfig = {
         provider: activeProvider,
+        googleSheetUrl: document.getElementById('googleSheetUrl').value,
         syncKey: document.getElementById('syncKeyInput').value,
         supabaseUrl: document.getElementById('supabaseUrl').value,
         supabaseAnonKey: document.getElementById('supabaseAnonKey').value,
@@ -680,16 +685,85 @@ document.addEventListener('DOMContentLoaded', async () => {
       };
 
       cloud.saveConfig(newConfig);
-      ui.showToast('Cloud sync settings saved!', 'success');
+      ui.showToast('Cloud storage settings saved!', 'success');
       closeCloudModal();
 
       // Immediately sync current records to cloud and reload
-      ui.showToast('Uploading & synchronizing records with cloud...', 'info');
+      ui.showToast('Uploading & synchronizing with common Excel / Google Sheet...', 'info');
       await cloud.batchImport(manager.entries);
       await manager.initialize();
       renderApp();
-      ui.showToast('Cloud database synchronized successfully!', 'success');
+      ui.showToast('Worksheet synchronized successfully!', 'success');
     });
+
+    // Copy Google Apps Script Button
+    const copySheetBtn = document.getElementById('btnCopySheetScript');
+    if (copySheetBtn) {
+      copySheetBtn.addEventListener('click', () => {
+        const script = `function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
+  var headers = data[0];
+  var result = [];
+  for (var i = 1; i < data.length; i++) {
+    var row = data[i];
+    var obj = {};
+    for (var j = 0; j < headers.length; j++) obj[headers[j]] = row[j];
+    result.push({
+      id: String(obj["ID"] || ("row-" + i)),
+      date: obj["Date"] ? (obj["Date"] instanceof Date ? Utilities.formatDate(obj["Date"], "GMT", "yyyy-MM-dd") : String(obj["Date"]).substring(0,10)) : "",
+      projectName: String(obj["Project Name"] || "General"),
+      work: String(obj["Work Description"] || ""),
+      status: String(obj["Status"] || "In Progress"),
+      hoursWorked: parseFloat(obj["Hours"] || 0),
+      priority: String(obj["Priority"] || "Medium"),
+      remarks: String(obj["Remarks"] || "")
+    });
+  }
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    var contents = JSON.parse(e.postData.contents);
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
+    }
+    if (contents.action === "sync_all" && Array.isArray(contents.entries)) {
+      sheet.clearContents();
+      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
+      var rows = contents.entries.map(function(item) {
+        return [item.id || "", item.date || "", item.projectName || "", item.work || "", item.status || "In Progress", item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
+      });
+      if (rows.length > 0) sheet.getRange(2, 1, rows.length, 9).setValues(rows);
+    } else if (contents.action === "upsert" && contents.entry) {
+      var item = contents.entry;
+      var data = sheet.getDataRange().getValues();
+      var foundRow = -1;
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(item.id)) { foundRow = i + 1; break; }
+      }
+      var rowValues = [item.id, item.date, item.projectName, item.work, item.status, item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
+      if (foundRow > 0) sheet.getRange(foundRow, 1, 1, 9).setValues([rowValues]);
+      else sheet.appendRow(rowValues);
+    } else if (contents.action === "delete" && contents.id) {
+      var data = sheet.getDataRange().getValues();
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(contents.id)) { sheet.deleteRow(i + 1); break; }
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ success: true })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ error: err.message })).setMimeType(ContentService.MimeType.JSON);
+  }
+}`;
+        navigator.clipboard.writeText(script).then(() => {
+          ui.showToast('Google Apps Script copied to clipboard!', 'success');
+        });
+      });
+    }
 
     // Copy SQL Script Button
     document.getElementById('btnCopySql').addEventListener('click', () => {

@@ -570,6 +570,17 @@
 
           <!-- Storage Provider Options -->
           <div class="storage-mode-selector">
+            <label class="mode-card" data-mode="sheets">
+              <input type="radio" name="storageProvider" value="sheets">
+              <div class="mode-content">
+                <div class="mode-title-row">
+                  <span class="mode-title">📊 Google Sheets / Excel Online</span>
+                  <span class="badge-recommended" style="background-color: #10b981;">Common Excel Sheet</span>
+                </div>
+                <p class="mode-desc">Store all data in a real Google Sheet / Excel spreadsheet in Google Drive. Accessible & editable directly on phone & PC!</p>
+              </div>
+            </label>
+
             <label class="mode-card active" data-mode="instant">
               <input type="radio" name="storageProvider" value="instant" checked>
               <div class="mode-content">
@@ -611,6 +622,96 @@
                 <p class="mode-desc">Saves strictly inside this browser. (Data won't sync to other devices).</p>
               </div>
             </label>
+          </div>
+
+          <!-- Google Sheets Config Section -->
+          <div id="sheetsConfigSection" class="config-form-section hidden">
+            <h4 class="section-title">Google Sheets / Excel Online Web App URL</h4>
+            <div class="form-group">
+              <label for="googleSheetUrl" class="form-label required">Google Apps Script Web App URL</label>
+              <input type="url" id="googleSheetUrl" class="form-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
+              <span class="form-hint">Every task you save will automatically write rows into your Google Sheet (Common Excel Sheet)!</span>
+            </div>
+
+            <!-- Quick Google Sheets Setup Accordion -->
+            <details class="setup-details" open>
+              <summary class="setup-summary">
+                <i data-lucide="sheet" class="icon-sm"></i>
+                <span>How to connect your Google Sheet in 1 minute (Click to expand)</span>
+              </summary>
+              <div class="setup-content">
+                <ol class="setup-steps">
+                  <li>Create a new spreadsheet at <a href="https://sheets.new" target="_blank" rel="noopener">sheets.new</a> named <strong>"Office Daily Worksheet"</strong>.</li>
+                  <li>Click <strong>Extensions</strong> ➔ <strong>Apps Script</strong> in the top menu.</li>
+                  <li>Delete any existing code, paste the script below, then click <strong>Save (💾)</strong>:</li>
+                </ol>
+                <div class="code-box">
+                  <pre><code>function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
+  var headers = data[0];
+  var result = [];
+  for (var i = 1; i < data.length; i++) {
+    var row = data[i];
+    var obj = {};
+    for (var j = 0; j < headers.length; j++) obj[headers[j]] = row[j];
+    result.push({
+      id: String(obj["ID"] || ("row-" + i)),
+      date: obj["Date"] ? (obj["Date"] instanceof Date ? Utilities.formatDate(obj["Date"], "GMT", "yyyy-MM-dd") : String(obj["Date"]).substring(0,10)) : "",
+      projectName: String(obj["Project Name"] || "General"),
+      work: String(obj["Work Description"] || ""),
+      status: String(obj["Status"] || "In Progress"),
+      hoursWorked: parseFloat(obj["Hours"] || 0),
+      priority: String(obj["Priority"] || "Medium"),
+      remarks: String(obj["Remarks"] || "")
+    });
+  }
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    var contents = JSON.parse(e.postData.contents);
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
+    }
+    if (contents.action === "sync_all" && Array.isArray(contents.entries)) {
+      sheet.clearContents();
+      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
+      var rows = contents.entries.map(function(item) {
+        return [item.id || "", item.date || "", item.projectName || "", item.work || "", item.status || "In Progress", item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
+      });
+      if (rows.length > 0) sheet.getRange(2, 1, rows.length, 9).setValues(rows);
+    } else if (contents.action === "upsert" && contents.entry) {
+      var item = contents.entry;
+      var data = sheet.getDataRange().getValues();
+      var foundRow = -1;
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(item.id)) { foundRow = i + 1; break; }
+      }
+      var rowValues = [item.id, item.date, item.projectName, item.work, item.status, item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
+      if (foundRow > 0) sheet.getRange(foundRow, 1, 1, 9).setValues([rowValues]);
+      else sheet.appendRow(rowValues);
+    } else if (contents.action === "delete" && contents.id) {
+      var data = sheet.getDataRange().getValues();
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(contents.id)) { sheet.deleteRow(i + 1); break; }
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ success: true })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ error: err.message })).setMimeType(ContentService.MimeType.JSON);
+  }
+}</code></pre>
+                  <button type="button" id="btnCopySheetScript" class="btn btn-xs btn-outline btn-copy">
+                    <i data-lucide="copy"></i> Copy Google Apps Script
+                  </button>
+                </div>
+                <p class="step-footer">4. Click <strong>Deploy ➔ New Deployment</strong> ➔ select type <strong>Web app</strong> ➔ set <em>Who has access</em> to <strong>"Anyone"</strong> ➔ click <strong>Deploy</strong> and paste your Web App URL above!</p>
+              </div>
+            </details>
           </div>
 
           <!-- Instant Cloud Sync Config Section -->

@@ -3065,6 +3065,17 @@ code {
 
           <!-- Storage Provider Options -->
           <div class="storage-mode-selector">
+            <label class="mode-card" data-mode="sheets">
+              <input type="radio" name="storageProvider" value="sheets">
+              <div class="mode-content">
+                <div class="mode-title-row">
+                  <span class="mode-title">ðŸ“Š Google Sheets / Excel Online</span>
+                  <span class="badge-recommended" style="background-color: #10b981;">Common Excel Sheet</span>
+                </div>
+                <p class="mode-desc">Store all data in a real Google Sheet / Excel spreadsheet in Google Drive. Accessible & editable directly on phone & PC!</p>
+              </div>
+            </label>
+
             <label class="mode-card active" data-mode="instant">
               <input type="radio" name="storageProvider" value="instant" checked>
               <div class="mode-content">
@@ -3106,6 +3117,96 @@ code {
                 <p class="mode-desc">Saves strictly inside this browser. (Data won't sync to other devices).</p>
               </div>
             </label>
+          </div>
+
+          <!-- Google Sheets Config Section -->
+          <div id="sheetsConfigSection" class="config-form-section hidden">
+            <h4 class="section-title">Google Sheets / Excel Online Web App URL</h4>
+            <div class="form-group">
+              <label for="googleSheetUrl" class="form-label required">Google Apps Script Web App URL</label>
+              <input type="url" id="googleSheetUrl" class="form-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
+              <span class="form-hint">Every task you save will automatically write rows into your Google Sheet (Common Excel Sheet)!</span>
+            </div>
+
+            <!-- Quick Google Sheets Setup Accordion -->
+            <details class="setup-details" open>
+              <summary class="setup-summary">
+                <i data-lucide="sheet" class="icon-sm"></i>
+                <span>How to connect your Google Sheet in 1 minute (Click to expand)</span>
+              </summary>
+              <div class="setup-content">
+                <ol class="setup-steps">
+                  <li>Create a new spreadsheet at <a href="https://sheets.new" target="_blank" rel="noopener">sheets.new</a> named <strong>"Office Daily Worksheet"</strong>.</li>
+                  <li>Click <strong>Extensions</strong> âž” <strong>Apps Script</strong> in the top menu.</li>
+                  <li>Delete any existing code, paste the script below, then click <strong>Save (ðŸ’¾)</strong>:</li>
+                </ol>
+                <div class="code-box">
+                  <pre><code>function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
+  var headers = data[0];
+  var result = [];
+  for (var i = 1; i < data.length; i++) {
+    var row = data[i];
+    var obj = {};
+    for (var j = 0; j < headers.length; j++) obj[headers[j]] = row[j];
+    result.push({
+      id: String(obj["ID"] || ("row-" + i)),
+      date: obj["Date"] ? (obj["Date"] instanceof Date ? Utilities.formatDate(obj["Date"], "GMT", "yyyy-MM-dd") : String(obj["Date"]).substring(0,10)) : "",
+      projectName: String(obj["Project Name"] || "General"),
+      work: String(obj["Work Description"] || ""),
+      status: String(obj["Status"] || "In Progress"),
+      hoursWorked: parseFloat(obj["Hours"] || 0),
+      priority: String(obj["Priority"] || "Medium"),
+      remarks: String(obj["Remarks"] || "")
+    });
+  }
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    var contents = JSON.parse(e.postData.contents);
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
+    }
+    if (contents.action === "sync_all" && Array.isArray(contents.entries)) {
+      sheet.clearContents();
+      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
+      var rows = contents.entries.map(function(item) {
+        return [item.id || "", item.date || "", item.projectName || "", item.work || "", item.status || "In Progress", item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
+      });
+      if (rows.length > 0) sheet.getRange(2, 1, rows.length, 9).setValues(rows);
+    } else if (contents.action === "upsert" && contents.entry) {
+      var item = contents.entry;
+      var data = sheet.getDataRange().getValues();
+      var foundRow = -1;
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(item.id)) { foundRow = i + 1; break; }
+      }
+      var rowValues = [item.id, item.date, item.projectName, item.work, item.status, item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
+      if (foundRow > 0) sheet.getRange(foundRow, 1, 1, 9).setValues([rowValues]);
+      else sheet.appendRow(rowValues);
+    } else if (contents.action === "delete" && contents.id) {
+      var data = sheet.getDataRange().getValues();
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(contents.id)) { sheet.deleteRow(i + 1); break; }
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ success: true })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ error: err.message })).setMimeType(ContentService.MimeType.JSON);
+  }
+}</code></pre>
+                  <button type="button" id="btnCopySheetScript" class="btn btn-xs btn-outline btn-copy">
+                    <i data-lucide="copy"></i> Copy Google Apps Script
+                  </button>
+                </div>
+                <p class="step-footer">4. Click <strong>Deploy âž” New Deployment</strong> âž” select type <strong>Web app</strong> âž” set <em>Who has access</em> to <strong>"Anyone"</strong> âž” click <strong>Deploy</strong> and paste your Web App URL above!</p>
+              </div>
+            </details>
           </div>
 
           <!-- Instant Cloud Sync Config Section -->
@@ -3564,10 +3665,11 @@ window.SAMPLE_WORKSHEET_DATA = SAMPLE_WORKSHEET_DATA;
 /**
  * Cloud Storage & Multi-Device Sync Adapter (WorkPulse)
  * Supports:
- * 1. Instant Cloud Sync Key (Zero-setup free cloud sync across phone & laptop)
- * 2. Supabase PostgreSQL Cloud Database (Real-time enterprise cloud DB)
- * 3. Custom REST API Server
- * 4. Local Storage with Offline Fallback & Auto-Queue
+ * 1. Google Sheets / Excel Online (Common shared spreadsheet across phone & PC)
+ * 2. Instant Cloud Sync Key (Zero-setup free cloud sync across phone & laptop)
+ * 3. Supabase PostgreSQL Cloud Database (Real-time enterprise cloud DB)
+ * 4. Custom REST API Server
+ * 5. Local Storage with Offline Fallback & Auto-Queue
  */
 
 class CloudStorageService {
@@ -3601,6 +3703,7 @@ class CloudStorageService {
         const parsed = JSON.parse(saved);
         return {
           provider: parsed.provider || 'local',
+          googleSheetUrl: parsed.googleSheetUrl || '',
           syncKey: parsed.syncKey || '',
           supabaseUrl: parsed.supabaseUrl || '',
           supabaseAnonKey: parsed.supabaseAnonKey || '',
@@ -3613,7 +3716,8 @@ class CloudStorageService {
       }
     }
     return {
-      provider: 'local', // 'instant' | 'supabase' | 'rest' | 'local'
+      provider: 'local', // 'sheets' | 'instant' | 'supabase' | 'rest' | 'local'
+      googleSheetUrl: '',
       syncKey: '',
       supabaseUrl: '',
       supabaseAnonKey: '',
@@ -3638,6 +3742,12 @@ class CloudStorageService {
         this.supabaseClient.removeChannel(this.realtimeChannel);
       } catch (e) {}
       this.realtimeChannel = null;
+    }
+
+    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && this.config.googleSheetUrl.trim()) {
+      this.supabaseClient = null;
+      this.setStatus('connected', 'ðŸ“Š Google Sheets / Excel Online Connected');
+      return;
     }
 
     if (this.config.provider === 'instant' && this.config.syncKey && this.config.syncKey.trim()) {
@@ -3711,11 +3821,11 @@ class CloudStorageService {
     if (this.pollingInterval) clearInterval(this.pollingInterval);
     this.pollingInterval = setInterval(async () => {
       if (!navigator.onLine) return;
-      if (this.config.provider === 'instant' || this.config.provider === 'supabase' || this.config.provider === 'rest') {
+      if (this.config.provider === 'sheets' || this.config.provider === 'instant' || this.config.provider === 'supabase' || this.config.provider === 'rest') {
         const prevDataStr = localStorage.getItem(this.storageKey);
         const latest = await this.fetchAll();
         const newDataStr = JSON.stringify(latest);
-        if (prevDataStr !== newDataStr) {
+        if (prevDataStr !== newDataStr && latest && latest.length > 0) {
           this.notifyDataChange();
         }
       }
@@ -3751,20 +3861,22 @@ class CloudStorageService {
 
   // Test Cloud Connection
   async testConnection(testConfig = this.config) {
-    if (testConfig.provider === 'instant') {
+    if (testConfig.provider === 'sheets') {
+      const url = (testConfig.googleSheetUrl || '').trim();
+      if (!url) throw new Error('Please paste your Google Apps Script Web App URL.');
+      try {
+        const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'action=test');
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        return { success: true, message: 'Successfully connected to Google Sheet / Excel Online!' };
+      } catch (err) {
+        throw new Error('Could not connect to Google Sheet Web App: ' + err.message);
+      }
+    } else if (testConfig.provider === 'instant') {
       const key = (testConfig.syncKey || '').trim();
       if (!key) {
         throw new Error('Please enter a Sync Key / Room Name (e.g. office-team-2026).');
       }
-      // Test cloud bin
-      try {
-        const url = `https://api.restful-api.dev/objects?id=${encodeURIComponent(key)}`;
-        const res = await fetch('https://httpbin.org/get');
-        if (!res.ok) throw new Error('Network test failed');
-        return { success: true, message: `Instant Cloud Sync is active with key "${key}". Use this same key on your phone and laptop to share data!` };
-      } catch (err) {
-        throw new Error('Internet connection check failed: ' + err.message);
-      }
+      return { success: true, message: `Instant Cloud Sync is active with key "${key}". Use this same key on your phone and laptop to share data!` };
     } else if (testConfig.provider === 'supabase') {
       const url = (testConfig.supabaseUrl || '').trim();
       const key = (testConfig.supabaseAnonKey || '').trim();
@@ -3810,7 +3922,27 @@ class CloudStorageService {
   async fetchAll() {
     let entries = [];
 
-    // 1. Instant Cloud Sync Mode
+    // 1. Google Sheets / Excel Online Mode
+    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+      try {
+        this.setStatus('syncing', 'Syncing Google Sheet...');
+        const url = this.config.googleSheetUrl.trim();
+        const res = await fetch(url);
+        if (res.ok) {
+          const sheetData = await res.json();
+          if (Array.isArray(sheetData) && sheetData.length > 0) {
+            entries = sheetData;
+            localStorage.setItem(this.storageKey, JSON.stringify(entries));
+            this.setStatus('connected', 'ðŸ“Š Google Sheets Synced');
+            return entries;
+          }
+        }
+      } catch (err) {
+        console.warn('Google Sheets fetch failed, using local cache:', err);
+      }
+    }
+
+    // 2. Instant Cloud Sync Mode
     if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
       try {
         const cloudData = await this.fetchInstantCloud(this.config.syncKey);
@@ -3825,7 +3957,7 @@ class CloudStorageService {
       }
     }
 
-    // 2. Supabase Cloud DB Mode
+    // 3. Supabase Cloud DB Mode
     if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
       try {
         this.setStatus('syncing', 'Syncing cloud...');
@@ -3848,7 +3980,7 @@ class CloudStorageService {
       }
     }
 
-    // 3. REST API Mode
+    // 4. REST API Mode
     if (this.config.provider === 'rest' && this.config.restApiUrl && navigator.onLine) {
       try {
         const headers = { 'Content-Type': 'application/json' };
@@ -3866,7 +3998,7 @@ class CloudStorageService {
       }
     }
 
-    // 4. LocalStorage Fallback
+    // 5. LocalStorage Fallback
     const local = localStorage.getItem(this.storageKey);
     if (local) {
       try {
@@ -3899,7 +4031,23 @@ class CloudStorageService {
     }
     localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
 
-    // 2. Sync to Instant Cloud
+    // 2. Sync to Google Sheets
+    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+      try {
+        this.setStatus('syncing', 'Saving to Google Sheet...');
+        await fetch(this.config.googleSheetUrl.trim(), {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'upsert', entry: entry })
+        });
+        this.setStatus('connected', 'ðŸ“Š Google Sheets Synced');
+      } catch (err) {
+        console.error('Google Sheet save error:', err);
+      }
+    }
+
+    // 3. Sync to Instant Cloud
     if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
       try {
         this.setStatus('syncing', 'Saving to Cloud...');
@@ -3910,7 +4058,7 @@ class CloudStorageService {
       }
     }
 
-    // 3. Sync to Supabase
+    // 4. Sync to Supabase
     if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
       try {
         this.setStatus('syncing', 'Saving to Supabase...');
@@ -3928,7 +4076,7 @@ class CloudStorageService {
       }
     }
 
-    // 4. Sync to REST
+    // 5. Sync to REST
     if (this.config.provider === 'rest' && this.config.restApiUrl && navigator.onLine) {
       try {
         const headers = { 'Content-Type': 'application/json' };
@@ -3952,6 +4100,17 @@ class CloudStorageService {
     let localEntries = this.getLocalEntries().filter(e => e.id !== id);
     localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
 
+    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+      try {
+        await fetch(this.config.googleSheetUrl.trim(), {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', id: id })
+        });
+      } catch (e) {}
+    }
+
     if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
       try {
         await this.pushInstantCloud(this.config.syncKey, localEntries);
@@ -3974,7 +4133,7 @@ class CloudStorageService {
     return true;
   }
 
-  // Batch Import entries
+  // Batch Import / Upload all entries
   async batchImport(entries) {
     let localEntries = this.getLocalEntries();
     
@@ -3988,6 +4147,22 @@ class CloudStorageService {
     });
 
     localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
+
+    // Upload all to Google Sheet
+    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+      try {
+        this.setStatus('syncing', 'Syncing with Google Sheet...');
+        await fetch(this.config.googleSheetUrl.trim(), {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'sync_all', entries: localEntries })
+        });
+        this.setStatus('connected', 'ðŸ“Š Google Sheets Synced');
+      } catch (e) {
+        console.error('Google Sheet batch sync failed:', e);
+      }
+    }
 
     if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
       try {
@@ -6063,6 +6238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       radio.closest('.mode-card').classList.toggle('active', radio.value === config.provider);
     });
 
+    document.getElementById('googleSheetUrl').value = config.googleSheetUrl || '';
     document.getElementById('syncKeyInput').value = config.syncKey || '';
     document.getElementById('supabaseUrl').value = config.supabaseUrl || '';
     document.getElementById('supabaseAnonKey').value = config.supabaseAnonKey || '';
@@ -6080,10 +6256,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function updateCloudConfigUI(provider) {
+    const sheetsSec = document.getElementById('sheetsConfigSection');
     const instantSec = document.getElementById('instantConfigSection');
     const supabaseSec = document.getElementById('supabaseConfigSection');
     const restSec = document.getElementById('restConfigSection');
 
+    if (sheetsSec) sheetsSec.classList.toggle('hidden', provider !== 'sheets');
     if (instantSec) instantSec.classList.toggle('hidden', provider !== 'instant');
     if (supabaseSec) supabaseSec.classList.toggle('hidden', provider !== 'supabase');
     if (restSec) restSec.classList.toggle('hidden', provider !== 'rest');
@@ -6120,6 +6298,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
       const testConfig = {
         provider: activeProvider,
+        googleSheetUrl: document.getElementById('googleSheetUrl').value,
         syncKey: document.getElementById('syncKeyInput').value,
         supabaseUrl: document.getElementById('supabaseUrl').value,
         supabaseAnonKey: document.getElementById('supabaseAnonKey').value,
@@ -6142,6 +6321,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
       const newConfig = {
         provider: activeProvider,
+        googleSheetUrl: document.getElementById('googleSheetUrl').value,
         syncKey: document.getElementById('syncKeyInput').value,
         supabaseUrl: document.getElementById('supabaseUrl').value,
         supabaseAnonKey: document.getElementById('supabaseAnonKey').value,
@@ -6150,16 +6330,85 @@ document.addEventListener('DOMContentLoaded', async () => {
       };
 
       cloud.saveConfig(newConfig);
-      ui.showToast('Cloud sync settings saved!', 'success');
+      ui.showToast('Cloud storage settings saved!', 'success');
       closeCloudModal();
 
       // Immediately sync current records to cloud and reload
-      ui.showToast('Uploading & synchronizing records with cloud...', 'info');
+      ui.showToast('Uploading & synchronizing with common Excel / Google Sheet...', 'info');
       await cloud.batchImport(manager.entries);
       await manager.initialize();
       renderApp();
-      ui.showToast('Cloud database synchronized successfully!', 'success');
+      ui.showToast('Worksheet synchronized successfully!', 'success');
     });
+
+    // Copy Google Apps Script Button
+    const copySheetBtn = document.getElementById('btnCopySheetScript');
+    if (copySheetBtn) {
+      copySheetBtn.addEventListener('click', () => {
+        const script = `function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
+  var headers = data[0];
+  var result = [];
+  for (var i = 1; i < data.length; i++) {
+    var row = data[i];
+    var obj = {};
+    for (var j = 0; j < headers.length; j++) obj[headers[j]] = row[j];
+    result.push({
+      id: String(obj["ID"] || ("row-" + i)),
+      date: obj["Date"] ? (obj["Date"] instanceof Date ? Utilities.formatDate(obj["Date"], "GMT", "yyyy-MM-dd") : String(obj["Date"]).substring(0,10)) : "",
+      projectName: String(obj["Project Name"] || "General"),
+      work: String(obj["Work Description"] || ""),
+      status: String(obj["Status"] || "In Progress"),
+      hoursWorked: parseFloat(obj["Hours"] || 0),
+      priority: String(obj["Priority"] || "Medium"),
+      remarks: String(obj["Remarks"] || "")
+    });
+  }
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    var contents = JSON.parse(e.postData.contents);
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
+    }
+    if (contents.action === "sync_all" && Array.isArray(contents.entries)) {
+      sheet.clearContents();
+      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
+      var rows = contents.entries.map(function(item) {
+        return [item.id || "", item.date || "", item.projectName || "", item.work || "", item.status || "In Progress", item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
+      });
+      if (rows.length > 0) sheet.getRange(2, 1, rows.length, 9).setValues(rows);
+    } else if (contents.action === "upsert" && contents.entry) {
+      var item = contents.entry;
+      var data = sheet.getDataRange().getValues();
+      var foundRow = -1;
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(item.id)) { foundRow = i + 1; break; }
+      }
+      var rowValues = [item.id, item.date, item.projectName, item.work, item.status, item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
+      if (foundRow > 0) sheet.getRange(foundRow, 1, 1, 9).setValues([rowValues]);
+      else sheet.appendRow(rowValues);
+    } else if (contents.action === "delete" && contents.id) {
+      var data = sheet.getDataRange().getValues();
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(contents.id)) { sheet.deleteRow(i + 1); break; }
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ success: true })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ error: err.message })).setMimeType(ContentService.MimeType.JSON);
+  }
+}`;
+        navigator.clipboard.writeText(script).then(() => {
+          ui.showToast('Google Apps Script copied to clipboard!', 'success');
+        });
+      });
+    }
 
     // Copy SQL Script Button
     document.getElementById('btnCopySql').addEventListener('click', () => {

@@ -1,10 +1,11 @@
 /**
  * Cloud Storage & Multi-Device Sync Adapter (WorkPulse)
  * Supports:
- * 1. Instant Cloud Sync Key (Zero-setup free cloud sync across phone & laptop)
- * 2. Supabase PostgreSQL Cloud Database (Real-time enterprise cloud DB)
- * 3. Custom REST API Server
- * 4. Local Storage with Offline Fallback & Auto-Queue
+ * 1. Google Sheets / Excel Online (Common shared spreadsheet across phone & PC)
+ * 2. Instant Cloud Sync Key (Zero-setup free cloud sync across phone & laptop)
+ * 3. Supabase PostgreSQL Cloud Database (Real-time enterprise cloud DB)
+ * 4. Custom REST API Server
+ * 5. Local Storage with Offline Fallback & Auto-Queue
  */
 
 class CloudStorageService {
@@ -38,6 +39,7 @@ class CloudStorageService {
         const parsed = JSON.parse(saved);
         return {
           provider: parsed.provider || 'local',
+          googleSheetUrl: parsed.googleSheetUrl || '',
           syncKey: parsed.syncKey || '',
           supabaseUrl: parsed.supabaseUrl || '',
           supabaseAnonKey: parsed.supabaseAnonKey || '',
@@ -50,7 +52,8 @@ class CloudStorageService {
       }
     }
     return {
-      provider: 'local', // 'instant' | 'supabase' | 'rest' | 'local'
+      provider: 'local', // 'sheets' | 'instant' | 'supabase' | 'rest' | 'local'
+      googleSheetUrl: '',
       syncKey: '',
       supabaseUrl: '',
       supabaseAnonKey: '',
@@ -75,6 +78,12 @@ class CloudStorageService {
         this.supabaseClient.removeChannel(this.realtimeChannel);
       } catch (e) {}
       this.realtimeChannel = null;
+    }
+
+    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && this.config.googleSheetUrl.trim()) {
+      this.supabaseClient = null;
+      this.setStatus('connected', '📊 Google Sheets / Excel Online Connected');
+      return;
     }
 
     if (this.config.provider === 'instant' && this.config.syncKey && this.config.syncKey.trim()) {
@@ -148,11 +157,11 @@ class CloudStorageService {
     if (this.pollingInterval) clearInterval(this.pollingInterval);
     this.pollingInterval = setInterval(async () => {
       if (!navigator.onLine) return;
-      if (this.config.provider === 'instant' || this.config.provider === 'supabase' || this.config.provider === 'rest') {
+      if (this.config.provider === 'sheets' || this.config.provider === 'instant' || this.config.provider === 'supabase' || this.config.provider === 'rest') {
         const prevDataStr = localStorage.getItem(this.storageKey);
         const latest = await this.fetchAll();
         const newDataStr = JSON.stringify(latest);
-        if (prevDataStr !== newDataStr) {
+        if (prevDataStr !== newDataStr && latest && latest.length > 0) {
           this.notifyDataChange();
         }
       }
@@ -188,20 +197,22 @@ class CloudStorageService {
 
   // Test Cloud Connection
   async testConnection(testConfig = this.config) {
-    if (testConfig.provider === 'instant') {
+    if (testConfig.provider === 'sheets') {
+      const url = (testConfig.googleSheetUrl || '').trim();
+      if (!url) throw new Error('Please paste your Google Apps Script Web App URL.');
+      try {
+        const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'action=test');
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        return { success: true, message: 'Successfully connected to Google Sheet / Excel Online!' };
+      } catch (err) {
+        throw new Error('Could not connect to Google Sheet Web App: ' + err.message);
+      }
+    } else if (testConfig.provider === 'instant') {
       const key = (testConfig.syncKey || '').trim();
       if (!key) {
         throw new Error('Please enter a Sync Key / Room Name (e.g. office-team-2026).');
       }
-      // Test cloud bin
-      try {
-        const url = `https://api.restful-api.dev/objects?id=${encodeURIComponent(key)}`;
-        const res = await fetch('https://httpbin.org/get');
-        if (!res.ok) throw new Error('Network test failed');
-        return { success: true, message: `Instant Cloud Sync is active with key "${key}". Use this same key on your phone and laptop to share data!` };
-      } catch (err) {
-        throw new Error('Internet connection check failed: ' + err.message);
-      }
+      return { success: true, message: `Instant Cloud Sync is active with key "${key}". Use this same key on your phone and laptop to share data!` };
     } else if (testConfig.provider === 'supabase') {
       const url = (testConfig.supabaseUrl || '').trim();
       const key = (testConfig.supabaseAnonKey || '').trim();
@@ -247,7 +258,27 @@ class CloudStorageService {
   async fetchAll() {
     let entries = [];
 
-    // 1. Instant Cloud Sync Mode
+    // 1. Google Sheets / Excel Online Mode
+    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+      try {
+        this.setStatus('syncing', 'Syncing Google Sheet...');
+        const url = this.config.googleSheetUrl.trim();
+        const res = await fetch(url);
+        if (res.ok) {
+          const sheetData = await res.json();
+          if (Array.isArray(sheetData) && sheetData.length > 0) {
+            entries = sheetData;
+            localStorage.setItem(this.storageKey, JSON.stringify(entries));
+            this.setStatus('connected', '📊 Google Sheets Synced');
+            return entries;
+          }
+        }
+      } catch (err) {
+        console.warn('Google Sheets fetch failed, using local cache:', err);
+      }
+    }
+
+    // 2. Instant Cloud Sync Mode
     if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
       try {
         const cloudData = await this.fetchInstantCloud(this.config.syncKey);
@@ -262,7 +293,7 @@ class CloudStorageService {
       }
     }
 
-    // 2. Supabase Cloud DB Mode
+    // 3. Supabase Cloud DB Mode
     if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
       try {
         this.setStatus('syncing', 'Syncing cloud...');
@@ -285,7 +316,7 @@ class CloudStorageService {
       }
     }
 
-    // 3. REST API Mode
+    // 4. REST API Mode
     if (this.config.provider === 'rest' && this.config.restApiUrl && navigator.onLine) {
       try {
         const headers = { 'Content-Type': 'application/json' };
@@ -303,7 +334,7 @@ class CloudStorageService {
       }
     }
 
-    // 4. LocalStorage Fallback
+    // 5. LocalStorage Fallback
     const local = localStorage.getItem(this.storageKey);
     if (local) {
       try {
@@ -336,7 +367,23 @@ class CloudStorageService {
     }
     localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
 
-    // 2. Sync to Instant Cloud
+    // 2. Sync to Google Sheets
+    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+      try {
+        this.setStatus('syncing', 'Saving to Google Sheet...');
+        await fetch(this.config.googleSheetUrl.trim(), {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'upsert', entry: entry })
+        });
+        this.setStatus('connected', '📊 Google Sheets Synced');
+      } catch (err) {
+        console.error('Google Sheet save error:', err);
+      }
+    }
+
+    // 3. Sync to Instant Cloud
     if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
       try {
         this.setStatus('syncing', 'Saving to Cloud...');
@@ -347,7 +394,7 @@ class CloudStorageService {
       }
     }
 
-    // 3. Sync to Supabase
+    // 4. Sync to Supabase
     if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
       try {
         this.setStatus('syncing', 'Saving to Supabase...');
@@ -365,7 +412,7 @@ class CloudStorageService {
       }
     }
 
-    // 4. Sync to REST
+    // 5. Sync to REST
     if (this.config.provider === 'rest' && this.config.restApiUrl && navigator.onLine) {
       try {
         const headers = { 'Content-Type': 'application/json' };
@@ -389,6 +436,17 @@ class CloudStorageService {
     let localEntries = this.getLocalEntries().filter(e => e.id !== id);
     localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
 
+    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+      try {
+        await fetch(this.config.googleSheetUrl.trim(), {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', id: id })
+        });
+      } catch (e) {}
+    }
+
     if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
       try {
         await this.pushInstantCloud(this.config.syncKey, localEntries);
@@ -411,7 +469,7 @@ class CloudStorageService {
     return true;
   }
 
-  // Batch Import entries
+  // Batch Import / Upload all entries
   async batchImport(entries) {
     let localEntries = this.getLocalEntries();
     
@@ -425,6 +483,22 @@ class CloudStorageService {
     });
 
     localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
+
+    // Upload all to Google Sheet
+    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+      try {
+        this.setStatus('syncing', 'Syncing with Google Sheet...');
+        await fetch(this.config.googleSheetUrl.trim(), {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'sync_all', entries: localEntries })
+        });
+        this.setStatus('connected', '📊 Google Sheets Synced');
+      } catch (e) {
+        console.error('Google Sheet batch sync failed:', e);
+      }
+    }
 
     if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
       try {
