@@ -3716,8 +3716,8 @@ class CloudStorageService {
       }
     }
     return {
-      provider: 'local', // 'sheets' | 'instant' | 'supabase' | 'rest' | 'local'
-      googleSheetUrl: '',
+      provider: 'sheets', // 'sheets' | 'instant' | 'supabase' | 'rest' | 'local'
+      googleSheetUrl: 'https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec',
       syncKey: '',
       supabaseUrl: '',
       supabaseAnonKey: '',
@@ -3931,7 +3931,16 @@ class CloudStorageService {
         if (res.ok) {
           const sheetData = await res.json();
           if (Array.isArray(sheetData) && sheetData.length > 0) {
-            entries = sheetData;
+            entries = sheetData.map((item, idx) => ({
+              id: item.id || `sheet-row-${idx}`,
+              date: this.normalizeDate(item.date),
+              projectName: item.projectName || 'General',
+              work: item.work || '',
+              status: item.status || 'In Progress',
+              hoursWorked: parseFloat(item.hoursWorked || 0),
+              priority: item.priority || 'Medium',
+              remarks: item.remarks || ''
+            }));
             localStorage.setItem(this.storageKey, JSON.stringify(entries));
             this.setStatus('connected', 'ðŸ“Š Google Sheets Synced');
             return entries;
@@ -4274,7 +4283,7 @@ class CloudStorageService {
   mapFromSupabaseRow(row) {
     return {
       id: row.id,
-      date: row.date,
+      date: this.normalizeDate(row.date),
       projectName: row.project_name || row.projectName || 'General',
       work: row.work || '',
       status: row.status || 'In Progress',
@@ -4284,6 +4293,21 @@ class CloudStorageService {
       createdAt: row.created_at || row.createdAt,
       updatedAt: row.updated_at || row.updatedAt
     };
+  }
+
+  normalizeDate(d) {
+    if (!d) return '';
+    if (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.trim())) return d.trim();
+    try {
+      const dt = new Date(d);
+      if (!isNaN(dt.getTime())) {
+        const yr = dt.getFullYear();
+        const mo = String(dt.getMonth() + 1).padStart(2, '0');
+        const da = String(dt.getDate()).padStart(2, '0');
+        return `${yr}-${mo}-${da}`;
+      }
+    } catch (e) {}
+    return String(d).substring(0, 10);
   }
 }
 
