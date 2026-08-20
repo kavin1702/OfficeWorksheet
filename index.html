@@ -67,6 +67,12 @@
         </button>
       </div>
 
+      <!-- Auth Alert Message Box (Hidden by default) -->
+      <div id="authPortalAlert" class="auth-alert-box hidden">
+        <i data-lucide="alert-circle" class="icon-xs"></i>
+        <span id="authPortalAlertText"></span>
+      </div>
+
       <!-- Tab 1: Sign In (Email & Password) -->
       <div id="portalPaneSignIn" class="auth-tab-pane">
         <form id="portalSignInForm" class="portal-form">
@@ -74,7 +80,7 @@
             <label for="portalSignInEmail" class="form-label required">Email Address</label>
             <div class="input-with-icon">
               <i data-lucide="mail" class="input-icon"></i>
-              <input type="email" id="portalSignInEmail" class="form-input" placeholder="name@company.com" required autocomplete="email">
+              <input type="email" id="portalSignInEmail" class="form-input" placeholder="e.g. kavin@office.com or your email" required autocomplete="email">
             </div>
           </div>
 
@@ -92,6 +98,11 @@
           <button type="submit" class="btn btn-primary btn-block btn-glow">
             <i data-lucide="log-in"></i>
             <span>Sign In to My Worksheet</span>
+          </button>
+
+          <button type="button" id="btnQuickDemoLogin" class="btn btn-outline btn-block" style="margin-top: 0.5rem; border-color: rgba(59,130,246,0.4); color: #93c5fd;">
+            <i data-lucide="zap" class="icon-xs text-amber"></i>
+            <span>⚡ Instant Sign In as Kavin</span>
           </button>
 
           <div class="auth-switch-link">

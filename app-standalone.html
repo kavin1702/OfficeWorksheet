@@ -2701,6 +2701,33 @@ code {
   color: #93c5fd;
 }
 
+.auth-alert-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  margin-bottom: 1rem;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  animation: shakeAlert 0.3s ease;
+}
+
+.auth-alert-box.success {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+}
+
+@keyframes shakeAlert {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+
 
 
 
@@ -3122,6 +3149,12 @@ code {
         </button>
       </div>
 
+      <!-- Auth Alert Message Box (Hidden by default) -->
+      <div id="authPortalAlert" class="auth-alert-box hidden">
+        <i data-lucide="alert-circle" class="icon-xs"></i>
+        <span id="authPortalAlertText"></span>
+      </div>
+
       <!-- Tab 1: Sign In (Email & Password) -->
       <div id="portalPaneSignIn" class="auth-tab-pane">
         <form id="portalSignInForm" class="portal-form">
@@ -3129,7 +3162,7 @@ code {
             <label for="portalSignInEmail" class="form-label required">Email Address</label>
             <div class="input-with-icon">
               <i data-lucide="mail" class="input-icon"></i>
-              <input type="email" id="portalSignInEmail" class="form-input" placeholder="name@company.com" required autocomplete="email">
+              <input type="email" id="portalSignInEmail" class="form-input" placeholder="e.g. kavin@office.com or your email" required autocomplete="email">
             </div>
           </div>
 
@@ -3147,6 +3180,11 @@ code {
           <button type="submit" class="btn btn-primary btn-block btn-glow">
             <i data-lucide="log-in"></i>
             <span>Sign In to My Worksheet</span>
+          </button>
+
+          <button type="button" id="btnQuickDemoLogin" class="btn btn-outline btn-block" style="margin-top: 0.5rem; border-color: rgba(59,130,246,0.4); color: #93c5fd;">
+            <i data-lucide="zap" class="icon-xs text-amber"></i>
+            <span>âš¡ Instant Sign In as Kavin</span>
           </button>
 
           <div class="auth-switch-link">
@@ -4260,12 +4298,12 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
   <script>
 /**
  * Auth & Multi-User Manager (WorkPulse)
- * Secure Email & Password Authentication, User Isolation, and Session Management.
+ * Frictionless Email & Password Authentication, Auto-Registration, and Isolated Workspaces.
  */
 
 class AuthManager {
   constructor() {
-    this.usersKey = 'workpulse_users_list_v2';
+    this.usersKey = 'workpulse_users_list_v3';
     this.currentUserIdKey = 'workpulse_active_user_id';
     this.sessionKey = 'workpulse_auth_session_active';
     this.listeners = [];
@@ -4273,7 +4311,7 @@ class AuthManager {
     this.initUsers();
   }
 
-  // Initialize with default admin profile if empty
+  // Initialize with default admin profiles
   initUsers() {
     let users = this.getAllUsers();
     if (!users || users.length === 0) {
@@ -4301,7 +4339,7 @@ class AuthManager {
     return session === 'true' && !!activeUser;
   }
 
-  // Login by Email & Password
+  // Login by Email & Password with Smart Auto-Registration
   login(email, password) {
     if (!email || !email.trim()) {
       throw new Error('Please enter your email address.');
@@ -4314,17 +4352,23 @@ class AuthManager {
     const cleanPass = password.trim();
     const users = this.getAllUsers();
 
-    const found = users.find(u => 
-      u.email.toLowerCase() === cleanEmail || 
+    let found = users.find(u => 
+      (u.email && u.email.toLowerCase() === cleanEmail) || 
       (u.username && u.username.toLowerCase() === cleanEmail)
     );
 
+    // If account does not exist yet, seamlessly auto-create it so user is never blocked!
     if (!found) {
-      throw new Error('No account found with this email address. Please click Create Account.');
+      let displayName = cleanEmail.split('@')[0].replace(/[._-]/g, ' ');
+      displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+      if (!displayName) displayName = 'User';
+
+      return this.registerUser(displayName, cleanEmail, cleanPass, 'Team Member');
     }
 
+    // Verify Password if existing
     if (found.password && found.password !== cleanPass) {
-      throw new Error('Incorrect password. Please check and try again.');
+      throw new Error('Incorrect password. Please verify your password or use Create Account.');
     }
 
     localStorage.setItem(this.currentUserIdKey, found.id);
@@ -4361,17 +4405,23 @@ class AuthManager {
   registerUser(name, email, password, role = 'Team Member', color = null) {
     if (!name || !name.trim()) throw new Error('Please enter your full name.');
     if (!email || !email.trim()) throw new Error('Please enter your email address.');
-    if (!password || password.length < 4) throw new Error('Password must be at least 4 characters long.');
+    if (!password || password.length < 3) throw new Error('Password must be at least 3 characters long.');
 
     const cleanEmail = email.trim().toLowerCase();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(cleanEmail)) {
-      throw new Error('Please enter a valid email address (e.g. name@example.com).');
-    }
-
     const users = this.getAllUsers();
-    if (users.some(u => u.email.toLowerCase() === cleanEmail)) {
-      throw new Error(`An account with email "${cleanEmail}" already exists. Please Sign In.`);
+
+    // If already exists, update and log in
+    const existingIndex = users.findIndex(u => u.email.toLowerCase() === cleanEmail);
+    if (existingIndex !== -1) {
+      users[existingIndex].password = password.trim();
+      users[existingIndex].name = name.trim();
+      if (role) users[existingIndex].role = role.trim();
+      if (color) users[existingIndex].color = color;
+      localStorage.setItem(this.usersKey, JSON.stringify(users));
+      localStorage.setItem(this.currentUserIdKey, users[existingIndex].id);
+      localStorage.setItem(this.sessionKey, 'true');
+      this.notifyListeners({ event: 'login', user: users[existingIndex] });
+      return users[existingIndex];
     }
 
     const username = cleanEmail.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_');
@@ -7854,7 +7904,23 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     const tabContentNewUser = document.getElementById('tabContentNewUser');
     const newUserForm = document.getElementById('newUserForm');
 
+    const btnQuickDemoLogin = document.getElementById('btnQuickDemoLogin');
+    const authPortalAlert = document.getElementById('authPortalAlert');
+    const authPortalAlertText = document.getElementById('authPortalAlertText');
+
+    function showAuthAlert(msg, type = 'error') {
+      if (!authPortalAlert || !authPortalAlertText) return;
+      authPortalAlertText.textContent = msg;
+      authPortalAlert.className = `auth-alert-box ${type === 'success' ? 'success' : ''}`;
+      authPortalAlert.classList.remove('hidden');
+    }
+
+    function hideAuthAlert() {
+      if (authPortalAlert) authPortalAlert.classList.add('hidden');
+    }
+
     function switchToSignInTab() {
+      hideAuthAlert();
       if (portalTabBtnSignIn) portalTabBtnSignIn.classList.add('active');
       if (portalTabBtnSignUp) portalTabBtnSignUp.classList.remove('active');
       if (portalPaneSignIn) portalPaneSignIn.classList.remove('hidden');
@@ -7864,6 +7930,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     }
 
     function switchToSignUpTab() {
+      hideAuthAlert();
       if (portalTabBtnSignUp) portalTabBtnSignUp.classList.add('active');
       if (portalTabBtnSignIn) portalTabBtnSignIn.classList.remove('active');
       if (portalPaneSignUp) portalPaneSignUp.classList.remove('hidden');
@@ -7877,6 +7944,19 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     if (portalTabBtnSignUp) portalTabBtnSignUp.addEventListener('click', switchToSignUpTab);
     if (btnSwitchToSignUp) btnSwitchToSignUp.addEventListener('click', switchToSignUpTab);
     if (btnSwitchToSignIn) btnSwitchToSignIn.addEventListener('click', switchToSignInTab);
+
+    // Quick 1-Click Demo Login
+    if (btnQuickDemoLogin) {
+      btnQuickDemoLogin.addEventListener('click', () => {
+        try {
+          hideAuthAlert();
+          const logged = auth.login('kavin@office.com', 'password123');
+          ui.showToast(`Logged in as ${logged.name}!`, 'success');
+        } catch (err) {
+          showAuthAlert(err.message);
+        }
+      });
+    }
 
     // 2. Password Visibility Toggle Buttons
     document.querySelectorAll('.btn-toggle-pwd').forEach(btn => {
@@ -7898,6 +7978,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     if (portalSignInForm) {
       portalSignInForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        hideAuthAlert();
         const email = document.getElementById('portalSignInEmail').value;
         const password = document.getElementById('portalSignInPassword').value;
         try {
@@ -7905,6 +7986,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
           ui.showToast(`Welcome back, ${logged.name}!`, 'success');
           portalSignInForm.reset();
         } catch (err) {
+          showAuthAlert(err.message);
           ui.showToast(err.message, 'error');
         }
       });
@@ -7914,6 +7996,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     if (portalSignUpForm) {
       portalSignUpForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        hideAuthAlert();
         const name = document.getElementById('portalSignUpName').value;
         const email = document.getElementById('portalSignUpEmail').value;
         const password = document.getElementById('portalSignUpPassword').value;
@@ -7926,6 +8009,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
           ui.showToast(`Account created! Welcome, ${newUser.name}.`, 'success');
           portalSignUpForm.reset();
         } catch (err) {
+          showAuthAlert(err.message);
           ui.showToast(err.message, 'error');
         }
       });

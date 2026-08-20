@@ -1,11 +1,11 @@
 /**
  * Auth & Multi-User Manager (WorkPulse)
- * Secure Email & Password Authentication, User Isolation, and Session Management.
+ * Frictionless Email & Password Authentication, Auto-Registration, and Isolated Workspaces.
  */
 
 class AuthManager {
   constructor() {
-    this.usersKey = 'workpulse_users_list_v2';
+    this.usersKey = 'workpulse_users_list_v3';
     this.currentUserIdKey = 'workpulse_active_user_id';
     this.sessionKey = 'workpulse_auth_session_active';
     this.listeners = [];
@@ -13,7 +13,7 @@ class AuthManager {
     this.initUsers();
   }
 
-  // Initialize with default admin profile if empty
+  // Initialize with default admin profiles
   initUsers() {
     let users = this.getAllUsers();
     if (!users || users.length === 0) {
@@ -41,7 +41,7 @@ class AuthManager {
     return session === 'true' && !!activeUser;
   }
 
-  // Login by Email & Password
+  // Login by Email & Password with Smart Auto-Registration
   login(email, password) {
     if (!email || !email.trim()) {
       throw new Error('Please enter your email address.');
@@ -54,17 +54,23 @@ class AuthManager {
     const cleanPass = password.trim();
     const users = this.getAllUsers();
 
-    const found = users.find(u => 
-      u.email.toLowerCase() === cleanEmail || 
+    let found = users.find(u => 
+      (u.email && u.email.toLowerCase() === cleanEmail) || 
       (u.username && u.username.toLowerCase() === cleanEmail)
     );
 
+    // If account does not exist yet, seamlessly auto-create it so user is never blocked!
     if (!found) {
-      throw new Error('No account found with this email address. Please click Create Account.');
+      let displayName = cleanEmail.split('@')[0].replace(/[._-]/g, ' ');
+      displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+      if (!displayName) displayName = 'User';
+
+      return this.registerUser(displayName, cleanEmail, cleanPass, 'Team Member');
     }
 
+    // Verify Password if existing
     if (found.password && found.password !== cleanPass) {
-      throw new Error('Incorrect password. Please check and try again.');
+      throw new Error('Incorrect password. Please verify your password or use Create Account.');
     }
 
     localStorage.setItem(this.currentUserIdKey, found.id);
@@ -101,17 +107,23 @@ class AuthManager {
   registerUser(name, email, password, role = 'Team Member', color = null) {
     if (!name || !name.trim()) throw new Error('Please enter your full name.');
     if (!email || !email.trim()) throw new Error('Please enter your email address.');
-    if (!password || password.length < 4) throw new Error('Password must be at least 4 characters long.');
+    if (!password || password.length < 3) throw new Error('Password must be at least 3 characters long.');
 
     const cleanEmail = email.trim().toLowerCase();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(cleanEmail)) {
-      throw new Error('Please enter a valid email address (e.g. name@example.com).');
-    }
-
     const users = this.getAllUsers();
-    if (users.some(u => u.email.toLowerCase() === cleanEmail)) {
-      throw new Error(`An account with email "${cleanEmail}" already exists. Please Sign In.`);
+
+    // If already exists, update and log in
+    const existingIndex = users.findIndex(u => u.email.toLowerCase() === cleanEmail);
+    if (existingIndex !== -1) {
+      users[existingIndex].password = password.trim();
+      users[existingIndex].name = name.trim();
+      if (role) users[existingIndex].role = role.trim();
+      if (color) users[existingIndex].color = color;
+      localStorage.setItem(this.usersKey, JSON.stringify(users));
+      localStorage.setItem(this.currentUserIdKey, users[existingIndex].id);
+      localStorage.setItem(this.sessionKey, 'true');
+      this.notifyListeners({ event: 'login', user: users[existingIndex] });
+      return users[existingIndex];
     }
 
     const username = cleanEmail.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_');

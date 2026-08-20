@@ -1054,7 +1054,23 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     const tabContentNewUser = document.getElementById('tabContentNewUser');
     const newUserForm = document.getElementById('newUserForm');
 
+    const btnQuickDemoLogin = document.getElementById('btnQuickDemoLogin');
+    const authPortalAlert = document.getElementById('authPortalAlert');
+    const authPortalAlertText = document.getElementById('authPortalAlertText');
+
+    function showAuthAlert(msg, type = 'error') {
+      if (!authPortalAlert || !authPortalAlertText) return;
+      authPortalAlertText.textContent = msg;
+      authPortalAlert.className = `auth-alert-box ${type === 'success' ? 'success' : ''}`;
+      authPortalAlert.classList.remove('hidden');
+    }
+
+    function hideAuthAlert() {
+      if (authPortalAlert) authPortalAlert.classList.add('hidden');
+    }
+
     function switchToSignInTab() {
+      hideAuthAlert();
       if (portalTabBtnSignIn) portalTabBtnSignIn.classList.add('active');
       if (portalTabBtnSignUp) portalTabBtnSignUp.classList.remove('active');
       if (portalPaneSignIn) portalPaneSignIn.classList.remove('hidden');
@@ -1064,6 +1080,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     }
 
     function switchToSignUpTab() {
+      hideAuthAlert();
       if (portalTabBtnSignUp) portalTabBtnSignUp.classList.add('active');
       if (portalTabBtnSignIn) portalTabBtnSignIn.classList.remove('active');
       if (portalPaneSignUp) portalPaneSignUp.classList.remove('hidden');
@@ -1077,6 +1094,19 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     if (portalTabBtnSignUp) portalTabBtnSignUp.addEventListener('click', switchToSignUpTab);
     if (btnSwitchToSignUp) btnSwitchToSignUp.addEventListener('click', switchToSignUpTab);
     if (btnSwitchToSignIn) btnSwitchToSignIn.addEventListener('click', switchToSignInTab);
+
+    // Quick 1-Click Demo Login
+    if (btnQuickDemoLogin) {
+      btnQuickDemoLogin.addEventListener('click', () => {
+        try {
+          hideAuthAlert();
+          const logged = auth.login('kavin@office.com', 'password123');
+          ui.showToast(`Logged in as ${logged.name}!`, 'success');
+        } catch (err) {
+          showAuthAlert(err.message);
+        }
+      });
+    }
 
     // 2. Password Visibility Toggle Buttons
     document.querySelectorAll('.btn-toggle-pwd').forEach(btn => {
@@ -1098,6 +1128,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     if (portalSignInForm) {
       portalSignInForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        hideAuthAlert();
         const email = document.getElementById('portalSignInEmail').value;
         const password = document.getElementById('portalSignInPassword').value;
         try {
@@ -1105,6 +1136,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
           ui.showToast(`Welcome back, ${logged.name}!`, 'success');
           portalSignInForm.reset();
         } catch (err) {
+          showAuthAlert(err.message);
           ui.showToast(err.message, 'error');
         }
       });
@@ -1114,6 +1146,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     if (portalSignUpForm) {
       portalSignUpForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        hideAuthAlert();
         const name = document.getElementById('portalSignUpName').value;
         const email = document.getElementById('portalSignUpEmail').value;
         const password = document.getElementById('portalSignUpPassword').value;
@@ -1126,6 +1159,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
           ui.showToast(`Account created! Welcome, ${newUser.name}.`, 'success');
           portalSignUpForm.reset();
         } catch (err) {
+          showAuthAlert(err.message);
           ui.showToast(err.message, 'error');
         }
       });
