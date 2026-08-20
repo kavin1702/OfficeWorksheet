@@ -2656,6 +2656,52 @@ code {
   gap: 0.3rem;
 }
 
+.btn-toggle-pwd {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+
+.btn-toggle-pwd:hover {
+  color: #ffffff;
+}
+
+.auth-switch-link {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #60a5fa;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  transition: color var(--transition-fast);
+}
+
+.link-btn:hover {
+  color: #93c5fd;
+}
+
+
 
 
 /* =========================================================
@@ -3076,49 +3122,67 @@ code {
         </button>
       </div>
 
-      <!-- Tab 1: Sign In -->
+      <!-- Tab 1: Sign In (Email & Password) -->
       <div id="portalPaneSignIn" class="auth-tab-pane">
-        <div class="portal-section-label">Select profile to enter:</div>
-        <div id="portalUsersList" class="portal-users-grid">
-          <!-- Dynamically populated profile cards -->
-        </div>
-
-        <div class="auth-or-divider">
-          <span>OR SIGN IN BY USERNAME</span>
-        </div>
-
         <form id="portalSignInForm" class="portal-form">
           <div class="form-group">
-            <label for="portalSignInUsername" class="form-label">Username</label>
+            <label for="portalSignInEmail" class="form-label required">Email Address</label>
             <div class="input-with-icon">
-              <i data-lucide="user" class="input-icon"></i>
-              <input type="text" id="portalSignInUsername" class="form-input" placeholder="e.g. kavin, rahul" required autocomplete="username">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="portalSignInEmail" class="form-input" placeholder="name@company.com" required autocomplete="email">
             </div>
           </div>
+
+          <div class="form-group">
+            <label for="portalSignInPassword" class="form-label required">Password</label>
+            <div class="input-with-icon">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="portalSignInPassword" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+              <button type="button" class="btn-toggle-pwd" data-target="portalSignInPassword" title="Toggle password visibility">
+                <i data-lucide="eye" class="icon-xs"></i>
+              </button>
+            </div>
+          </div>
+
           <button type="submit" class="btn btn-primary btn-block btn-glow">
-            <i data-lucide="arrow-right"></i>
-            <span>Sign In to Worksheet</span>
+            <i data-lucide="log-in"></i>
+            <span>Sign In to My Worksheet</span>
           </button>
+
+          <div class="auth-switch-link">
+            <span>Don't have an account?</span>
+            <button type="button" id="btnSwitchToSignUp" class="link-btn">Create one now</button>
+          </div>
         </form>
       </div>
 
-      <!-- Tab 2: Create Account -->
+      <!-- Tab 2: Create Account (Email & Password) -->
       <div id="portalPaneSignUp" class="auth-tab-pane hidden">
-        <p class="portal-section-label">Create a personal profile to start your worksheet:</p>
         <form id="portalSignUpForm" class="portal-form">
           <div class="form-group">
-            <label for="portalSignUpName" class="form-label required">Display Name</label>
+            <label for="portalSignUpName" class="form-label required">Full Name</label>
             <div class="input-with-icon">
-              <i data-lucide="user-check" class="input-icon"></i>
-              <input type="text" id="portalSignUpName" class="form-input" placeholder="e.g. Rahul Sharma, Priya" required>
+              <i data-lucide="user" class="input-icon"></i>
+              <input type="text" id="portalSignUpName" class="form-input" placeholder="e.g. Kavin M, Rahul" required>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="portalSignUpUsername" class="form-label required">Username (Unique)</label>
+            <label for="portalSignUpEmail" class="form-label required">Email Address</label>
             <div class="input-with-icon">
-              <i data-lucide="at-sign" class="input-icon"></i>
-              <input type="text" id="portalSignUpUsername" class="form-input" placeholder="e.g. rahul, priya_dev" required autocomplete="username">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="portalSignUpEmail" class="form-input" placeholder="name@company.com" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="portalSignUpPassword" class="form-label required">Password</label>
+            <div class="input-with-icon">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="portalSignUpPassword" class="form-input" placeholder="Create password (min 4 characters)" required autocomplete="new-password">
+              <button type="button" class="btn-toggle-pwd" data-target="portalSignUpPassword" title="Toggle password visibility">
+                <i data-lucide="eye" class="icon-xs"></i>
+              </button>
             </div>
           </div>
 
@@ -3131,7 +3195,7 @@ code {
           </div>
 
           <div class="form-group">
-            <label class="form-label">Profile Avatar Color</label>
+            <label class="form-label">Avatar Color</label>
             <div class="color-picker-row">
               <label class="color-circle" style="background-color: #3b82f6;"><input type="radio" name="portalUserColor" value="#3b82f6" checked></label>
               <label class="color-circle" style="background-color: #10b981;"><input type="radio" name="portalUserColor" value="#10b981"></label>
@@ -3144,8 +3208,13 @@ code {
 
           <button type="submit" class="btn btn-primary btn-block btn-glow">
             <i data-lucide="user-plus"></i>
-            <span>Create Account & Enter</span>
+            <span>Create Account & Sign In</span>
           </button>
+
+          <div class="auth-switch-link">
+            <span>Already have an account?</span>
+            <button type="button" id="btnSwitchToSignIn" class="link-btn">Sign In instead</button>
+          </div>
         </form>
       </div>
 
@@ -4191,12 +4260,12 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
   <script>
 /**
  * Auth & Multi-User Manager (WorkPulse)
- * Handles user profiles, authentication session state, registration, login, logout, and separate data workspaces.
+ * Secure Email & Password Authentication, User Isolation, and Session Management.
  */
 
 class AuthManager {
   constructor() {
-    this.usersKey = 'workpulse_users_list';
+    this.usersKey = 'workpulse_users_list_v2';
     this.currentUserIdKey = 'workpulse_active_user_id';
     this.sessionKey = 'workpulse_auth_session_active';
     this.listeners = [];
@@ -4204,15 +4273,16 @@ class AuthManager {
     this.initUsers();
   }
 
-  // Initialize with default profiles
+  // Initialize with default admin profile if empty
   initUsers() {
     let users = this.getAllUsers();
     if (!users || users.length === 0) {
       const defaultUser = {
         id: 'user_kavin',
-        username: 'kavin',
-        name: 'Kavin',
         email: 'kavin@office.com',
+        password: 'password123',
+        name: 'Kavin',
+        username: 'kavin',
         role: 'Developer',
         color: '#3b82f6',
         avatar: 'K',
@@ -4224,24 +4294,37 @@ class AuthManager {
     }
   }
 
-  // Check if a session is currently active
+  // Check if session is logged in
   isLoggedIn() {
     const session = localStorage.getItem(this.sessionKey);
     const activeUser = this.getCurrentUser();
     return session === 'true' && !!activeUser;
   }
 
-  // Login a user
-  login(usernameOrId) {
-    if (!usernameOrId || !usernameOrId.trim()) {
-      throw new Error('Please enter a username or select an account.');
+  // Login by Email & Password
+  login(email, password) {
+    if (!email || !email.trim()) {
+      throw new Error('Please enter your email address.');
     }
-    const clean = usernameOrId.trim().toLowerCase();
+    if (!password || !password.trim()) {
+      throw new Error('Please enter your password.');
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPass = password.trim();
     const users = this.getAllUsers();
-    const found = users.find(u => u.id === clean || u.username.toLowerCase() === clean);
+
+    const found = users.find(u => 
+      u.email.toLowerCase() === cleanEmail || 
+      (u.username && u.username.toLowerCase() === cleanEmail)
+    );
 
     if (!found) {
-      throw new Error(`Account "${usernameOrId}" not found. Please create an account.`);
+      throw new Error('No account found with this email address. Please click Create Account.');
+    }
+
+    if (found.password && found.password !== cleanPass) {
+      throw new Error('Incorrect password. Please check and try again.');
     }
 
     localStorage.setItem(this.currentUserIdKey, found.id);
@@ -4250,13 +4333,13 @@ class AuthManager {
     return found;
   }
 
-  // Logout current user
+  // Logout
   logout() {
     localStorage.setItem(this.sessionKey, 'false');
     this.notifyListeners({ event: 'logout', user: null });
   }
 
-  // Get all registered users
+  // Get all users
   getAllUsers() {
     try {
       const data = localStorage.getItem(this.usersKey);
@@ -4266,7 +4349,7 @@ class AuthManager {
     }
   }
 
-  // Get active user
+  // Get current active user
   getCurrentUser() {
     const users = this.getAllUsers();
     const activeId = localStorage.getItem(this.currentUserIdKey);
@@ -4274,39 +4357,33 @@ class AuthManager {
     return found || users[0] || null;
   }
 
-  // Switch active user
-  switchUser(userId) {
-    const users = this.getAllUsers();
-    const user = users.find(u => u.id === userId || u.username.toLowerCase() === userId.toLowerCase());
-    if (user) {
-      localStorage.setItem(this.currentUserIdKey, user.id);
-      localStorage.setItem(this.sessionKey, 'true');
-      this.notifyListeners({ event: 'switch', user });
-      return user;
-    }
-    throw new Error('User not found.');
-  }
+  // Register New User with Email & Password
+  registerUser(name, email, password, role = 'Team Member', color = null) {
+    if (!name || !name.trim()) throw new Error('Please enter your full name.');
+    if (!email || !email.trim()) throw new Error('Please enter your email address.');
+    if (!password || password.length < 4) throw new Error('Password must be at least 4 characters long.');
 
-  // Register / Add new friend or user profile
-  registerUser(name, username, role = 'Team Member', email = '', color = null) {
-    if (!name || !name.trim()) throw new Error('Please enter your display name.');
-    if (!username || !username.trim()) throw new Error('Please choose a username.');
-
-    const cleanUsername = username.trim().toLowerCase().replace(/\s+/g, '_');
-    const users = this.getAllUsers();
-
-    if (users.some(u => u.username.toLowerCase() === cleanUsername)) {
-      throw new Error(`Username "${cleanUsername}" is already taken. Please choose another.`);
+    const cleanEmail = email.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      throw new Error('Please enter a valid email address (e.g. name@example.com).');
     }
 
+    const users = this.getAllUsers();
+    if (users.some(u => u.email.toLowerCase() === cleanEmail)) {
+      throw new Error(`An account with email "${cleanEmail}" already exists. Please Sign In.`);
+    }
+
+    const username = cleanEmail.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_');
     const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#f97316'];
     const chosenColor = color || colors[users.length % colors.length];
 
     const newUser = {
-      id: 'user_' + cleanUsername + '_' + Math.random().toString(36).substring(2, 6),
-      username: cleanUsername,
+      id: 'user_' + username + '_' + Math.random().toString(36).substring(2, 7),
+      email: cleanEmail,
+      password: password.trim(),
       name: name.trim(),
-      email: email ? email.trim() : `${cleanUsername}@office.com`,
+      username: username,
       role: role.trim() || 'Team Member',
       color: chosenColor,
       avatar: name.trim().charAt(0).toUpperCase(),
@@ -4316,7 +4393,7 @@ class AuthManager {
     users.push(newUser);
     localStorage.setItem(this.usersKey, JSON.stringify(users));
 
-    // Automatically login and switch to new user
+    // Automatically set as active user & log in
     localStorage.setItem(this.currentUserIdKey, newUser.id);
     localStorage.setItem(this.sessionKey, 'true');
     this.notifyListeners({ event: 'register', user: newUser });
@@ -4324,24 +4401,19 @@ class AuthManager {
     return newUser;
   }
 
-  // Delete user profile
-  deleteUser(userId) {
-    let users = this.getAllUsers();
-    if (users.length <= 1) {
-      throw new Error('Cannot delete the only user profile.');
+  // Switch user
+  switchUser(userId) {
+    const users = this.getAllUsers();
+    const user = users.find(u => u.id === userId || u.email.toLowerCase() === userId.toLowerCase());
+    if (user) {
+      localStorage.setItem(this.currentUserIdKey, user.id);
+      localStorage.setItem(this.sessionKey, 'true');
+      this.notifyListeners({ event: 'switch', user });
+      return user;
     }
-
-    users = users.filter(u => u.id !== userId);
-    localStorage.setItem(this.usersKey, JSON.stringify(users));
-
-    if (localStorage.getItem(this.currentUserIdKey) === userId) {
-      localStorage.setItem(this.currentUserIdKey, users[0].id);
-      this.notifyListeners({ event: 'switch', user: users[0] });
-    }
-    return true;
+    throw new Error('User account not found.');
   }
 
-  // Listen to auth events
   onUserChange(callback) {
     this.listeners.push(callback);
   }
@@ -7764,6 +7836,8 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     const portalPaneSignUp = document.getElementById('portalPaneSignUp');
     const portalSignInForm = document.getElementById('portalSignInForm');
     const portalSignUpForm = document.getElementById('portalSignUpForm');
+    const btnSwitchToSignUp = document.getElementById('btnSwitchToSignUp');
+    const btnSwitchToSignIn = document.getElementById('btnSwitchToSignIn');
 
     // Inside App Elements
     const btnUserProfile = document.getElementById('btnUserProfile');
@@ -7780,31 +7854,54 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     const tabContentNewUser = document.getElementById('tabContentNewUser');
     const newUserForm = document.getElementById('newUserForm');
 
-    // 1. Landing Portal Tabs
-    if (portalTabBtnSignIn && portalTabBtnSignUp) {
-      portalTabBtnSignIn.addEventListener('click', () => {
-        portalTabBtnSignIn.classList.add('active');
-        portalTabBtnSignUp.classList.remove('active');
-        portalPaneSignIn.classList.remove('hidden');
-        portalPaneSignUp.classList.add('hidden');
-        renderPortalUsers();
-      });
-
-      portalTabBtnSignUp.addEventListener('click', () => {
-        portalTabBtnSignUp.classList.add('active');
-        portalTabBtnSignIn.classList.remove('active');
-        portalPaneSignUp.classList.remove('hidden');
-        portalPaneSignIn.classList.add('hidden');
-      });
+    function switchToSignInTab() {
+      if (portalTabBtnSignIn) portalTabBtnSignIn.classList.add('active');
+      if (portalTabBtnSignUp) portalTabBtnSignUp.classList.remove('active');
+      if (portalPaneSignIn) portalPaneSignIn.classList.remove('hidden');
+      if (portalPaneSignUp) portalPaneSignUp.classList.add('hidden');
+      const emailInput = document.getElementById('portalSignInEmail');
+      if (emailInput) emailInput.focus();
     }
 
-    // 2. Portal Sign In Form
+    function switchToSignUpTab() {
+      if (portalTabBtnSignUp) portalTabBtnSignUp.classList.add('active');
+      if (portalTabBtnSignIn) portalTabBtnSignIn.classList.remove('active');
+      if (portalPaneSignUp) portalPaneSignUp.classList.remove('hidden');
+      if (portalPaneSignIn) portalPaneSignIn.classList.add('hidden');
+      const nameInput = document.getElementById('portalSignUpName');
+      if (nameInput) nameInput.focus();
+    }
+
+    // 1. Landing Portal Tabs
+    if (portalTabBtnSignIn) portalTabBtnSignIn.addEventListener('click', switchToSignInTab);
+    if (portalTabBtnSignUp) portalTabBtnSignUp.addEventListener('click', switchToSignUpTab);
+    if (btnSwitchToSignUp) btnSwitchToSignUp.addEventListener('click', switchToSignUpTab);
+    if (btnSwitchToSignIn) btnSwitchToSignIn.addEventListener('click', switchToSignInTab);
+
+    // 2. Password Visibility Toggle Buttons
+    document.querySelectorAll('.btn-toggle-pwd').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.dataset.target;
+        const input = document.getElementById(targetId);
+        if (!input) return;
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        const icon = btn.querySelector('i');
+        if (icon) {
+          icon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+          if (window.lucide) window.lucide.createIcons();
+        }
+      });
+    });
+
+    // 3. Portal Sign In Form (Email & Password)
     if (portalSignInForm) {
       portalSignInForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const username = document.getElementById('portalSignInUsername').value;
+        const email = document.getElementById('portalSignInEmail').value;
+        const password = document.getElementById('portalSignInPassword').value;
         try {
-          const logged = auth.login(username);
+          const logged = auth.login(email, password);
           ui.showToast(`Welcome back, ${logged.name}!`, 'success');
           portalSignInForm.reset();
         } catch (err) {
@@ -7813,18 +7910,19 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       });
     }
 
-    // 3. Portal Sign Up Form (Create Account)
+    // 4. Portal Sign Up Form (Create Account with Email & Password)
     if (portalSignUpForm) {
       portalSignUpForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const name = document.getElementById('portalSignUpName').value;
-        const username = document.getElementById('portalSignUpUsername').value;
+        const email = document.getElementById('portalSignUpEmail').value;
+        const password = document.getElementById('portalSignUpPassword').value;
         const role = document.getElementById('portalSignUpRole').value;
         const colorRadio = document.querySelector('input[name="portalUserColor"]:checked');
         const color = colorRadio ? colorRadio.value : '#3b82f6';
 
         try {
-          const newUser = auth.registerUser(name, username, role, '', color);
+          const newUser = auth.registerUser(name, email, password, role, color);
           ui.showToast(`Account created! Welcome, ${newUser.name}.`, 'success');
           portalSignUpForm.reset();
         } catch (err) {
@@ -7833,7 +7931,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       });
     }
 
-    // 4. Header Dropdown Toggle
+    // 5. Header Dropdown Toggle
     if (btnUserProfile && userDropdownMenu) {
       btnUserProfile.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -7848,12 +7946,12 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       });
     }
 
-    // 5. Logout Button
+    // 6. Logout Button
     if (btnDropdownLogout) {
       btnDropdownLogout.addEventListener('click', () => {
         userDropdownMenu.classList.add('hidden');
         auth.logout();
-        ui.showToast('You have been logged out.', 'info');
+        ui.showToast('You have been logged out safely.', 'info');
       });
     }
 
@@ -7911,13 +8009,14 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
         e.preventDefault();
         const name = document.getElementById('newUserName').value;
         const username = document.getElementById('newUserUsername').value;
+        const email = `${username.toLowerCase().replace(/\s+/g, '_')}@office.com`;
         const role = document.getElementById('newUserRole').value;
         const colorRadio = document.querySelector('input[name="userColor"]:checked');
         const color = colorRadio ? colorRadio.value : '#3b82f6';
 
         try {
-          const newUser = auth.registerUser(name, username, role, '', color);
-          ui.showToast(`Welcome, ${newUser.name}! Profile created and activated.`, 'success');
+          const newUser = auth.registerUser(name, email, 'password123', role, color);
+          ui.showToast(`Welcome, ${newUser.name}! Profile created.`, 'success');
           newUserForm.reset();
           closeAuthModal();
         } catch (err) {

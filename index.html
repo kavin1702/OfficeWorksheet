@@ -67,49 +67,67 @@
         </button>
       </div>
 
-      <!-- Tab 1: Sign In -->
+      <!-- Tab 1: Sign In (Email & Password) -->
       <div id="portalPaneSignIn" class="auth-tab-pane">
-        <div class="portal-section-label">Select profile to enter:</div>
-        <div id="portalUsersList" class="portal-users-grid">
-          <!-- Dynamically populated profile cards -->
-        </div>
-
-        <div class="auth-or-divider">
-          <span>OR SIGN IN BY USERNAME</span>
-        </div>
-
         <form id="portalSignInForm" class="portal-form">
           <div class="form-group">
-            <label for="portalSignInUsername" class="form-label">Username</label>
+            <label for="portalSignInEmail" class="form-label required">Email Address</label>
             <div class="input-with-icon">
-              <i data-lucide="user" class="input-icon"></i>
-              <input type="text" id="portalSignInUsername" class="form-input" placeholder="e.g. kavin, rahul" required autocomplete="username">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="portalSignInEmail" class="form-input" placeholder="name@company.com" required autocomplete="email">
             </div>
           </div>
+
+          <div class="form-group">
+            <label for="portalSignInPassword" class="form-label required">Password</label>
+            <div class="input-with-icon">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="portalSignInPassword" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+              <button type="button" class="btn-toggle-pwd" data-target="portalSignInPassword" title="Toggle password visibility">
+                <i data-lucide="eye" class="icon-xs"></i>
+              </button>
+            </div>
+          </div>
+
           <button type="submit" class="btn btn-primary btn-block btn-glow">
-            <i data-lucide="arrow-right"></i>
-            <span>Sign In to Worksheet</span>
+            <i data-lucide="log-in"></i>
+            <span>Sign In to My Worksheet</span>
           </button>
+
+          <div class="auth-switch-link">
+            <span>Don't have an account?</span>
+            <button type="button" id="btnSwitchToSignUp" class="link-btn">Create one now</button>
+          </div>
         </form>
       </div>
 
-      <!-- Tab 2: Create Account -->
+      <!-- Tab 2: Create Account (Email & Password) -->
       <div id="portalPaneSignUp" class="auth-tab-pane hidden">
-        <p class="portal-section-label">Create a personal profile to start your worksheet:</p>
         <form id="portalSignUpForm" class="portal-form">
           <div class="form-group">
-            <label for="portalSignUpName" class="form-label required">Display Name</label>
+            <label for="portalSignUpName" class="form-label required">Full Name</label>
             <div class="input-with-icon">
-              <i data-lucide="user-check" class="input-icon"></i>
-              <input type="text" id="portalSignUpName" class="form-input" placeholder="e.g. Rahul Sharma, Priya" required>
+              <i data-lucide="user" class="input-icon"></i>
+              <input type="text" id="portalSignUpName" class="form-input" placeholder="e.g. Kavin M, Rahul" required>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="portalSignUpUsername" class="form-label required">Username (Unique)</label>
+            <label for="portalSignUpEmail" class="form-label required">Email Address</label>
             <div class="input-with-icon">
-              <i data-lucide="at-sign" class="input-icon"></i>
-              <input type="text" id="portalSignUpUsername" class="form-input" placeholder="e.g. rahul, priya_dev" required autocomplete="username">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="portalSignUpEmail" class="form-input" placeholder="name@company.com" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="portalSignUpPassword" class="form-label required">Password</label>
+            <div class="input-with-icon">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="portalSignUpPassword" class="form-input" placeholder="Create password (min 4 characters)" required autocomplete="new-password">
+              <button type="button" class="btn-toggle-pwd" data-target="portalSignUpPassword" title="Toggle password visibility">
+                <i data-lucide="eye" class="icon-xs"></i>
+              </button>
             </div>
           </div>
 
@@ -122,7 +140,7 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Profile Avatar Color</label>
+            <label class="form-label">Avatar Color</label>
             <div class="color-picker-row">
               <label class="color-circle" style="background-color: #3b82f6;"><input type="radio" name="portalUserColor" value="#3b82f6" checked></label>
               <label class="color-circle" style="background-color: #10b981;"><input type="radio" name="portalUserColor" value="#10b981"></label>
@@ -135,8 +153,13 @@
 
           <button type="submit" class="btn btn-primary btn-block btn-glow">
             <i data-lucide="user-plus"></i>
-            <span>Create Account & Enter</span>
+            <span>Create Account & Sign In</span>
           </button>
+
+          <div class="auth-switch-link">
+            <span>Already have an account?</span>
+            <button type="button" id="btnSwitchToSignIn" class="link-btn">Sign In instead</button>
+          </div>
         </form>
       </div>
 

@@ -1036,6 +1036,8 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     const portalPaneSignUp = document.getElementById('portalPaneSignUp');
     const portalSignInForm = document.getElementById('portalSignInForm');
     const portalSignUpForm = document.getElementById('portalSignUpForm');
+    const btnSwitchToSignUp = document.getElementById('btnSwitchToSignUp');
+    const btnSwitchToSignIn = document.getElementById('btnSwitchToSignIn');
 
     // Inside App Elements
     const btnUserProfile = document.getElementById('btnUserProfile');
@@ -1052,31 +1054,54 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     const tabContentNewUser = document.getElementById('tabContentNewUser');
     const newUserForm = document.getElementById('newUserForm');
 
-    // 1. Landing Portal Tabs
-    if (portalTabBtnSignIn && portalTabBtnSignUp) {
-      portalTabBtnSignIn.addEventListener('click', () => {
-        portalTabBtnSignIn.classList.add('active');
-        portalTabBtnSignUp.classList.remove('active');
-        portalPaneSignIn.classList.remove('hidden');
-        portalPaneSignUp.classList.add('hidden');
-        renderPortalUsers();
-      });
-
-      portalTabBtnSignUp.addEventListener('click', () => {
-        portalTabBtnSignUp.classList.add('active');
-        portalTabBtnSignIn.classList.remove('active');
-        portalPaneSignUp.classList.remove('hidden');
-        portalPaneSignIn.classList.add('hidden');
-      });
+    function switchToSignInTab() {
+      if (portalTabBtnSignIn) portalTabBtnSignIn.classList.add('active');
+      if (portalTabBtnSignUp) portalTabBtnSignUp.classList.remove('active');
+      if (portalPaneSignIn) portalPaneSignIn.classList.remove('hidden');
+      if (portalPaneSignUp) portalPaneSignUp.classList.add('hidden');
+      const emailInput = document.getElementById('portalSignInEmail');
+      if (emailInput) emailInput.focus();
     }
 
-    // 2. Portal Sign In Form
+    function switchToSignUpTab() {
+      if (portalTabBtnSignUp) portalTabBtnSignUp.classList.add('active');
+      if (portalTabBtnSignIn) portalTabBtnSignIn.classList.remove('active');
+      if (portalPaneSignUp) portalPaneSignUp.classList.remove('hidden');
+      if (portalPaneSignIn) portalPaneSignIn.classList.add('hidden');
+      const nameInput = document.getElementById('portalSignUpName');
+      if (nameInput) nameInput.focus();
+    }
+
+    // 1. Landing Portal Tabs
+    if (portalTabBtnSignIn) portalTabBtnSignIn.addEventListener('click', switchToSignInTab);
+    if (portalTabBtnSignUp) portalTabBtnSignUp.addEventListener('click', switchToSignUpTab);
+    if (btnSwitchToSignUp) btnSwitchToSignUp.addEventListener('click', switchToSignUpTab);
+    if (btnSwitchToSignIn) btnSwitchToSignIn.addEventListener('click', switchToSignInTab);
+
+    // 2. Password Visibility Toggle Buttons
+    document.querySelectorAll('.btn-toggle-pwd').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.dataset.target;
+        const input = document.getElementById(targetId);
+        if (!input) return;
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        const icon = btn.querySelector('i');
+        if (icon) {
+          icon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+          if (window.lucide) window.lucide.createIcons();
+        }
+      });
+    });
+
+    // 3. Portal Sign In Form (Email & Password)
     if (portalSignInForm) {
       portalSignInForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const username = document.getElementById('portalSignInUsername').value;
+        const email = document.getElementById('portalSignInEmail').value;
+        const password = document.getElementById('portalSignInPassword').value;
         try {
-          const logged = auth.login(username);
+          const logged = auth.login(email, password);
           ui.showToast(`Welcome back, ${logged.name}!`, 'success');
           portalSignInForm.reset();
         } catch (err) {
@@ -1085,18 +1110,19 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       });
     }
 
-    // 3. Portal Sign Up Form (Create Account)
+    // 4. Portal Sign Up Form (Create Account with Email & Password)
     if (portalSignUpForm) {
       portalSignUpForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const name = document.getElementById('portalSignUpName').value;
-        const username = document.getElementById('portalSignUpUsername').value;
+        const email = document.getElementById('portalSignUpEmail').value;
+        const password = document.getElementById('portalSignUpPassword').value;
         const role = document.getElementById('portalSignUpRole').value;
         const colorRadio = document.querySelector('input[name="portalUserColor"]:checked');
         const color = colorRadio ? colorRadio.value : '#3b82f6';
 
         try {
-          const newUser = auth.registerUser(name, username, role, '', color);
+          const newUser = auth.registerUser(name, email, password, role, color);
           ui.showToast(`Account created! Welcome, ${newUser.name}.`, 'success');
           portalSignUpForm.reset();
         } catch (err) {
@@ -1105,7 +1131,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       });
     }
 
-    // 4. Header Dropdown Toggle
+    // 5. Header Dropdown Toggle
     if (btnUserProfile && userDropdownMenu) {
       btnUserProfile.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1120,12 +1146,12 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       });
     }
 
-    // 5. Logout Button
+    // 6. Logout Button
     if (btnDropdownLogout) {
       btnDropdownLogout.addEventListener('click', () => {
         userDropdownMenu.classList.add('hidden');
         auth.logout();
-        ui.showToast('You have been logged out.', 'info');
+        ui.showToast('You have been logged out safely.', 'info');
       });
     }
 
@@ -1183,13 +1209,14 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
         e.preventDefault();
         const name = document.getElementById('newUserName').value;
         const username = document.getElementById('newUserUsername').value;
+        const email = `${username.toLowerCase().replace(/\s+/g, '_')}@office.com`;
         const role = document.getElementById('newUserRole').value;
         const colorRadio = document.querySelector('input[name="userColor"]:checked');
         const color = colorRadio ? colorRadio.value : '#3b82f6';
 
         try {
-          const newUser = auth.registerUser(name, username, role, '', color);
-          ui.showToast(`Welcome, ${newUser.name}! Profile created and activated.`, 'success');
+          const newUser = auth.registerUser(name, email, 'password123', role, color);
+          ui.showToast(`Welcome, ${newUser.name}! Profile created.`, 'success');
           newUserForm.reset();
           closeAuthModal();
         } catch (err) {
