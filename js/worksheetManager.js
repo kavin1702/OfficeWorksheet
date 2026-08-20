@@ -185,8 +185,15 @@ class WorksheetManager {
   isEntryBelongsToUser(entry, user) {
     if (!user) return true;
     if (entry.userId === user.id) return true;
-    if (entry.userName && entry.userName.toLowerCase() === user.name.toLowerCase()) return true;
-    if (!entry.userId && user.username === 'kavin') return true; // legacy data belongs to default user Kavin
+    if (entry.userName && user.name && entry.userName.toLowerCase() === user.name.toLowerCase()) return true;
+
+    // Connect any Kavin account or primary email (mnkavin2006@gmail.com, kavin@office.com) to the August worksheet data
+    const isKavinUser = (user.email && (user.email.toLowerCase().includes('kavin') || user.email.toLowerCase().includes('mnkavin'))) ||
+                        (user.username && (user.username.toLowerCase().includes('kavin') || user.username.toLowerCase().includes('mnkavin'))) ||
+                        (user.name && user.name.toLowerCase().includes('kavin'));
+    if (isKavinUser) {
+      if (!entry.userId || entry.userId === 'user_kavin' || entry.userName === 'Kavin') return true;
+    }
     return false;
   }
 
@@ -297,11 +304,21 @@ class WorksheetManager {
       // 5. Search keyword
       if (this.filters.search) {
         const q = this.filters.search.toLowerCase().trim();
-        const inProject = (entry.projectName || '').toLowerCase().includes(q);
-        const inWork = (entry.work || '').toLowerCase().includes(q);
-        const inRemarks = (entry.remarks || '').toLowerCase().includes(q);
-        const inUser = (entry.userName || '').toLowerCase().includes(q);
-        if (!inProject && !inWork && !inRemarks && !inUser) return false;
+        // If user typed their email/name in search, don't filter out all their tasks
+        const isSelfQuery = currentUser && (
+          (currentUser.email && currentUser.email.toLowerCase() === q) ||
+          (currentUser.username && currentUser.username.toLowerCase() === q) ||
+          (currentUser.name && currentUser.name.toLowerCase() === q)
+        );
+
+        if (!isSelfQuery) {
+          const inProject = (entry.projectName || '').toLowerCase().includes(q);
+          const inWork = (entry.work || '').toLowerCase().includes(q);
+          const inRemarks = (entry.remarks || '').toLowerCase().includes(q);
+          const inUser = (entry.userName || '').toLowerCase().includes(q);
+          const inDate = (entry.date || '').toLowerCase().includes(q);
+          if (!inProject && !inWork && !inRemarks && !inUser && !inDate) return false;
+        }
       }
 
       return true;
