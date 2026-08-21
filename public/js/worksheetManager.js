@@ -187,12 +187,12 @@ class WorksheetManager {
     if (entry.userId === user.id) return true;
     if (entry.userName && user.name && entry.userName.toLowerCase() === user.name.toLowerCase()) return true;
 
-    // Connect any Kavin account or primary email (mnkavin2006@gmail.com, kavin@office.com) to the August worksheet data
-    const isKavinUser = (user.email && (user.email.toLowerCase().includes('kavin') || user.email.toLowerCase().includes('mnkavin'))) ||
-                        (user.username && (user.username.toLowerCase().includes('kavin') || user.username.toLowerCase().includes('mnkavin'))) ||
-                        (user.name && user.name.toLowerCase().includes('kavin'));
-    if (isKavinUser) {
-      if (!entry.userId || entry.userId === 'user_kavin' || entry.userName === 'Kavin') return true;
+    const email = (user.email || '').toLowerCase().trim();
+    if (email === 'mnkavin2006@gmail.com') {
+      if (!entry.userId || entry.userId === 'user_kavin' || entry.userId === 'user_admin_mnkavin' || entry.userName === 'Kavin' || entry.userName === 'Kavin M' || entry.userName === 'Kavin M (Admin)') return true;
+    }
+    if (email === 'kavin@8chili.com') {
+      if (entry.userId === 'user_8chili_kavin' || entry.userName === 'Kavin (8chili)') return true;
     }
     return false;
   }
