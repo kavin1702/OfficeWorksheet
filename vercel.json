@@ -1,10 +1,9 @@
 {
-  "buildCommand": "echo 'Static build successful'",
-  "outputDirectory": ".",
+  "framework": null,
   "cleanUrls": true,
   "rewrites": [
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/admi", "destination": "/admin.html" },
-    { "source": "/((?!admin|css|js|assets|manifest|sw|robots|sitemap|app-standalone|chat-history|.*\\..*).*)", "destination": "/index.html" }
+    { "source": "/admin.html", "destination": "/admin.html" }
   ]
 }
