@@ -235,6 +235,7 @@ class UIRenderer {
 
     const initial = (user.name || 'U').charAt(0).toUpperCase();
     const color = user.color || this.getUserColor(user.name);
+    const isAdminUser = window.authManager ? window.authManager.isAdmin(user) : false;
 
     if (avatarBadge) {
       avatarBadge.textContent = initial;
@@ -246,8 +247,18 @@ class UIRenderer {
       dropAvatar.style.backgroundColor = color;
     }
     if (dropName) dropName.textContent = user.name;
-    if (dropRole) dropRole.textContent = user.role || 'Team Member';
+    if (dropRole) dropRole.textContent = isAdminUser ? '👑 Admin' : (user.role || 'Team Member');
     if (myLabel) myLabel.textContent = `${user.name}'s Worksheet`;
+
+    const dropAdminLink = document.getElementById('btnDropdownAdmin');
+    if (dropAdminLink) {
+      dropAdminLink.style.display = isAdminUser ? 'flex' : 'none';
+    }
+
+    const headerAdminBtn = document.getElementById('btnOpenAdminPanel');
+    if (headerAdminBtn) {
+      headerAdminBtn.style.display = isAdminUser ? 'inline-flex' : 'none';
+    }
   }
 
   // Render User Accounts List in Modal

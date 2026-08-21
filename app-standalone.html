@@ -3453,6 +3453,10 @@ code {
                 </div>
               </div>
               <div class="dropdown-divider"></div>
+              <a href="admin.html" class="dropdown-item" id="btnDropdownAdmin" style="color: #fbbf24; text-decoration: none;">
+                <i data-lucide="shield-check" class="icon-sm text-amber"></i>
+                <span>ðŸ‘‘ Admin Portal</span>
+              </a>
               <button class="dropdown-item" id="btnDropdownSwitchUser">
                 <i data-lucide="users" class="icon-sm"></i>
                 <span>Switch User Account</span>
@@ -3469,10 +3473,10 @@ code {
             </div>
           </div>
 
-          <button id="btnOpenAdminPanel" class="btn btn-outline btn-sm admin-header-btn hidden" title="Team Admin & User Management">
+          <a href="admin.html" id="btnOpenAdminPanel" class="btn btn-outline btn-sm admin-header-btn" title="Team Admin & User Management" style="text-decoration: none;">
             <i data-lucide="shield-check" class="text-amber"></i>
             <span class="btn-text">Admin Panel</span>
-          </button>
+          </a>
 
           <button id="btnOpenReport" class="btn btn-outline btn-sm" title="Generate formatted daily report for WhatsApp/Slack">
             <i data-lucide="file-text"></i>
@@ -6068,6 +6072,7 @@ class UIRenderer {
 
     const initial = (user.name || 'U').charAt(0).toUpperCase();
     const color = user.color || this.getUserColor(user.name);
+    const isAdminUser = window.authManager ? window.authManager.isAdmin(user) : false;
 
     if (avatarBadge) {
       avatarBadge.textContent = initial;
@@ -6079,8 +6084,18 @@ class UIRenderer {
       dropAvatar.style.backgroundColor = color;
     }
     if (dropName) dropName.textContent = user.name;
-    if (dropRole) dropRole.textContent = user.role || 'Team Member';
+    if (dropRole) dropRole.textContent = isAdminUser ? 'ðŸ‘‘ Admin' : (user.role || 'Team Member');
     if (myLabel) myLabel.textContent = `${user.name}'s Worksheet`;
+
+    const dropAdminLink = document.getElementById('btnDropdownAdmin');
+    if (dropAdminLink) {
+      dropAdminLink.style.display = isAdminUser ? 'flex' : 'none';
+    }
+
+    const headerAdminBtn = document.getElementById('btnOpenAdminPanel');
+    if (headerAdminBtn) {
+      headerAdminBtn.style.display = isAdminUser ? 'inline-flex' : 'none';
+    }
   }
 
   // Render User Accounts List in Modal
