@@ -22,9 +22,29 @@ class WorksheetManager {
     };
   }
 
-  // Load initial entries from storage
+  // Load initial entries from storage and ensure all tasks belong to kavin@8chili.com
   async initialize() {
-    this.entries = await this.storage.fetchAll();
+    let list = await this.storage.fetchAll();
+    if (!list || list.length === 0) {
+      if (window.SAMPLE_WORKSHEET_DATA) {
+        list = window.SAMPLE_WORKSHEET_DATA;
+        await this.storage.batchImport(list);
+      }
+    } else {
+      // Automatically migrate all work data to kavin@8chili.com
+      let migrated = false;
+      list.forEach(e => {
+        if (!e.userId || e.userId === 'user_kavin' || e.userId === 'user_admin_mnkavin' || e.userName === 'Kavin' || e.userName === 'Kavin M' || !e.userName) {
+          e.userId = 'user_8chili_kavin';
+          e.userName = 'Kavin (8chili)';
+          migrated = true;
+        }
+      });
+      if (migrated) {
+        await this.storage.batchImport(list);
+      }
+    }
+    this.entries = list || [];
     return this.entries;
   }
 
@@ -56,10 +76,12 @@ class WorksheetManager {
   // Add new worksheet entry (tagged with active user)
   async addEntry(data) {
     const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+    const is8chili = currentUser && (currentUser.email === 'kavin@8chili.com' || currentUser.id === 'user_8chili_kavin');
+
     const newEntry = {
       id: this.generateId(),
-      userId: data.userId || (currentUser ? currentUser.id : 'user_kavin'),
-      userName: data.userName || (currentUser ? currentUser.name : 'Kavin'),
+      userId: currentUser ? (is8chili ? 'user_8chili_kavin' : currentUser.id) : 'user_8chili_kavin',
+      userName: currentUser ? (is8chili ? 'Kavin (8chili)' : currentUser.name) : 'Kavin (8chili)',
       date: data.date || WorksheetManager.getTodayStr(),
       projectName: (data.projectName || 'General').trim(),
       work: (data.work || '').trim(),
@@ -184,16 +206,23 @@ class WorksheetManager {
   // Helper: check if entry belongs to a user
   isEntryBelongsToUser(entry, user) {
     if (!user) return true;
+    const email = (user.email || '').toLowerCase().trim();
+
+    // kavin@8chili.com owns all daily worksheet records
+    if (email === 'kavin@8chili.com') {
+      if (entry.userId === 'user_8chili_kavin' || entry.userName === 'Kavin (8chili)' || entry.userName === 'Kavin' || entry.userName === 'Kavin M' || !entry.userId || entry.userId === 'user_kavin') {
+        return true;
+      }
+      return entry.userId === user.id;
+    }
+
+    // mnkavin2006@gmail.com (Admin) personal worksheet
+    if (email === 'mnkavin2006@gmail.com') {
+      return entry.userId === 'user_admin_mnkavin' || entry.userName === 'Kavin M (Admin)';
+    }
+
     if (entry.userId === user.id) return true;
     if (entry.userName && user.name && entry.userName.toLowerCase() === user.name.toLowerCase()) return true;
-
-    const email = (user.email || '').toLowerCase().trim();
-    if (email === 'mnkavin2006@gmail.com') {
-      if (!entry.userId || entry.userId === 'user_kavin' || entry.userId === 'user_admin_mnkavin' || entry.userName === 'Kavin' || entry.userName === 'Kavin M' || entry.userName === 'Kavin M (Admin)') return true;
-    }
-    if (email === 'kavin@8chili.com') {
-      if (entry.userId === 'user_8chili_kavin' || entry.userName === 'Kavin (8chili)') return true;
-    }
     return false;
   }
 

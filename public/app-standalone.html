@@ -4840,12 +4840,14 @@ window.authManager = new AuthManager();
 
 /**
  * Actual Office Daily Worksheet Data (Aug 2026)
- * Preloaded with your provided office daily records.
+ * Assigned directly to user: kavin@8chili.com (Kavin)
  */
 
 const SAMPLE_WORKSHEET_DATA = [
   {
     id: "task-aug-03",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-03",
     projectName: "MDI_Manu_CleaningEthanol",
     work: "â€¢ Updated Grab Pose\nâ€¢ Implemented audio changes",
@@ -4858,6 +4860,8 @@ const SAMPLE_WORKSHEET_DATA = [
   },
   {
     id: "task-aug-04",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-04",
     projectName: "MDI_Manu_CleaningEthanol",
     work: "â€¢ Tested 4 simulations in MDI environment",
@@ -4870,6 +4874,8 @@ const SAMPLE_WORKSHEET_DATA = [
   },
   {
     id: "task-aug-05-1",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-05",
     projectName: "Cleaning-of-Parisson-Area",
     work: "Storyboard explanation and process walkthrough with team",
@@ -4882,6 +4888,8 @@ const SAMPLE_WORKSHEET_DATA = [
   },
   {
     id: "task-aug-05-2",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-05",
     projectName: "MDI_Manu_CleaningEthanol",
     work: "Updated the simulation package and asset references",
@@ -4894,6 +4902,8 @@ const SAMPLE_WORKSHEET_DATA = [
   },
   {
     id: "task-aug-06-1",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-06",
     projectName: "MDI_Parisson Area Cleaning",
     work: "Step Wizard â€” worked on 10 sequential simulation steps",
@@ -4906,6 +4916,8 @@ const SAMPLE_WORKSHEET_DATA = [
   },
   {
     id: "task-aug-06-2",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-06",
     projectName: "MDI_Cleaning of Ethanol",
     work: "Grab Pose correction and hand interaction refinement",
@@ -4918,138 +4930,161 @@ const SAMPLE_WORKSHEET_DATA = [
   },
   {
     id: "task-aug-06-3",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-06",
-    projectName: "MDI_Cleaning of Purified Water",
-    work: "Fixed Audio triggers, Detect Visual markers and Grab Pose",
+    projectName: "MDI_Cleaning",
+    work: "MDI Parisson Area Cleaning audio sync integration",
     status: "In Progress",
     hoursWorked: 2.0,
     priority: "Medium",
-    remarks: "Audio cue alignment completed.",
+    remarks: "Audio clips connected to event triggers.",
     createdAt: "2026-08-06T16:00:00Z",
     updatedAt: "2026-08-06T18:00:00Z"
   },
   {
     id: "task-aug-07-1",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-07",
-    projectName: "MDI_Manu_Ethanol",
-    work: "Updating VIVE package and VR SDK dependencies",
+    projectName: "Line clearance Checklist",
+    work: "Line clearance initial storyboard development & process review",
     status: "In Progress",
-    hoursWorked: 3.0,
+    hoursWorked: 4.0,
     priority: "High",
-    remarks: "VIVE SDK upgrade in progress.",
+    remarks: "Flowchart approved by QA.",
     createdAt: "2026-08-07T09:30:00Z",
-    updatedAt: "2026-08-07T12:30:00Z"
+    updatedAt: "2026-08-07T13:30:00Z"
   },
   {
     id: "task-aug-07-2",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-07",
-    projectName: "MDI_Setup and Ops",
-    work: "Updating VIVE package configuration and build settings",
+    projectName: "MDI_Line Clearance",
+    work: "Model setup and interactive asset placements for clearance module",
     status: "In Progress",
-    hoursWorked: 2.5,
+    hoursWorked: 4.0,
     priority: "Medium",
-    remarks: "Testing headset tracking.",
-    createdAt: "2026-08-07T13:00:00Z",
-    updatedAt: "2026-08-07T15:30:00Z"
-  },
-  {
-    id: "task-aug-07-3",
-    date: "2026-08-07",
-    projectName: "FFS - Cleaning of Parisson Area",
-    work: "Step Wizard setup and flow integration",
-    status: "In Progress",
-    hoursWorked: 2.5,
-    priority: "Medium",
-    remarks: "Initial step sequence mapped.",
-    createdAt: "2026-08-07T15:30:00Z",
+    remarks: "Environment layout finalized.",
+    createdAt: "2026-08-07T14:00:00Z",
     updatedAt: "2026-08-07T18:00:00Z"
   },
   {
-    id: "task-aug-08",
+    id: "task-aug-08-1",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-08",
-    projectName: "Leave / Weekend",
-    work: "ðŸ–ï¸ Weekend / Off",
-    status: "Leave",
-    hoursWorked: 0,
-    priority: "Low",
-    remarks: "Weekend",
-    createdAt: "2026-08-08T09:00:00Z",
-    updatedAt: "2026-08-08T09:00:00Z"
-  },
-  {
-    id: "task-aug-09",
-    date: "2026-08-09",
-    projectName: "Leave / Weekend",
-    work: "ðŸ–ï¸ Weekend / Off",
-    status: "Leave",
-    hoursWorked: 0,
-    priority: "Low",
-    remarks: "Weekend",
-    createdAt: "2026-08-09T09:00:00Z",
-    updatedAt: "2026-08-09T09:00:00Z"
-  },
-  {
-    id: "task-aug-10",
-    date: "2026-08-10",
-    projectName: "FFS_Cleaning Of Parisson Area",
-    work: "â€¢ Completed the Step Wizard for all steps\nâ€¢ Fixed Detect Visual functionality for all steps",
-    status: "Completed",
-    hoursWorked: 8.0,
-    priority: "High",
-    remarks: "All step wizards verified and working.",
-    createdAt: "2026-08-10T09:30:00Z",
-    updatedAt: "2026-08-10T18:00:00Z"
-  },
-  {
-    id: "task-aug-11",
-    date: "2026-08-11",
-    projectName: "FFS - Cleaning of Parisson Area",
-    work: "â€¢ Worked on the Step Events\nâ€¢ Configured and updated event behavior for the simulation steps",
+    projectName: "MDI-LineClearance",
+    work: "Step Wizard implementation for sequential line clearance verification",
     status: "In Progress",
-    hoursWorked: 8.0,
+    hoursWorked: 4.0,
     priority: "High",
-    remarks: "Event triggers connected to state machine.",
+    remarks: "Steps 1 through 8 completed.",
+    createdAt: "2026-08-08T09:30:00Z",
+    updatedAt: "2026-08-08T13:30:00Z"
+  },
+  {
+    id: "task-aug-08-2",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-08",
+    projectName: "MDI-LineClearance",
+    work: "Updated simulation package with new assets and animation clips",
+    status: "In Progress",
+    hoursWorked: 4.0,
+    priority: "Medium",
+    remarks: "Package built and deployed to test environment.",
+    createdAt: "2026-08-08T14:00:00Z",
+    updatedAt: "2026-08-08T18:00:00Z"
+  },
+  {
+    id: "task-aug-11-1",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-11",
+    projectName: "MDI-LineClearance",
+    work: "Simulation step update â€” corrected order of operation for steps 4 & 5",
+    status: "In Progress",
+    hoursWorked: 4.0,
+    priority: "Medium",
+    remarks: "Step sequence aligned with SOP document.",
     createdAt: "2026-08-11T09:30:00Z",
+    updatedAt: "2026-08-11T13:30:00Z"
+  },
+  {
+    id: "task-aug-11-2",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-11",
+    projectName: "MDI-LineClearance",
+    work: "Model updates & asset reference corrections across scene nodes",
+    status: "In Progress",
+    hoursWorked: 4.0,
+    priority: "Medium",
+    remarks: "Cleaned redundant mesh colliders.",
+    createdAt: "2026-08-11T14:00:00Z",
     updatedAt: "2026-08-11T18:00:00Z"
   },
   {
-    id: "task-aug-12",
+    id: "task-aug-12-1",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-12",
-    projectName: "MDI_Manu_Ethanol",
-    work: "â€¢ Correction work on simulation models\nâ€¢ Testing on the VR platform",
+    projectName: "MDI_Parisson Area Cleaning",
+    work: "Step Wizard animation trigger fixes and interactive highlight shaders",
     status: "In Progress",
-    hoursWorked: 8.0,
-    priority: "High",
-    remarks: "Performance testing on target hardware.",
+    hoursWorked: 3.5,
+    priority: "Medium",
+    remarks: "Highlight shader tested on target meshes.",
     createdAt: "2026-08-12T09:30:00Z",
-    updatedAt: "2026-08-12T18:00:00Z"
+    updatedAt: "2026-08-12T13:00:00Z"
+  },
+  {
+    id: "task-aug-12-2",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-12",
+    projectName: "MDI_Parisson Area Cleaning",
+    work: "Audio changes & voiceover cue timing adjustments for training module",
+    status: "In Progress",
+    hoursWorked: 2.5,
+    priority: "Low",
+    remarks: "All 12 voiceover cues matched to visual actions.",
+    createdAt: "2026-08-12T13:30:00Z",
+    updatedAt: "2026-08-12T16:00:00Z"
   },
   {
     id: "task-aug-13",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-13",
-    projectName: "Leave / Off",
-    work: "ðŸ–ï¸ Official Leave",
-    status: "Leave",
-    hoursWorked: 0,
-    priority: "Low",
-    remarks: "Approved Leave",
-    createdAt: "2026-08-13T09:00:00Z",
-    updatedAt: "2026-08-13T09:00:00Z"
+    projectName: "MDI_LineClearance",
+    work: "Grab Pose refinement and controller haptic feedback implementation",
+    status: "In Progress",
+    hoursWorked: 4.0,
+    priority: "High",
+    remarks: "Haptic feedback curve tuned for realistic tactile feel.",
+    createdAt: "2026-08-13T09:30:00Z",
+    updatedAt: "2026-08-13T13:30:00Z"
   },
   {
     id: "task-aug-14",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
     date: "2026-08-14",
-    projectName: "Leave / Off",
-    work: "ðŸ–ï¸ Official Leave",
-    status: "Leave",
-    hoursWorked: 0,
-    priority: "Low",
-    remarks: "Approved Leave",
-    createdAt: "2026-08-14T09:00:00Z",
-    updatedAt: "2026-08-14T09:00:00Z"
+    projectName: "MDI_LineClearance",
+    work: "Step Wizard UI integration and full end-to-end simulation testing",
+    status: "Completed",
+    hoursWorked: 4.0,
+    priority: "High",
+    remarks: "Completed line clearance run-through with 0 errors.",
+    createdAt: "2026-08-14T09:30:00Z",
+    updatedAt: "2026-08-14T13:30:00Z"
   }
 ];
 
+// Export to window
 window.SAMPLE_WORKSHEET_DATA = SAMPLE_WORKSHEET_DATA;
 
 /**
@@ -5496,9 +5531,29 @@ class WorksheetManager {
     };
   }
 
-  // Load initial entries from storage
+  // Load initial entries from storage and ensure all tasks belong to kavin@8chili.com
   async initialize() {
-    this.entries = await this.storage.fetchAll();
+    let list = await this.storage.fetchAll();
+    if (!list || list.length === 0) {
+      if (window.SAMPLE_WORKSHEET_DATA) {
+        list = window.SAMPLE_WORKSHEET_DATA;
+        await this.storage.batchImport(list);
+      }
+    } else {
+      // Automatically migrate all work data to kavin@8chili.com
+      let migrated = false;
+      list.forEach(e => {
+        if (!e.userId || e.userId === 'user_kavin' || e.userId === 'user_admin_mnkavin' || e.userName === 'Kavin' || e.userName === 'Kavin M' || !e.userName) {
+          e.userId = 'user_8chili_kavin';
+          e.userName = 'Kavin (8chili)';
+          migrated = true;
+        }
+      });
+      if (migrated) {
+        await this.storage.batchImport(list);
+      }
+    }
+    this.entries = list || [];
     return this.entries;
   }
 
@@ -5530,10 +5585,12 @@ class WorksheetManager {
   // Add new worksheet entry (tagged with active user)
   async addEntry(data) {
     const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+    const is8chili = currentUser && (currentUser.email === 'kavin@8chili.com' || currentUser.id === 'user_8chili_kavin');
+
     const newEntry = {
       id: this.generateId(),
-      userId: data.userId || (currentUser ? currentUser.id : 'user_kavin'),
-      userName: data.userName || (currentUser ? currentUser.name : 'Kavin'),
+      userId: currentUser ? (is8chili ? 'user_8chili_kavin' : currentUser.id) : 'user_8chili_kavin',
+      userName: currentUser ? (is8chili ? 'Kavin (8chili)' : currentUser.name) : 'Kavin (8chili)',
       date: data.date || WorksheetManager.getTodayStr(),
       projectName: (data.projectName || 'General').trim(),
       work: (data.work || '').trim(),
@@ -5658,16 +5715,23 @@ class WorksheetManager {
   // Helper: check if entry belongs to a user
   isEntryBelongsToUser(entry, user) {
     if (!user) return true;
+    const email = (user.email || '').toLowerCase().trim();
+
+    // kavin@8chili.com owns all daily worksheet records
+    if (email === 'kavin@8chili.com') {
+      if (entry.userId === 'user_8chili_kavin' || entry.userName === 'Kavin (8chili)' || entry.userName === 'Kavin' || entry.userName === 'Kavin M' || !entry.userId || entry.userId === 'user_kavin') {
+        return true;
+      }
+      return entry.userId === user.id;
+    }
+
+    // mnkavin2006@gmail.com (Admin) personal worksheet
+    if (email === 'mnkavin2006@gmail.com') {
+      return entry.userId === 'user_admin_mnkavin' || entry.userName === 'Kavin M (Admin)';
+    }
+
     if (entry.userId === user.id) return true;
     if (entry.userName && user.name && entry.userName.toLowerCase() === user.name.toLowerCase()) return true;
-
-    const email = (user.email || '').toLowerCase().trim();
-    if (email === 'mnkavin2006@gmail.com') {
-      if (!entry.userId || entry.userId === 'user_kavin' || entry.userId === 'user_admin_mnkavin' || entry.userName === 'Kavin' || entry.userName === 'Kavin M' || entry.userName === 'Kavin M (Admin)') return true;
-    }
-    if (email === 'kavin@8chili.com') {
-      if (entry.userId === 'user_8chili_kavin' || entry.userName === 'Kavin (8chili)') return true;
-    }
     return false;
   }
 
