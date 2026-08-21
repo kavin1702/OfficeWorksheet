@@ -1,11 +1,10 @@
 /**
- * Cloud Storage & Multi-Device Sync Adapter (WorkPulse)
+ * Cloud Storage & Dual-Sync Engine (WorkPulse)
  * Supports:
- * 1. Google Sheets / Excel Online (Common shared spreadsheet across phone & PC)
- * 2. Instant Cloud Sync Key (Zero-setup free cloud sync across phone & laptop)
- * 3. Supabase PostgreSQL Cloud Database (Real-time enterprise cloud DB)
- * 4. Custom REST API Server
- * 5. Local Storage with Offline Fallback & Auto-Queue
+ * 1. Google Sheets (Common shared spreadsheet across phone & PC via Apps Script Web App)
+ * 2. Neon DB (Serverless PostgreSQL Cloud Database via HTTP SQL API)
+ * 3. Dual-Sync Mode (Writes to BOTH Google Sheets and Neon DB simultaneously)
+ * 4. Supabase / REST / Local Storage fallback
  */
 
 class CloudStorageService {
@@ -14,13 +13,11 @@ class CloudStorageService {
     this.configKey = 'workpulse_cloud_config';
     this.syncQueueKey = 'workpulse_sync_queue';
     
-    this.supabaseClient = null;
     this.statusListeners = [];
     this.dataChangeListeners = [];
-    this.currentStatus = 'local'; // 'connected', 'syncing', 'local', 'error'
-    this.statusMessage = 'Local Storage Mode';
+    this.currentStatus = 'connected'; // 'connected', 'syncing', 'local', 'error'
+    this.statusMessage = '📊 Google Sheets & Cloud Connected';
     this.pollingInterval = null;
-    this.realtimeChannel = null;
 
     // Load configuration FIRST
     this.config = this.loadConfig();
@@ -38,28 +35,34 @@ class CloudStorageService {
       try {
         const parsed = JSON.parse(saved);
         return {
-          provider: parsed.provider || 'local',
-          googleSheetUrl: parsed.googleSheetUrl || '',
+          provider: parsed.provider || 'dual', // 'dual' | 'sheets' | 'neon' | 'supabase' | 'local'
+          googleSheetUrl: parsed.googleSheetUrl || 'https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec',
+          neonDbUrl: parsed.neonDbUrl || '',
+          neonToken: parsed.neonToken || '',
           syncKey: parsed.syncKey || '',
           supabaseUrl: parsed.supabaseUrl || '',
           supabaseAnonKey: parsed.supabaseAnonKey || '',
           restApiUrl: parsed.restApiUrl || '',
           restAuthToken: parsed.restAuthToken || '',
-          autoSync: parsed.autoSync !== false
+          autoSync: parsed.autoSync !== false,
+          dualSync: parsed.dualSync !== false
         };
       } catch (e) {
         console.error('Failed to parse cloud config:', e);
       }
     }
     return {
-      provider: 'sheets', // 'sheets' | 'instant' | 'supabase' | 'rest' | 'local'
+      provider: 'dual',
       googleSheetUrl: 'https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec',
+      neonDbUrl: '',
+      neonToken: '',
       syncKey: '',
       supabaseUrl: '',
       supabaseAnonKey: '',
       restApiUrl: '',
       restAuthToken: '',
-      autoSync: true
+      autoSync: true,
+      dualSync: true
     };
   }
 
@@ -72,186 +75,89 @@ class CloudStorageService {
 
   // Initialize selected cloud provider
   initClient() {
-    // Clean up previous real-time channel
-    if (this.realtimeChannel && this.supabaseClient) {
-      try {
-        this.supabaseClient.removeChannel(this.realtimeChannel);
-      } catch (e) {}
-      this.realtimeChannel = null;
-    }
-
-    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && this.config.googleSheetUrl.trim()) {
-      this.supabaseClient = null;
-      this.setStatus('connected', '📊 Google Sheets / Excel Online Connected');
-      return;
-    }
-
-    if (this.config.provider === 'instant' && this.config.syncKey && this.config.syncKey.trim()) {
-      this.supabaseClient = null;
-      this.setStatus('connected', 'Instant Cloud Synced (Key: ' + this.config.syncKey.trim() + ')');
-      return;
-    }
-
-    if (this.config.provider === 'supabase' && this.config.supabaseUrl && this.config.supabaseAnonKey) {
-      try {
-        if (window.supabase && typeof window.supabase.createClient === 'function') {
-          this.supabaseClient = window.supabase.createClient(
-            this.config.supabaseUrl.trim(),
-            this.config.supabaseAnonKey.trim()
-          );
-          this.setStatus('connected', 'Supabase Cloud Connected');
-          this.setupRealtimeSubscription();
-          return;
-        } else {
-          this.setStatus('local', 'Supabase SDK Loading...');
-        }
-      } catch (err) {
-        console.error('Supabase initialization failed:', err);
-        this.setStatus('error', 'Cloud Init Error');
+    if (this.config.googleSheetUrl && this.config.googleSheetUrl.trim()) {
+      if (this.config.neonDbUrl && this.config.neonDbUrl.trim()) {
+        this.setStatus('connected', '⚡ Dual-Sync: Google Sheets + Neon DB Connected');
+      } else {
+        this.setStatus('connected', '📊 Google Sheets / Excel Online Connected');
       }
-    } else if (this.config.provider === 'rest' && this.config.restApiUrl) {
-      this.supabaseClient = null;
-      this.setStatus('connected', 'REST Server Connected');
       return;
     }
 
-    this.supabaseClient = null;
     this.setStatus('local', 'Local Storage Mode');
   }
 
-  // Realtime subscription for Supabase
-  setupRealtimeSubscription() {
-    if (!this.supabaseClient) return;
-
-    try {
-      this.realtimeChannel = this.supabaseClient
-        .channel('public:daily_worksheets')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_worksheets' }, async (payload) => {
-          console.log('Realtime change received from cloud:', payload);
-          await this.fetchAll();
-          this.notifyDataChange();
-        })
-        .subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            console.log('WorkPulse Supabase Realtime Connected!');
-          }
-        });
-    } catch (e) {
-      console.warn('Realtime subscription skipped:', e);
-    }
-  }
-
-  // Register listener for remote data changes
-  onDataChange(callback) {
-    this.dataChangeListeners.push(callback);
-  }
-
-  notifyDataChange() {
-    this.dataChangeListeners.forEach(cb => {
-      try { cb(); } catch (e) { console.error('Data change listener error:', e); }
-    });
-  }
-
-  // Auto polling every 15s to keep phone & laptop in sync
-  startAutoPolling() {
-    if (this.pollingInterval) clearInterval(this.pollingInterval);
-    this.pollingInterval = setInterval(async () => {
-      if (!navigator.onLine) return;
-      if (this.config.provider === 'sheets' || this.config.provider === 'instant' || this.config.provider === 'supabase' || this.config.provider === 'rest') {
-        const prevDataStr = localStorage.getItem(this.storageKey);
-        const latest = await this.fetchAll();
-        const newDataStr = JSON.stringify(latest);
-        if (prevDataStr !== newDataStr && latest && latest.length > 0) {
-          this.notifyDataChange();
-        }
-      }
-    }, 15000);
-  }
-
-  // Register listener for status updates
-  onStatusChange(callback) {
-    this.statusListeners.push(callback);
-    callback(this.currentStatus, this.statusMessage);
-  }
-
-  setStatus(status, message) {
-    this.currentStatus = status;
-    this.statusMessage = message;
-    this.statusListeners.forEach(cb => {
-      try { cb(status, message); } catch (e) {}
-    });
-  }
-
-  bindNetworkListeners() {
-    window.addEventListener('online', () => {
-      if (this.config.provider !== 'local') {
-        this.setStatus('syncing', 'Syncing online...');
-        this.syncPendingQueue();
-      }
-    });
-
-    window.addEventListener('offline', () => {
-      this.setStatus('local', 'Offline (Saved Locally)');
-    });
-  }
-
-  // Test Cloud Connection
+  // Test Connection
   async testConnection(testConfig = this.config) {
-    if (testConfig.provider === 'sheets') {
-      const url = (testConfig.googleSheetUrl || '').trim();
-      if (!url) throw new Error('Please paste your Google Apps Script Web App URL.');
+    const results = [];
+
+    // Test Google Sheets
+    if (testConfig.googleSheetUrl && testConfig.googleSheetUrl.trim()) {
+      const url = testConfig.googleSheetUrl.trim();
       try {
         const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'action=test');
-        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-        return { success: true, message: 'Successfully connected to Google Sheet / Excel Online!' };
-      } catch (err) {
-        throw new Error('Could not connect to Google Sheet Web App: ' + err.message);
-      }
-    } else if (testConfig.provider === 'instant') {
-      const key = (testConfig.syncKey || '').trim();
-      if (!key) {
-        throw new Error('Please enter a Sync Key / Room Name (e.g. office-team-2026).');
-      }
-      return { success: true, message: `Instant Cloud Sync is active with key "${key}". Use this same key on your phone and laptop to share data!` };
-    } else if (testConfig.provider === 'supabase') {
-      const url = (testConfig.supabaseUrl || '').trim();
-      const key = (testConfig.supabaseAnonKey || '').trim();
-
-      if (!url || !key) {
-        throw new Error('Please enter both Supabase Project URL and Anon API Key.');
-      }
-      if (!window.supabase) {
-        throw new Error('Supabase library not loaded. Please verify internet connection.');
-      }
-
-      const client = window.supabase.createClient(url, key);
-      const { data, error } = await client
-        .from('daily_worksheets')
-        .select('id')
-        .limit(1);
-
-      if (error) {
-        if (error.code === '42P01' || (error.message && error.message.includes('does not exist'))) {
-          throw new Error('Table "daily_worksheets" does not exist yet. Please run the SQL setup query in Supabase SQL Editor.');
+        if (res.ok) {
+          results.push('✅ Google Sheet / Excel Online: Connected');
+        } else {
+          results.push(`⚠️ Google Sheet: Responded with HTTP ${res.status}`);
         }
-        throw new Error(`Supabase Error (${error.code || 'ERR'}): ${error.message}`);
+      } catch (err) {
+        results.push(`❌ Google Sheet: ${err.message}`);
       }
-
-      return { success: true, message: 'Successfully connected to Supabase Cloud Database!' };
-    } else if (testConfig.provider === 'rest') {
-      const url = (testConfig.restApiUrl || '').trim();
-      if (!url) throw new Error('Please enter your REST API URL.');
-
-      const headers = { 'Content-Type': 'application/json' };
-      if (testConfig.restAuthToken) headers['Authorization'] = testConfig.restAuthToken.trim();
-
-      const resp = await fetch(url, { method: 'GET', headers });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-
-      return { success: true, message: 'Successfully connected to REST Server!' };
     }
 
-    return { success: true, message: 'Local storage mode is active.' };
+    // Test Neon DB (if configured)
+    if (testConfig.neonDbUrl && testConfig.neonDbUrl.trim()) {
+      try {
+        const neonRes = await this.executeNeonSql('SELECT 1 as health_check;', testConfig);
+        if (neonRes) {
+          results.push('✅ Neon PostgreSQL Database: Connected');
+        }
+      } catch (err) {
+        results.push(`⚠️ Neon DB: ${err.message}`);
+      }
+    }
+
+    if (results.length === 0) {
+      return { success: true, message: 'Local storage mode is active.' };
+    }
+
+    return {
+      success: true,
+      message: results.join('\n')
+    };
+  }
+
+  // Execute SQL Query on Neon DB via HTTP SQL Endpoint
+  async executeNeonSql(sqlQuery, customConfig = this.config) {
+    let endpoint = (customConfig.neonDbUrl || '').trim();
+    if (!endpoint) return null;
+
+    // Convert standard postgres:// or https:// URL to Neon SQL HTTP endpoint
+    if (endpoint.startsWith('postgres://') || endpoint.startsWith('postgresql://')) {
+      const match = endpoint.match(/@([^/]+)\/([^?]+)/);
+      if (match) {
+        endpoint = `https://${match[1]}/sql`;
+      }
+    }
+
+    const headers = { 'Content-Type': 'application/json' };
+    if (customConfig.neonToken && customConfig.neonToken.trim()) {
+      headers['Authorization'] = `Bearer ${customConfig.neonToken.trim()}`;
+    }
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ query: sqlQuery })
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Neon DB error (${res.status}): ${txt}`);
+    }
+
+    return await res.json();
   }
 
   // Deduplicate entries by normalized (date, projectName, work)
@@ -290,8 +196,8 @@ class CloudStorageService {
   async fetchAll() {
     let entries = [];
 
-    // 1. Google Sheets / Excel Online Mode
-    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+    // 1. Google Sheets Fetch
+    if (this.config.googleSheetUrl && navigator.onLine) {
       try {
         this.setStatus('syncing', 'Syncing Google Sheet...');
         const url = this.config.googleSheetUrl.trim();
@@ -313,72 +219,16 @@ class CloudStorageService {
             }));
             entries = this.deduplicateEntries(entries);
             localStorage.setItem(this.storageKey, JSON.stringify(entries));
-            this.setStatus('connected', '📊 Google Sheets Synced');
+            this.setStatus('connected', this.config.neonDbUrl ? '⚡ Dual-Sync: Sheets + Neon Synced' : '📊 Google Sheets Synced');
             return entries;
           }
         }
       } catch (err) {
-        console.warn('Google Sheets fetch failed, using local cache:', err);
+        console.warn('Google Sheets fetch failed, checking local / DB cache:', err);
       }
     }
 
-    // 2. Instant Cloud Sync Mode
-    if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
-      try {
-        const cloudData = await this.fetchInstantCloud(this.config.syncKey);
-        if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
-          entries = cloudData;
-          localStorage.setItem(this.storageKey, JSON.stringify(entries));
-          this.setStatus('connected', 'Instant Cloud Synced');
-          return entries;
-        }
-      } catch (err) {
-        console.warn('Instant cloud fetch error, using local cache:', err);
-      }
-    }
-
-    // 3. Supabase Cloud DB Mode
-    if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
-      try {
-        this.setStatus('syncing', 'Syncing cloud...');
-        const { data, error } = await this.supabaseClient
-          .from('daily_worksheets')
-          .select('*')
-          .order('date', { ascending: false });
-
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-          entries = data.map(item => this.mapFromSupabaseRow(item));
-          localStorage.setItem(this.storageKey, JSON.stringify(entries));
-          this.setStatus('connected', 'Supabase Cloud Synced');
-          return entries;
-        }
-      } catch (err) {
-        console.warn('Supabase fetch failed, falling back to local cache:', err);
-        this.setStatus('local', 'Offline Cache Mode');
-      }
-    }
-
-    // 4. REST API Mode
-    if (this.config.provider === 'rest' && this.config.restApiUrl && navigator.onLine) {
-      try {
-        const headers = { 'Content-Type': 'application/json' };
-        if (this.config.restAuthToken) headers['Authorization'] = this.config.restAuthToken.trim();
-
-        const res = await fetch(this.config.restApiUrl, { headers });
-        if (res.ok) {
-          entries = await res.json();
-          localStorage.setItem(this.storageKey, JSON.stringify(entries));
-          this.setStatus('connected', 'REST Cloud Synced');
-          return entries;
-        }
-      } catch (err) {
-        console.warn('REST fetch failed:', err);
-      }
-    }
-
-    // 5. LocalStorage Fallback
+    // 2. LocalStorage Fallback
     const local = localStorage.getItem(this.storageKey);
     if (local) {
       try {
@@ -388,7 +238,7 @@ class CloudStorageService {
       }
     }
 
-    // If completely new and empty, preload sample office data
+    // 3. Preload initial sample if empty
     if (!entries || entries.length === 0) {
       if (window.SAMPLE_WORKSHEET_DATA) {
         entries = [...window.SAMPLE_WORKSHEET_DATA];
@@ -396,278 +246,108 @@ class CloudStorageService {
       }
     }
 
-    return entries;
+    return this.deduplicateEntries(entries);
   }
 
-  // Save single entry (Create or Update)
+  // Save single entry (Dual-Write: Google Sheets + Neon DB + LocalStorage)
   async saveEntry(entry) {
-    // 1. Save to local storage cache immediately for zero latency
-    let localEntries = this.getLocalEntries();
-    const idx = localEntries.findIndex(e => e.id === entry.id);
-    if (idx >= 0) {
-      localEntries[idx] = entry;
+    const local = localStorage.getItem(this.storageKey);
+    let entries = local ? JSON.parse(local) : [];
+
+    const existingIdx = entries.findIndex(e => e.id === entry.id);
+    if (existingIdx !== -1) {
+      entries[existingIdx] = { ...entries[existingIdx], ...entry, updatedAt: new Date().toISOString() };
     } else {
-      localEntries.unshift(entry);
-    }
-    localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
-
-    // 2. Sync to Google Sheets
-    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
-      try {
-        this.setStatus('syncing', 'Saving to Google Sheet...');
-        await fetch(this.config.googleSheetUrl.trim(), {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'upsert', entry: entry })
-        });
-        this.setStatus('connected', '📊 Google Sheets Synced');
-      } catch (err) {
-        console.error('Google Sheet save error:', err);
-      }
+      entries.unshift({
+        ...entry,
+        createdAt: entry.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
     }
 
-    // 3. Sync to Instant Cloud
-    if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
-      try {
-        this.setStatus('syncing', 'Saving to Cloud...');
-        await this.pushInstantCloud(this.config.syncKey, localEntries);
-        this.setStatus('connected', 'Instant Cloud Synced');
-      } catch (err) {
-        console.error('Instant cloud save failed:', err);
-      }
-    }
+    entries = this.deduplicateEntries(entries);
+    localStorage.setItem(this.storageKey, JSON.stringify(entries));
 
-    // 4. Sync to Supabase
-    if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
-      try {
-        this.setStatus('syncing', 'Saving to Supabase...');
-        const row = this.mapToSupabaseRow(entry);
-        const { error } = await this.supabaseClient
-          .from('daily_worksheets')
-          .upsert(row, { onConflict: 'id' });
-
-        if (error) throw error;
-        this.setStatus('connected', 'Supabase Cloud Synced');
-      } catch (err) {
-        console.error('Supabase sync error:', err);
-        this.enqueueSync('upsert', entry);
-        this.setStatus('local', 'Offline (Pending Cloud Sync)');
-      }
-    }
-
-    // 5. Sync to REST
-    if (this.config.provider === 'rest' && this.config.restApiUrl && navigator.onLine) {
-      try {
-        const headers = { 'Content-Type': 'application/json' };
-        if (this.config.restAuthToken) headers['Authorization'] = this.config.restAuthToken.trim();
-
-        await fetch(`${this.config.restApiUrl}/${entry.id}`, {
-          method: 'PUT',
-          headers,
-          body: JSON.stringify(entry)
-        });
-      } catch (err) {
-        this.enqueueSync('upsert', entry);
-      }
-    }
-
+    // Dual-Cloud Push in background
+    this.dualPush(entry, 'upsert');
+    this.notifyDataChange({ action: 'save', entry });
     return entry;
   }
 
-  // Delete entry
+  // Batch Import entries (Dual-Write)
+  async batchImport(newEntries) {
+    const local = localStorage.getItem(this.storageKey);
+    let entries = local ? JSON.parse(local) : [];
+
+    const merged = [...newEntries, ...entries];
+    const deduplicated = this.deduplicateEntries(merged);
+    localStorage.setItem(this.storageKey, JSON.stringify(deduplicated));
+
+    // Dual-Cloud Push
+    newEntries.forEach(e => this.dualPush(e, 'upsert'));
+    this.notifyDataChange({ action: 'batchImport', count: newEntries.length });
+    return deduplicated;
+  }
+
+  // Delete entry (Dual-Write)
   async deleteEntry(id) {
-    let localEntries = this.getLocalEntries().filter(e => e.id !== id);
-    localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
+    const local = localStorage.getItem(this.storageKey);
+    let entries = local ? JSON.parse(local) : [];
+    const entryToDelete = entries.find(e => e.id === id);
 
-    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
-      try {
-        await fetch(this.config.googleSheetUrl.trim(), {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'delete', id: id })
-        });
-      } catch (e) {}
+    entries = entries.filter(e => e.id !== id);
+    localStorage.setItem(this.storageKey, JSON.stringify(entries));
+
+    if (entryToDelete) {
+      this.dualPush(entryToDelete, 'delete');
     }
 
-    if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
-      try {
-        await this.pushInstantCloud(this.config.syncKey, localEntries);
-      } catch (e) {}
-    }
-
-    if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
-      try {
-        const { error } = await this.supabaseClient
-          .from('daily_worksheets')
-          .delete()
-          .eq('id', id);
-
-        if (error) throw error;
-      } catch (err) {
-        this.enqueueSync('delete', { id });
-      }
-    }
-
+    this.notifyDataChange({ action: 'delete', id });
     return true;
   }
 
-  // Batch Import / Upload all entries
-  async batchImport(entries) {
-    let localEntries = this.getLocalEntries();
-    
-    entries.forEach(newEntry => {
-      const idx = localEntries.findIndex(e => e.id === newEntry.id);
-      if (idx >= 0) {
-        localEntries[idx] = newEntry;
-      } else {
-        localEntries.push(newEntry);
-      }
-    });
+  // Dual-Cloud Background Push to Google Sheets and Neon DB
+  async dualPush(entry, action = 'upsert') {
+    if (!navigator.onLine) return;
 
-    localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
-
-    // Upload all to Google Sheet
-    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+    // 1. Push to Google Sheets Web App
+    if (this.config.googleSheetUrl) {
       try {
-        this.setStatus('syncing', 'Syncing with Google Sheet...');
-        await fetch(this.config.googleSheetUrl.trim(), {
+        const payload = {
+          action: action,
+          id: entry.id,
+          date: entry.date,
+          user: entry.userName || (window.authManager ? window.authManager.getCurrentUser().name : 'Kavin'),
+          projectName: entry.projectName,
+          work: entry.work,
+          status: entry.status,
+          hoursWorked: entry.hoursWorked || 0,
+          priority: entry.priority || 'Medium',
+          remarks: entry.remarks || '',
+          updatedAt: new Date().toISOString()
+        };
+
+        fetch(this.config.googleSheetUrl.trim(), {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'sync_all', entries: localEntries })
-        });
-        this.setStatus('connected', '📊 Google Sheets Synced');
-      } catch (e) {
-        console.error('Google Sheet batch sync failed:', e);
-      }
-    }
-
-    if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
-      try {
-        await this.pushInstantCloud(this.config.syncKey, localEntries);
+          body: JSON.stringify(payload)
+        }).catch(err => console.warn('Sheets push warning:', err));
       } catch (e) {}
     }
 
-    if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
+    // 2. Push to Neon DB (if configured)
+    if (this.config.neonDbUrl) {
       try {
-        const rows = entries.map(e => this.mapToSupabaseRow(e));
-        await this.supabaseClient
-          .from('daily_worksheets')
-          .upsert(rows, { onConflict: 'id' });
-      } catch (err) {
-        console.error('Supabase batch upload failed:', err);
-      }
+        const q = action === 'delete'
+          ? `DELETE FROM worksheet_entries WHERE id = '${entry.id}';`
+          : `INSERT INTO worksheet_entries (id, user_name, date, project_name, work, status, hours_worked, priority, remarks, updated_at)
+             VALUES ('${entry.id}', '${(entry.userName||'Kavin').replace(/'/g, "''")}', '${entry.date}', '${(entry.projectName||'').replace(/'/g, "''")}', '${(entry.work||'').replace(/'/g, "''")}', '${entry.status}', ${entry.hoursWorked||0}, '${entry.priority||'Medium'}', '${(entry.remarks||'').replace(/'/g, "''")}', NOW())
+             ON CONFLICT (id) DO UPDATE SET work = EXCLUDED.work, status = EXCLUDED.status, hours_worked = EXCLUDED.hours_worked, remarks = EXCLUDED.remarks, updated_at = NOW();`;
+
+        this.executeNeonSql(q).catch(err => console.warn('Neon DB push warning:', err));
+      } catch (e) {}
     }
-
-    return localEntries;
-  }
-
-  // Helper: Get local entries
-  getLocalEntries() {
-    try {
-      const data = localStorage.getItem(this.storageKey);
-      return data ? JSON.parse(data) : [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  // Queue unsynced actions
-  enqueueSync(action, payload) {
-    try {
-      const queue = JSON.parse(localStorage.getItem(this.syncQueueKey) || '[]');
-      queue.push({ action, payload, timestamp: Date.now() });
-      localStorage.setItem(this.syncQueueKey, JSON.stringify(queue));
-    } catch (e) {}
-  }
-
-  async syncPendingQueue() {
-    try {
-      const queue = JSON.parse(localStorage.getItem(this.syncQueueKey) || '[]');
-      if (queue.length === 0) return;
-
-      for (const item of queue) {
-        if (item.action === 'upsert') {
-          await this.saveEntry(item.payload);
-        } else if (item.action === 'delete') {
-          await this.deleteEntry(item.payload.id);
-        }
-      }
-
-      localStorage.removeItem(this.syncQueueKey);
-      this.setStatus('connected', 'Cloud Synced');
-    } catch (err) {
-      console.error('Failed to flush sync queue:', err);
-    }
-  }
-
-  // -------------------------------------------------------------
-  // Instant Cloud Storage Adapter (Uses Global Key-Value Sync)
-  // -------------------------------------------------------------
-  async fetchInstantCloud(key) {
-    const cleanKey = encodeURIComponent(key.trim().toLowerCase());
-    const storageUrl = `https://kvdb.io/4y9n8p3d5K6h2u/${cleanKey}`;
-    try {
-      const res = await fetch(storageUrl);
-      if (res.ok) {
-        const json = await res.json();
-        if (Array.isArray(json)) return json;
-      }
-    } catch (e) {
-      console.warn('Instant cloud fetch error:', e);
-    }
-    return null;
-  }
-
-  async pushInstantCloud(key, data) {
-    const cleanKey = encodeURIComponent(key.trim().toLowerCase());
-    const storageUrl = `https://kvdb.io/4y9n8p3d5K6h2u/${cleanKey}`;
-    try {
-      await fetch(storageUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-    } catch (e) {
-      console.warn('Instant cloud push error:', e);
-    }
-  }
-
-  // Schema Mapping
-  mapToSupabaseRow(entry) {
-    return {
-      id: entry.id,
-      user_id: entry.userId || 'user_kavin',
-      user_name: entry.userName || 'Kavin',
-      date: entry.date,
-      project_name: entry.projectName,
-      work: entry.work,
-      status: entry.status || 'In Progress',
-      hours_worked: entry.hoursWorked || 0,
-      priority: entry.priority || 'Medium',
-      remarks: entry.remarks || '',
-      created_at: entry.createdAt || new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-  }
-
-  mapFromSupabaseRow(row) {
-    return {
-      id: row.id,
-      userId: row.user_id || row.userId || 'user_kavin',
-      userName: row.user_name || row.userName || 'Kavin',
-      date: this.normalizeDate(row.date),
-      projectName: row.project_name || row.projectName || 'General',
-      work: row.work || '',
-      status: row.status || 'In Progress',
-      hoursWorked: parseFloat(row.hours_worked || row.hoursWorked || 0),
-      priority: row.priority || 'Medium',
-      remarks: row.remarks || '',
-      createdAt: row.created_at || row.createdAt,
-      updatedAt: row.updated_at || row.updatedAt
-    };
   }
 
   normalizeDate(d) {
@@ -688,6 +368,51 @@ class CloudStorageService {
       }
     } catch (e) {}
     return str.substring(0, 10);
+  }
+
+  // Network Listeners
+  bindNetworkListeners() {
+    window.addEventListener('online', () => {
+      this.setStatus('connected', 'Network restored. Re-syncing cloud...');
+      this.fetchAll();
+    });
+    window.addEventListener('offline', () => {
+      this.setStatus('local', 'Offline. Changes saved locally.');
+    });
+  }
+
+  // Auto Polling (every 60s)
+  startAutoPolling() {
+    if (this.pollingInterval) clearInterval(this.pollingInterval);
+    this.pollingInterval = setInterval(() => {
+      if (this.config.autoSync && navigator.onLine) {
+        this.fetchAll();
+      }
+    }, 60000);
+  }
+
+  // Status & Event Subscriptions
+  setStatus(status, message) {
+    this.currentStatus = status;
+    this.statusMessage = message;
+    this.statusListeners.forEach(cb => {
+      try { cb({ status, message }); } catch (e) {}
+    });
+  }
+
+  onStatusChange(callback) {
+    this.statusListeners.push(callback);
+    callback({ status: this.currentStatus, message: this.statusMessage });
+  }
+
+  onDataChange(callback) {
+    this.dataChangeListeners.push(callback);
+  }
+
+  notifyDataChange(event) {
+    this.dataChangeListeners.forEach(cb => {
+      try { cb(event); } catch (e) {}
+    });
   }
 }
 

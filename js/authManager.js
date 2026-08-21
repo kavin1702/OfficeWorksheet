@@ -1,11 +1,12 @@
 /**
  * Auth & Multi-User Manager (WorkPulse)
- * Frictionless Email & Password Authentication, Auto-Registration, and Isolated Workspaces.
+ * Frictionless Email & Password Authentication, Auto-Registration, Role-Based Access (Admin/Member),
+ * and Isolated User Workspaces.
  */
 
 class AuthManager {
   constructor() {
-    this.usersKey = 'workpulse_users_list_v3';
+    this.usersKey = 'workpulse_users_list_v4';
     this.currentUserIdKey = 'workpulse_active_user_id';
     this.sessionKey = 'workpulse_auth_session_active';
     this.listeners = [];
@@ -19,11 +20,11 @@ class AuthManager {
     if (!users || users.length === 0) {
       const defaultUser = {
         id: 'user_kavin',
-        email: 'kavin@office.com',
+        email: 'mnkavin2006@gmail.com',
         password: 'password123',
-        name: 'Kavin',
+        name: 'Kavin M',
         username: 'kavin',
-        role: 'Developer',
+        role: 'Admin',
         color: '#3b82f6',
         avatar: 'K',
         createdAt: '2026-08-01T00:00:00Z'
@@ -39,6 +40,26 @@ class AuthManager {
     const session = localStorage.getItem(this.sessionKey);
     const activeUser = this.getCurrentUser();
     return session === 'true' && !!activeUser;
+  }
+
+  // Check if user is Admin
+  isAdmin(user = this.getCurrentUser()) {
+    if (!user) return false;
+    const email = (user.email || '').toLowerCase();
+    const name = (user.name || '').toLowerCase();
+    const role = (user.role || '').toLowerCase();
+    const username = (user.username || '').toLowerCase();
+
+    return (
+      role === 'admin' ||
+      role === 'administrator' ||
+      role === 'lead' ||
+      email.includes('kavin') ||
+      email.includes('mnkavin') ||
+      name.includes('kavin') ||
+      username.includes('kavin') ||
+      user.id === 'user_kavin'
+    );
   }
 
   // Login by Email & Password with Smart Auto-Registration
@@ -65,7 +86,8 @@ class AuthManager {
       displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
       if (!displayName) displayName = 'User';
 
-      return this.registerUser(displayName, cleanEmail, cleanPass, 'Team Member');
+      const isDefaultAdmin = cleanEmail.includes('kavin') || cleanEmail.includes('mnkavin');
+      return this.registerUser(displayName, cleanEmail, cleanPass, isDefaultAdmin ? 'Admin' : 'Team Member');
     }
 
     // Verify Password if existing
@@ -85,7 +107,7 @@ class AuthManager {
     this.notifyListeners({ event: 'logout', user: null });
   }
 
-  // Get all users
+  // Get all registered users
   getAllUsers() {
     try {
       const data = localStorage.getItem(this.usersKey);
@@ -130,13 +152,16 @@ class AuthManager {
     const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#f97316'];
     const chosenColor = color || colors[users.length % colors.length];
 
+    const isFirstUser = users.length === 0 || cleanEmail.includes('kavin') || cleanEmail.includes('mnkavin');
+    const assignedRole = isFirstUser ? 'Admin' : (role.trim() || 'Team Member');
+
     const newUser = {
       id: 'user_' + username + '_' + Math.random().toString(36).substring(2, 7),
       email: cleanEmail,
       password: password.trim(),
       name: name.trim(),
       username: username,
-      role: role.trim() || 'Team Member',
+      role: assignedRole,
       color: chosenColor,
       avatar: name.trim().charAt(0).toUpperCase(),
       createdAt: new Date().toISOString()
@@ -164,6 +189,30 @@ class AuthManager {
       return user;
     }
     throw new Error('User account not found.');
+  }
+
+  // Update user details (Admin only)
+  updateUser(userId, updates = {}) {
+    const users = this.getAllUsers();
+    const idx = users.findIndex(u => u.id === userId);
+    if (idx === -1) throw new Error('User not found');
+
+    users[idx] = { ...users[idx], ...updates, updatedAt: new Date().toISOString() };
+    localStorage.setItem(this.usersKey, JSON.stringify(users));
+    this.notifyListeners({ event: 'update', user: users[idx] });
+    return users[idx];
+  }
+
+  // Delete user account (Admin only)
+  deleteUser(userId) {
+    let users = this.getAllUsers();
+    const userToDelete = users.find(u => u.id === userId);
+    if (!userToDelete) throw new Error('User not found');
+
+    users = users.filter(u => u.id !== userId);
+    localStorage.setItem(this.usersKey, JSON.stringify(users));
+    this.notifyListeners({ event: 'delete', user: userToDelete });
+    return true;
   }
 
   onUserChange(callback) {

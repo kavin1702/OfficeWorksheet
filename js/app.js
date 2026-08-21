@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const manager = new window.WorksheetManager(cloud);
   const ui = window.uiRenderer;
   const ie = new window.ImportExportManager(manager, ui);
+  const admin = new window.AdminManager(manager, auth, ui);
 
   let currentView = 'table'; // 'table' | 'cards' | 'calendar' | 'analytics'
   let reportSelectedDate = WorksheetManager.getTodayStr();
@@ -64,6 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 6. Setup UI Event Listeners
   bindHeaderEvents();
   bindAuthEvents();
+  bindAdminEvents();
   bindFilterEvents();
   bindViewSwitching();
   bindCalendarEvents();
@@ -73,13 +75,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   bindDailyReportEvents();
   bindKeyboardShortcuts();
 
-  // -------------------------------------------------------------
+  // =========================================================================
   // Master Render Function
-  // -------------------------------------------------------------
+  // =========================================================================
   function renderApp() {
     const currentUser = auth ? auth.getCurrentUser() : null;
     if (currentUser) {
       ui.renderUserProfileHeader(currentUser);
+    }
+
+    // Toggle Admin Panel button visibility
+    const btnOpenAdminPanel = document.getElementById('btnOpenAdminPanel');
+    if (btnOpenAdminPanel) {
+      if (auth && auth.isAdmin()) {
+        btnOpenAdminPanel.classList.remove('hidden');
+      } else {
+        btnOpenAdminPanel.classList.add('hidden');
+      }
     }
 
     const entries = manager.getFilteredEntries();
@@ -626,6 +638,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // -------------------------------------------------------------
+  // Dedicated Admin Governance Portal
+  // -------------------------------------------------------------
+  function bindAdminEvents() {
+    const btnOpenAdminPanel = document.getElementById('btnOpenAdminPanel');
+    const adminModal = document.getElementById('adminPortalModal');
+    const btnCloseAdminModal = document.getElementById('btnCloseAdminModal');
+    const btnCloseAdminFooter = document.getElementById('btnCloseAdminFooter');
+
+    if (btnOpenAdminPanel) {
+      btnOpenAdminPanel.addEventListener('click', () => {
+        if (!auth.isAdmin()) {
+          ui.showToast('Admin privileges required to access Admin Panel', 'error');
+          return;
+        }
+        admin.renderAdminDashboard('adminDashboardContainer');
+        if (adminModal) adminModal.classList.remove('hidden');
+      });
+    }
+
+    if (btnCloseAdminModal) {
+      btnCloseAdminModal.addEventListener('click', () => {
+        if (adminModal) adminModal.classList.add('hidden');
+      });
+    }
+
+    if (btnCloseAdminFooter) {
+      btnCloseAdminFooter.addEventListener('click', () => {
+        if (adminModal) adminModal.classList.add('hidden');
+      });
+    }
+  }
+
+  // -------------------------------------------------------------
   // Cloud Database Settings Modal
   // -------------------------------------------------------------
   function openCloudModal() {
@@ -639,6 +684,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.getElementById('googleSheetUrl').value = config.googleSheetUrl || '';
+    const neonUrlEl = document.getElementById('neonDbUrl');
+    const neonTokenEl = document.getElementById('neonDbToken');
+    if (neonUrlEl) neonUrlEl.value = config.neonDbUrl || '';
+    if (neonTokenEl) neonTokenEl.value = config.neonToken || '';
+
     document.getElementById('syncKeyInput').value = config.syncKey || '';
     document.getElementById('supabaseUrl').value = config.supabaseUrl || '';
     document.getElementById('supabaseAnonKey').value = config.supabaseAnonKey || '';
@@ -661,7 +711,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const supabaseSec = document.getElementById('supabaseConfigSection');
     const restSec = document.getElementById('restConfigSection');
 
-    if (sheetsSec) sheetsSec.classList.toggle('hidden', provider !== 'sheets');
+    if (sheetsSec) sheetsSec.classList.toggle('hidden', provider !== 'sheets' && provider !== 'dual');
     if (instantSec) instantSec.classList.toggle('hidden', provider !== 'instant');
     if (supabaseSec) supabaseSec.classList.toggle('hidden', provider !== 'supabase');
     if (restSec) restSec.classList.toggle('hidden', provider !== 'rest');
@@ -696,9 +746,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       resultBox.classList.remove('hidden');
 
       const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
+      const neonUrlEl = document.getElementById('neonDbUrl');
+      const neonTokenEl = document.getElementById('neonDbToken');
+
       const testConfig = {
         provider: activeProvider,
         googleSheetUrl: document.getElementById('googleSheetUrl').value,
+        neonDbUrl: neonUrlEl ? neonUrlEl.value : '',
+        neonToken: neonTokenEl ? neonTokenEl.value : '',
         syncKey: document.getElementById('syncKeyInput').value,
         supabaseUrl: document.getElementById('supabaseUrl').value,
         supabaseAnonKey: document.getElementById('supabaseAnonKey').value,
@@ -709,7 +764,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const res = await cloud.testConnection(testConfig);
         resultBox.classList.add('success');
-        resultBox.textContent = '✅ ' + res.message;
+        resultBox.textContent = res.message;
       } catch (err) {
         resultBox.classList.add('error');
         resultBox.textContent = '❌ Connection Failed: ' + err.message;
@@ -719,9 +774,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Save Cloud Settings
     document.getElementById('btnSaveCloudSettings').addEventListener('click', async () => {
       const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
+      const neonUrlEl = document.getElementById('neonDbUrl');
+      const neonTokenEl = document.getElementById('neonDbToken');
+
       const newConfig = {
         provider: activeProvider,
         googleSheetUrl: document.getElementById('googleSheetUrl').value,
+        neonDbUrl: neonUrlEl ? neonUrlEl.value : '',
+        neonToken: neonTokenEl ? neonTokenEl.value : '',
         syncKey: document.getElementById('syncKeyInput').value,
         supabaseUrl: document.getElementById('supabaseUrl').value,
         supabaseAnonKey: document.getElementById('supabaseAnonKey').value,

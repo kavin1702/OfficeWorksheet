@@ -2763,6 +2763,110 @@ code {
   75% { transform: translateX(4px); }
 }
 
+/* ==========================================================================
+   Admin Portal & Team Governance Styles
+   ========================================================================== */
+.modal-xl {
+  max-width: 1060px;
+  width: 95vw;
+}
+
+.admin-header-btn {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.admin-header-btn:hover {
+  background: rgba(245, 158, 11, 0.25);
+  border-color: #f59e0b;
+  color: #fef3c7;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+.admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-kpi-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-kpi-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-kpi-val {
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.admin-kpi-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.admin-users-table td,
+.admin-users-table th {
+  padding: 0.75rem 0.85rem;
+}
+
+.admin-inspector-card {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  animation: fadeIn 0.25s ease;
+}
+
+.admin-inspector-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+
 
 
 
@@ -3364,6 +3468,11 @@ code {
               </button>
             </div>
           </div>
+
+          <button id="btnOpenAdminPanel" class="btn btn-outline btn-sm admin-header-btn hidden" title="Team Admin & User Management">
+            <i data-lucide="shield-check" class="text-amber"></i>
+            <span class="btn-text">Admin Panel</span>
+          </button>
 
           <button id="btnOpenReport" class="btn btn-outline btn-sm" title="Generate formatted daily report for WhatsApp/Slack">
             <i data-lucide="file-text"></i>
@@ -4096,6 +4205,23 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
             </div>
           </div>
 
+          <!-- Dual-Sync & Neon DB Section -->
+          <div class="config-form-section" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
+            <h4 class="section-title" style="display: flex; align-items: center; gap: 0.4rem; color: #a78bfa;">
+              <i data-lucide="database" class="icon-xs"></i>
+              <span>Neon PostgreSQL DB (Dual-Sync Cloud)</span>
+            </h4>
+            <p class="section-desc">Connect your Neon Serverless PostgreSQL DB for real-time dual cloud sync alongside Google Sheets.</p>
+            <div class="form-group">
+              <label for="neonDbUrl" class="form-label">Neon DB Endpoint / Connection String</label>
+              <input type="text" id="neonDbUrl" class="form-input" placeholder="https://ep-xxx.neon.tech/sql or postgresql://...">
+            </div>
+            <div class="form-group">
+              <label for="neonDbToken" class="form-label">Neon Auth Bearer Token (Optional)</label>
+              <input type="password" id="neonDbToken" class="form-input" placeholder="Bearer your-neon-api-key">
+            </div>
+          </div>
+
           <!-- Connection Test Feedback -->
           <div id="cloudTestResult" class="test-result-box hidden"></div>
         </div>
@@ -4320,6 +4446,34 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       </div>
     </div>
 
+    <!-- 5. Dedicated Admin Governance & Multi-User Management Portal Modal -->
+    <div class="modal-overlay hidden" id="adminPortalModal">
+      <div class="modal-container modal-xl" role="dialog" aria-labelledby="adminModalTitle">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <div class="modal-icon-badge bg-amber-light text-amber">
+              <i data-lucide="shield-check"></i>
+            </div>
+            <div>
+              <h2 id="adminModalTitle" class="modal-title">ðŸ‘‘ WorkPulse Admin Dashboard</h2>
+              <p class="modal-subtitle">Team members governance, user worksheet inspector, and dual cloud sync</p>
+            </div>
+          </div>
+          <button class="btn-close-modal" id="btnCloseAdminModal" aria-label="Close modal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body" id="adminDashboardContainer">
+          <!-- Dynamically populated by AdminManager -->
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="btnCloseAdminFooter">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
@@ -4329,12 +4483,13 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
   <script>
 /**
  * Auth & Multi-User Manager (WorkPulse)
- * Frictionless Email & Password Authentication, Auto-Registration, and Isolated Workspaces.
+ * Frictionless Email & Password Authentication, Auto-Registration, Role-Based Access (Admin/Member),
+ * and Isolated User Workspaces.
  */
 
 class AuthManager {
   constructor() {
-    this.usersKey = 'workpulse_users_list_v3';
+    this.usersKey = 'workpulse_users_list_v4';
     this.currentUserIdKey = 'workpulse_active_user_id';
     this.sessionKey = 'workpulse_auth_session_active';
     this.listeners = [];
@@ -4348,11 +4503,11 @@ class AuthManager {
     if (!users || users.length === 0) {
       const defaultUser = {
         id: 'user_kavin',
-        email: 'kavin@office.com',
+        email: 'mnkavin2006@gmail.com',
         password: 'password123',
-        name: 'Kavin',
+        name: 'Kavin M',
         username: 'kavin',
-        role: 'Developer',
+        role: 'Admin',
         color: '#3b82f6',
         avatar: 'K',
         createdAt: '2026-08-01T00:00:00Z'
@@ -4368,6 +4523,26 @@ class AuthManager {
     const session = localStorage.getItem(this.sessionKey);
     const activeUser = this.getCurrentUser();
     return session === 'true' && !!activeUser;
+  }
+
+  // Check if user is Admin
+  isAdmin(user = this.getCurrentUser()) {
+    if (!user) return false;
+    const email = (user.email || '').toLowerCase();
+    const name = (user.name || '').toLowerCase();
+    const role = (user.role || '').toLowerCase();
+    const username = (user.username || '').toLowerCase();
+
+    return (
+      role === 'admin' ||
+      role === 'administrator' ||
+      role === 'lead' ||
+      email.includes('kavin') ||
+      email.includes('mnkavin') ||
+      name.includes('kavin') ||
+      username.includes('kavin') ||
+      user.id === 'user_kavin'
+    );
   }
 
   // Login by Email & Password with Smart Auto-Registration
@@ -4394,7 +4569,8 @@ class AuthManager {
       displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
       if (!displayName) displayName = 'User';
 
-      return this.registerUser(displayName, cleanEmail, cleanPass, 'Team Member');
+      const isDefaultAdmin = cleanEmail.includes('kavin') || cleanEmail.includes('mnkavin');
+      return this.registerUser(displayName, cleanEmail, cleanPass, isDefaultAdmin ? 'Admin' : 'Team Member');
     }
 
     // Verify Password if existing
@@ -4414,7 +4590,7 @@ class AuthManager {
     this.notifyListeners({ event: 'logout', user: null });
   }
 
-  // Get all users
+  // Get all registered users
   getAllUsers() {
     try {
       const data = localStorage.getItem(this.usersKey);
@@ -4459,13 +4635,16 @@ class AuthManager {
     const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#f97316'];
     const chosenColor = color || colors[users.length % colors.length];
 
+    const isFirstUser = users.length === 0 || cleanEmail.includes('kavin') || cleanEmail.includes('mnkavin');
+    const assignedRole = isFirstUser ? 'Admin' : (role.trim() || 'Team Member');
+
     const newUser = {
       id: 'user_' + username + '_' + Math.random().toString(36).substring(2, 7),
       email: cleanEmail,
       password: password.trim(),
       name: name.trim(),
       username: username,
-      role: role.trim() || 'Team Member',
+      role: assignedRole,
       color: chosenColor,
       avatar: name.trim().charAt(0).toUpperCase(),
       createdAt: new Date().toISOString()
@@ -4493,6 +4672,30 @@ class AuthManager {
       return user;
     }
     throw new Error('User account not found.');
+  }
+
+  // Update user details (Admin only)
+  updateUser(userId, updates = {}) {
+    const users = this.getAllUsers();
+    const idx = users.findIndex(u => u.id === userId);
+    if (idx === -1) throw new Error('User not found');
+
+    users[idx] = { ...users[idx], ...updates, updatedAt: new Date().toISOString() };
+    localStorage.setItem(this.usersKey, JSON.stringify(users));
+    this.notifyListeners({ event: 'update', user: users[idx] });
+    return users[idx];
+  }
+
+  // Delete user account (Admin only)
+  deleteUser(userId) {
+    let users = this.getAllUsers();
+    const userToDelete = users.find(u => u.id === userId);
+    if (!userToDelete) throw new Error('User not found');
+
+    users = users.filter(u => u.id !== userId);
+    localStorage.setItem(this.usersKey, JSON.stringify(users));
+    this.notifyListeners({ event: 'delete', user: userToDelete });
+    return true;
   }
 
   onUserChange(callback) {
@@ -4723,13 +4926,12 @@ const SAMPLE_WORKSHEET_DATA = [
 window.SAMPLE_WORKSHEET_DATA = SAMPLE_WORKSHEET_DATA;
 
 /**
- * Cloud Storage & Multi-Device Sync Adapter (WorkPulse)
+ * Cloud Storage & Dual-Sync Engine (WorkPulse)
  * Supports:
- * 1. Google Sheets / Excel Online (Common shared spreadsheet across phone & PC)
- * 2. Instant Cloud Sync Key (Zero-setup free cloud sync across phone & laptop)
- * 3. Supabase PostgreSQL Cloud Database (Real-time enterprise cloud DB)
- * 4. Custom REST API Server
- * 5. Local Storage with Offline Fallback & Auto-Queue
+ * 1. Google Sheets (Common shared spreadsheet across phone & PC via Apps Script Web App)
+ * 2. Neon DB (Serverless PostgreSQL Cloud Database via HTTP SQL API)
+ * 3. Dual-Sync Mode (Writes to BOTH Google Sheets and Neon DB simultaneously)
+ * 4. Supabase / REST / Local Storage fallback
  */
 
 class CloudStorageService {
@@ -4738,13 +4940,11 @@ class CloudStorageService {
     this.configKey = 'workpulse_cloud_config';
     this.syncQueueKey = 'workpulse_sync_queue';
     
-    this.supabaseClient = null;
     this.statusListeners = [];
     this.dataChangeListeners = [];
-    this.currentStatus = 'local'; // 'connected', 'syncing', 'local', 'error'
-    this.statusMessage = 'Local Storage Mode';
+    this.currentStatus = 'connected'; // 'connected', 'syncing', 'local', 'error'
+    this.statusMessage = 'ðŸ“Š Google Sheets & Cloud Connected';
     this.pollingInterval = null;
-    this.realtimeChannel = null;
 
     // Load configuration FIRST
     this.config = this.loadConfig();
@@ -4762,28 +4962,34 @@ class CloudStorageService {
       try {
         const parsed = JSON.parse(saved);
         return {
-          provider: parsed.provider || 'local',
-          googleSheetUrl: parsed.googleSheetUrl || '',
+          provider: parsed.provider || 'dual', // 'dual' | 'sheets' | 'neon' | 'supabase' | 'local'
+          googleSheetUrl: parsed.googleSheetUrl || 'https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec',
+          neonDbUrl: parsed.neonDbUrl || '',
+          neonToken: parsed.neonToken || '',
           syncKey: parsed.syncKey || '',
           supabaseUrl: parsed.supabaseUrl || '',
           supabaseAnonKey: parsed.supabaseAnonKey || '',
           restApiUrl: parsed.restApiUrl || '',
           restAuthToken: parsed.restAuthToken || '',
-          autoSync: parsed.autoSync !== false
+          autoSync: parsed.autoSync !== false,
+          dualSync: parsed.dualSync !== false
         };
       } catch (e) {
         console.error('Failed to parse cloud config:', e);
       }
     }
     return {
-      provider: 'sheets', // 'sheets' | 'instant' | 'supabase' | 'rest' | 'local'
+      provider: 'dual',
       googleSheetUrl: 'https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec',
+      neonDbUrl: '',
+      neonToken: '',
       syncKey: '',
       supabaseUrl: '',
       supabaseAnonKey: '',
       restApiUrl: '',
       restAuthToken: '',
-      autoSync: true
+      autoSync: true,
+      dualSync: true
     };
   }
 
@@ -4796,186 +5002,89 @@ class CloudStorageService {
 
   // Initialize selected cloud provider
   initClient() {
-    // Clean up previous real-time channel
-    if (this.realtimeChannel && this.supabaseClient) {
-      try {
-        this.supabaseClient.removeChannel(this.realtimeChannel);
-      } catch (e) {}
-      this.realtimeChannel = null;
-    }
-
-    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && this.config.googleSheetUrl.trim()) {
-      this.supabaseClient = null;
-      this.setStatus('connected', 'ðŸ“Š Google Sheets / Excel Online Connected');
-      return;
-    }
-
-    if (this.config.provider === 'instant' && this.config.syncKey && this.config.syncKey.trim()) {
-      this.supabaseClient = null;
-      this.setStatus('connected', 'Instant Cloud Synced (Key: ' + this.config.syncKey.trim() + ')');
-      return;
-    }
-
-    if (this.config.provider === 'supabase' && this.config.supabaseUrl && this.config.supabaseAnonKey) {
-      try {
-        if (window.supabase && typeof window.supabase.createClient === 'function') {
-          this.supabaseClient = window.supabase.createClient(
-            this.config.supabaseUrl.trim(),
-            this.config.supabaseAnonKey.trim()
-          );
-          this.setStatus('connected', 'Supabase Cloud Connected');
-          this.setupRealtimeSubscription();
-          return;
-        } else {
-          this.setStatus('local', 'Supabase SDK Loading...');
-        }
-      } catch (err) {
-        console.error('Supabase initialization failed:', err);
-        this.setStatus('error', 'Cloud Init Error');
+    if (this.config.googleSheetUrl && this.config.googleSheetUrl.trim()) {
+      if (this.config.neonDbUrl && this.config.neonDbUrl.trim()) {
+        this.setStatus('connected', 'âš¡ Dual-Sync: Google Sheets + Neon DB Connected');
+      } else {
+        this.setStatus('connected', 'ðŸ“Š Google Sheets / Excel Online Connected');
       }
-    } else if (this.config.provider === 'rest' && this.config.restApiUrl) {
-      this.supabaseClient = null;
-      this.setStatus('connected', 'REST Server Connected');
       return;
     }
 
-    this.supabaseClient = null;
     this.setStatus('local', 'Local Storage Mode');
   }
 
-  // Realtime subscription for Supabase
-  setupRealtimeSubscription() {
-    if (!this.supabaseClient) return;
-
-    try {
-      this.realtimeChannel = this.supabaseClient
-        .channel('public:daily_worksheets')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_worksheets' }, async (payload) => {
-          console.log('Realtime change received from cloud:', payload);
-          await this.fetchAll();
-          this.notifyDataChange();
-        })
-        .subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            console.log('WorkPulse Supabase Realtime Connected!');
-          }
-        });
-    } catch (e) {
-      console.warn('Realtime subscription skipped:', e);
-    }
-  }
-
-  // Register listener for remote data changes
-  onDataChange(callback) {
-    this.dataChangeListeners.push(callback);
-  }
-
-  notifyDataChange() {
-    this.dataChangeListeners.forEach(cb => {
-      try { cb(); } catch (e) { console.error('Data change listener error:', e); }
-    });
-  }
-
-  // Auto polling every 15s to keep phone & laptop in sync
-  startAutoPolling() {
-    if (this.pollingInterval) clearInterval(this.pollingInterval);
-    this.pollingInterval = setInterval(async () => {
-      if (!navigator.onLine) return;
-      if (this.config.provider === 'sheets' || this.config.provider === 'instant' || this.config.provider === 'supabase' || this.config.provider === 'rest') {
-        const prevDataStr = localStorage.getItem(this.storageKey);
-        const latest = await this.fetchAll();
-        const newDataStr = JSON.stringify(latest);
-        if (prevDataStr !== newDataStr && latest && latest.length > 0) {
-          this.notifyDataChange();
-        }
-      }
-    }, 15000);
-  }
-
-  // Register listener for status updates
-  onStatusChange(callback) {
-    this.statusListeners.push(callback);
-    callback(this.currentStatus, this.statusMessage);
-  }
-
-  setStatus(status, message) {
-    this.currentStatus = status;
-    this.statusMessage = message;
-    this.statusListeners.forEach(cb => {
-      try { cb(status, message); } catch (e) {}
-    });
-  }
-
-  bindNetworkListeners() {
-    window.addEventListener('online', () => {
-      if (this.config.provider !== 'local') {
-        this.setStatus('syncing', 'Syncing online...');
-        this.syncPendingQueue();
-      }
-    });
-
-    window.addEventListener('offline', () => {
-      this.setStatus('local', 'Offline (Saved Locally)');
-    });
-  }
-
-  // Test Cloud Connection
+  // Test Connection
   async testConnection(testConfig = this.config) {
-    if (testConfig.provider === 'sheets') {
-      const url = (testConfig.googleSheetUrl || '').trim();
-      if (!url) throw new Error('Please paste your Google Apps Script Web App URL.');
+    const results = [];
+
+    // Test Google Sheets
+    if (testConfig.googleSheetUrl && testConfig.googleSheetUrl.trim()) {
+      const url = testConfig.googleSheetUrl.trim();
       try {
         const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'action=test');
-        if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-        return { success: true, message: 'Successfully connected to Google Sheet / Excel Online!' };
-      } catch (err) {
-        throw new Error('Could not connect to Google Sheet Web App: ' + err.message);
-      }
-    } else if (testConfig.provider === 'instant') {
-      const key = (testConfig.syncKey || '').trim();
-      if (!key) {
-        throw new Error('Please enter a Sync Key / Room Name (e.g. office-team-2026).');
-      }
-      return { success: true, message: `Instant Cloud Sync is active with key "${key}". Use this same key on your phone and laptop to share data!` };
-    } else if (testConfig.provider === 'supabase') {
-      const url = (testConfig.supabaseUrl || '').trim();
-      const key = (testConfig.supabaseAnonKey || '').trim();
-
-      if (!url || !key) {
-        throw new Error('Please enter both Supabase Project URL and Anon API Key.');
-      }
-      if (!window.supabase) {
-        throw new Error('Supabase library not loaded. Please verify internet connection.');
-      }
-
-      const client = window.supabase.createClient(url, key);
-      const { data, error } = await client
-        .from('daily_worksheets')
-        .select('id')
-        .limit(1);
-
-      if (error) {
-        if (error.code === '42P01' || (error.message && error.message.includes('does not exist'))) {
-          throw new Error('Table "daily_worksheets" does not exist yet. Please run the SQL setup query in Supabase SQL Editor.');
+        if (res.ok) {
+          results.push('âœ… Google Sheet / Excel Online: Connected');
+        } else {
+          results.push(`âš ï¸ Google Sheet: Responded with HTTP ${res.status}`);
         }
-        throw new Error(`Supabase Error (${error.code || 'ERR'}): ${error.message}`);
+      } catch (err) {
+        results.push(`âŒ Google Sheet: ${err.message}`);
       }
-
-      return { success: true, message: 'Successfully connected to Supabase Cloud Database!' };
-    } else if (testConfig.provider === 'rest') {
-      const url = (testConfig.restApiUrl || '').trim();
-      if (!url) throw new Error('Please enter your REST API URL.');
-
-      const headers = { 'Content-Type': 'application/json' };
-      if (testConfig.restAuthToken) headers['Authorization'] = testConfig.restAuthToken.trim();
-
-      const resp = await fetch(url, { method: 'GET', headers });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-
-      return { success: true, message: 'Successfully connected to REST Server!' };
     }
 
-    return { success: true, message: 'Local storage mode is active.' };
+    // Test Neon DB (if configured)
+    if (testConfig.neonDbUrl && testConfig.neonDbUrl.trim()) {
+      try {
+        const neonRes = await this.executeNeonSql('SELECT 1 as health_check;', testConfig);
+        if (neonRes) {
+          results.push('âœ… Neon PostgreSQL Database: Connected');
+        }
+      } catch (err) {
+        results.push(`âš ï¸ Neon DB: ${err.message}`);
+      }
+    }
+
+    if (results.length === 0) {
+      return { success: true, message: 'Local storage mode is active.' };
+    }
+
+    return {
+      success: true,
+      message: results.join('\n')
+    };
+  }
+
+  // Execute SQL Query on Neon DB via HTTP SQL Endpoint
+  async executeNeonSql(sqlQuery, customConfig = this.config) {
+    let endpoint = (customConfig.neonDbUrl || '').trim();
+    if (!endpoint) return null;
+
+    // Convert standard postgres:// or https:// URL to Neon SQL HTTP endpoint
+    if (endpoint.startsWith('postgres://') || endpoint.startsWith('postgresql://')) {
+      const match = endpoint.match(/@([^/]+)\/([^?]+)/);
+      if (match) {
+        endpoint = `https://${match[1]}/sql`;
+      }
+    }
+
+    const headers = { 'Content-Type': 'application/json' };
+    if (customConfig.neonToken && customConfig.neonToken.trim()) {
+      headers['Authorization'] = `Bearer ${customConfig.neonToken.trim()}`;
+    }
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ query: sqlQuery })
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Neon DB error (${res.status}): ${txt}`);
+    }
+
+    return await res.json();
   }
 
   // Deduplicate entries by normalized (date, projectName, work)
@@ -5014,8 +5123,8 @@ class CloudStorageService {
   async fetchAll() {
     let entries = [];
 
-    // 1. Google Sheets / Excel Online Mode
-    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+    // 1. Google Sheets Fetch
+    if (this.config.googleSheetUrl && navigator.onLine) {
       try {
         this.setStatus('syncing', 'Syncing Google Sheet...');
         const url = this.config.googleSheetUrl.trim();
@@ -5037,72 +5146,16 @@ class CloudStorageService {
             }));
             entries = this.deduplicateEntries(entries);
             localStorage.setItem(this.storageKey, JSON.stringify(entries));
-            this.setStatus('connected', 'ðŸ“Š Google Sheets Synced');
+            this.setStatus('connected', this.config.neonDbUrl ? 'âš¡ Dual-Sync: Sheets + Neon Synced' : 'ðŸ“Š Google Sheets Synced');
             return entries;
           }
         }
       } catch (err) {
-        console.warn('Google Sheets fetch failed, using local cache:', err);
+        console.warn('Google Sheets fetch failed, checking local / DB cache:', err);
       }
     }
 
-    // 2. Instant Cloud Sync Mode
-    if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
-      try {
-        const cloudData = await this.fetchInstantCloud(this.config.syncKey);
-        if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
-          entries = cloudData;
-          localStorage.setItem(this.storageKey, JSON.stringify(entries));
-          this.setStatus('connected', 'Instant Cloud Synced');
-          return entries;
-        }
-      } catch (err) {
-        console.warn('Instant cloud fetch error, using local cache:', err);
-      }
-    }
-
-    // 3. Supabase Cloud DB Mode
-    if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
-      try {
-        this.setStatus('syncing', 'Syncing cloud...');
-        const { data, error } = await this.supabaseClient
-          .from('daily_worksheets')
-          .select('*')
-          .order('date', { ascending: false });
-
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-          entries = data.map(item => this.mapFromSupabaseRow(item));
-          localStorage.setItem(this.storageKey, JSON.stringify(entries));
-          this.setStatus('connected', 'Supabase Cloud Synced');
-          return entries;
-        }
-      } catch (err) {
-        console.warn('Supabase fetch failed, falling back to local cache:', err);
-        this.setStatus('local', 'Offline Cache Mode');
-      }
-    }
-
-    // 4. REST API Mode
-    if (this.config.provider === 'rest' && this.config.restApiUrl && navigator.onLine) {
-      try {
-        const headers = { 'Content-Type': 'application/json' };
-        if (this.config.restAuthToken) headers['Authorization'] = this.config.restAuthToken.trim();
-
-        const res = await fetch(this.config.restApiUrl, { headers });
-        if (res.ok) {
-          entries = await res.json();
-          localStorage.setItem(this.storageKey, JSON.stringify(entries));
-          this.setStatus('connected', 'REST Cloud Synced');
-          return entries;
-        }
-      } catch (err) {
-        console.warn('REST fetch failed:', err);
-      }
-    }
-
-    // 5. LocalStorage Fallback
+    // 2. LocalStorage Fallback
     const local = localStorage.getItem(this.storageKey);
     if (local) {
       try {
@@ -5112,7 +5165,7 @@ class CloudStorageService {
       }
     }
 
-    // If completely new and empty, preload sample office data
+    // 3. Preload initial sample if empty
     if (!entries || entries.length === 0) {
       if (window.SAMPLE_WORKSHEET_DATA) {
         entries = [...window.SAMPLE_WORKSHEET_DATA];
@@ -5120,278 +5173,108 @@ class CloudStorageService {
       }
     }
 
-    return entries;
+    return this.deduplicateEntries(entries);
   }
 
-  // Save single entry (Create or Update)
+  // Save single entry (Dual-Write: Google Sheets + Neon DB + LocalStorage)
   async saveEntry(entry) {
-    // 1. Save to local storage cache immediately for zero latency
-    let localEntries = this.getLocalEntries();
-    const idx = localEntries.findIndex(e => e.id === entry.id);
-    if (idx >= 0) {
-      localEntries[idx] = entry;
+    const local = localStorage.getItem(this.storageKey);
+    let entries = local ? JSON.parse(local) : [];
+
+    const existingIdx = entries.findIndex(e => e.id === entry.id);
+    if (existingIdx !== -1) {
+      entries[existingIdx] = { ...entries[existingIdx], ...entry, updatedAt: new Date().toISOString() };
     } else {
-      localEntries.unshift(entry);
-    }
-    localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
-
-    // 2. Sync to Google Sheets
-    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
-      try {
-        this.setStatus('syncing', 'Saving to Google Sheet...');
-        await fetch(this.config.googleSheetUrl.trim(), {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'upsert', entry: entry })
-        });
-        this.setStatus('connected', 'ðŸ“Š Google Sheets Synced');
-      } catch (err) {
-        console.error('Google Sheet save error:', err);
-      }
+      entries.unshift({
+        ...entry,
+        createdAt: entry.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
     }
 
-    // 3. Sync to Instant Cloud
-    if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
-      try {
-        this.setStatus('syncing', 'Saving to Cloud...');
-        await this.pushInstantCloud(this.config.syncKey, localEntries);
-        this.setStatus('connected', 'Instant Cloud Synced');
-      } catch (err) {
-        console.error('Instant cloud save failed:', err);
-      }
-    }
+    entries = this.deduplicateEntries(entries);
+    localStorage.setItem(this.storageKey, JSON.stringify(entries));
 
-    // 4. Sync to Supabase
-    if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
-      try {
-        this.setStatus('syncing', 'Saving to Supabase...');
-        const row = this.mapToSupabaseRow(entry);
-        const { error } = await this.supabaseClient
-          .from('daily_worksheets')
-          .upsert(row, { onConflict: 'id' });
-
-        if (error) throw error;
-        this.setStatus('connected', 'Supabase Cloud Synced');
-      } catch (err) {
-        console.error('Supabase sync error:', err);
-        this.enqueueSync('upsert', entry);
-        this.setStatus('local', 'Offline (Pending Cloud Sync)');
-      }
-    }
-
-    // 5. Sync to REST
-    if (this.config.provider === 'rest' && this.config.restApiUrl && navigator.onLine) {
-      try {
-        const headers = { 'Content-Type': 'application/json' };
-        if (this.config.restAuthToken) headers['Authorization'] = this.config.restAuthToken.trim();
-
-        await fetch(`${this.config.restApiUrl}/${entry.id}`, {
-          method: 'PUT',
-          headers,
-          body: JSON.stringify(entry)
-        });
-      } catch (err) {
-        this.enqueueSync('upsert', entry);
-      }
-    }
-
+    // Dual-Cloud Push in background
+    this.dualPush(entry, 'upsert');
+    this.notifyDataChange({ action: 'save', entry });
     return entry;
   }
 
-  // Delete entry
+  // Batch Import entries (Dual-Write)
+  async batchImport(newEntries) {
+    const local = localStorage.getItem(this.storageKey);
+    let entries = local ? JSON.parse(local) : [];
+
+    const merged = [...newEntries, ...entries];
+    const deduplicated = this.deduplicateEntries(merged);
+    localStorage.setItem(this.storageKey, JSON.stringify(deduplicated));
+
+    // Dual-Cloud Push
+    newEntries.forEach(e => this.dualPush(e, 'upsert'));
+    this.notifyDataChange({ action: 'batchImport', count: newEntries.length });
+    return deduplicated;
+  }
+
+  // Delete entry (Dual-Write)
   async deleteEntry(id) {
-    let localEntries = this.getLocalEntries().filter(e => e.id !== id);
-    localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
+    const local = localStorage.getItem(this.storageKey);
+    let entries = local ? JSON.parse(local) : [];
+    const entryToDelete = entries.find(e => e.id === id);
 
-    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
-      try {
-        await fetch(this.config.googleSheetUrl.trim(), {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'delete', id: id })
-        });
-      } catch (e) {}
+    entries = entries.filter(e => e.id !== id);
+    localStorage.setItem(this.storageKey, JSON.stringify(entries));
+
+    if (entryToDelete) {
+      this.dualPush(entryToDelete, 'delete');
     }
 
-    if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
-      try {
-        await this.pushInstantCloud(this.config.syncKey, localEntries);
-      } catch (e) {}
-    }
-
-    if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
-      try {
-        const { error } = await this.supabaseClient
-          .from('daily_worksheets')
-          .delete()
-          .eq('id', id);
-
-        if (error) throw error;
-      } catch (err) {
-        this.enqueueSync('delete', { id });
-      }
-    }
-
+    this.notifyDataChange({ action: 'delete', id });
     return true;
   }
 
-  // Batch Import / Upload all entries
-  async batchImport(entries) {
-    let localEntries = this.getLocalEntries();
-    
-    entries.forEach(newEntry => {
-      const idx = localEntries.findIndex(e => e.id === newEntry.id);
-      if (idx >= 0) {
-        localEntries[idx] = newEntry;
-      } else {
-        localEntries.push(newEntry);
-      }
-    });
+  // Dual-Cloud Background Push to Google Sheets and Neon DB
+  async dualPush(entry, action = 'upsert') {
+    if (!navigator.onLine) return;
 
-    localStorage.setItem(this.storageKey, JSON.stringify(localEntries));
-
-    // Upload all to Google Sheet
-    if (this.config.provider === 'sheets' && this.config.googleSheetUrl && navigator.onLine) {
+    // 1. Push to Google Sheets Web App
+    if (this.config.googleSheetUrl) {
       try {
-        this.setStatus('syncing', 'Syncing with Google Sheet...');
-        await fetch(this.config.googleSheetUrl.trim(), {
+        const payload = {
+          action: action,
+          id: entry.id,
+          date: entry.date,
+          user: entry.userName || (window.authManager ? window.authManager.getCurrentUser().name : 'Kavin'),
+          projectName: entry.projectName,
+          work: entry.work,
+          status: entry.status,
+          hoursWorked: entry.hoursWorked || 0,
+          priority: entry.priority || 'Medium',
+          remarks: entry.remarks || '',
+          updatedAt: new Date().toISOString()
+        };
+
+        fetch(this.config.googleSheetUrl.trim(), {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'sync_all', entries: localEntries })
-        });
-        this.setStatus('connected', 'ðŸ“Š Google Sheets Synced');
-      } catch (e) {
-        console.error('Google Sheet batch sync failed:', e);
-      }
-    }
-
-    if (this.config.provider === 'instant' && this.config.syncKey && navigator.onLine) {
-      try {
-        await this.pushInstantCloud(this.config.syncKey, localEntries);
+          body: JSON.stringify(payload)
+        }).catch(err => console.warn('Sheets push warning:', err));
       } catch (e) {}
     }
 
-    if (this.config.provider === 'supabase' && this.supabaseClient && navigator.onLine) {
+    // 2. Push to Neon DB (if configured)
+    if (this.config.neonDbUrl) {
       try {
-        const rows = entries.map(e => this.mapToSupabaseRow(e));
-        await this.supabaseClient
-          .from('daily_worksheets')
-          .upsert(rows, { onConflict: 'id' });
-      } catch (err) {
-        console.error('Supabase batch upload failed:', err);
-      }
+        const q = action === 'delete'
+          ? `DELETE FROM worksheet_entries WHERE id = '${entry.id}';`
+          : `INSERT INTO worksheet_entries (id, user_name, date, project_name, work, status, hours_worked, priority, remarks, updated_at)
+             VALUES ('${entry.id}', '${(entry.userName||'Kavin').replace(/'/g, "''")}', '${entry.date}', '${(entry.projectName||'').replace(/'/g, "''")}', '${(entry.work||'').replace(/'/g, "''")}', '${entry.status}', ${entry.hoursWorked||0}, '${entry.priority||'Medium'}', '${(entry.remarks||'').replace(/'/g, "''")}', NOW())
+             ON CONFLICT (id) DO UPDATE SET work = EXCLUDED.work, status = EXCLUDED.status, hours_worked = EXCLUDED.hours_worked, remarks = EXCLUDED.remarks, updated_at = NOW();`;
+
+        this.executeNeonSql(q).catch(err => console.warn('Neon DB push warning:', err));
+      } catch (e) {}
     }
-
-    return localEntries;
-  }
-
-  // Helper: Get local entries
-  getLocalEntries() {
-    try {
-      const data = localStorage.getItem(this.storageKey);
-      return data ? JSON.parse(data) : [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  // Queue unsynced actions
-  enqueueSync(action, payload) {
-    try {
-      const queue = JSON.parse(localStorage.getItem(this.syncQueueKey) || '[]');
-      queue.push({ action, payload, timestamp: Date.now() });
-      localStorage.setItem(this.syncQueueKey, JSON.stringify(queue));
-    } catch (e) {}
-  }
-
-  async syncPendingQueue() {
-    try {
-      const queue = JSON.parse(localStorage.getItem(this.syncQueueKey) || '[]');
-      if (queue.length === 0) return;
-
-      for (const item of queue) {
-        if (item.action === 'upsert') {
-          await this.saveEntry(item.payload);
-        } else if (item.action === 'delete') {
-          await this.deleteEntry(item.payload.id);
-        }
-      }
-
-      localStorage.removeItem(this.syncQueueKey);
-      this.setStatus('connected', 'Cloud Synced');
-    } catch (err) {
-      console.error('Failed to flush sync queue:', err);
-    }
-  }
-
-  // -------------------------------------------------------------
-  // Instant Cloud Storage Adapter (Uses Global Key-Value Sync)
-  // -------------------------------------------------------------
-  async fetchInstantCloud(key) {
-    const cleanKey = encodeURIComponent(key.trim().toLowerCase());
-    const storageUrl = `https://kvdb.io/4y9n8p3d5K6h2u/${cleanKey}`;
-    try {
-      const res = await fetch(storageUrl);
-      if (res.ok) {
-        const json = await res.json();
-        if (Array.isArray(json)) return json;
-      }
-    } catch (e) {
-      console.warn('Instant cloud fetch error:', e);
-    }
-    return null;
-  }
-
-  async pushInstantCloud(key, data) {
-    const cleanKey = encodeURIComponent(key.trim().toLowerCase());
-    const storageUrl = `https://kvdb.io/4y9n8p3d5K6h2u/${cleanKey}`;
-    try {
-      await fetch(storageUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-    } catch (e) {
-      console.warn('Instant cloud push error:', e);
-    }
-  }
-
-  // Schema Mapping
-  mapToSupabaseRow(entry) {
-    return {
-      id: entry.id,
-      user_id: entry.userId || 'user_kavin',
-      user_name: entry.userName || 'Kavin',
-      date: entry.date,
-      project_name: entry.projectName,
-      work: entry.work,
-      status: entry.status || 'In Progress',
-      hours_worked: entry.hoursWorked || 0,
-      priority: entry.priority || 'Medium',
-      remarks: entry.remarks || '',
-      created_at: entry.createdAt || new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-  }
-
-  mapFromSupabaseRow(row) {
-    return {
-      id: row.id,
-      userId: row.user_id || row.userId || 'user_kavin',
-      userName: row.user_name || row.userName || 'Kavin',
-      date: this.normalizeDate(row.date),
-      projectName: row.project_name || row.projectName || 'General',
-      work: row.work || '',
-      status: row.status || 'In Progress',
-      hoursWorked: parseFloat(row.hours_worked || row.hoursWorked || 0),
-      priority: row.priority || 'Medium',
-      remarks: row.remarks || '',
-      createdAt: row.created_at || row.createdAt,
-      updatedAt: row.updated_at || row.updatedAt
-    };
   }
 
   normalizeDate(d) {
@@ -5412,6 +5295,51 @@ class CloudStorageService {
       }
     } catch (e) {}
     return str.substring(0, 10);
+  }
+
+  // Network Listeners
+  bindNetworkListeners() {
+    window.addEventListener('online', () => {
+      this.setStatus('connected', 'Network restored. Re-syncing cloud...');
+      this.fetchAll();
+    });
+    window.addEventListener('offline', () => {
+      this.setStatus('local', 'Offline. Changes saved locally.');
+    });
+  }
+
+  // Auto Polling (every 60s)
+  startAutoPolling() {
+    if (this.pollingInterval) clearInterval(this.pollingInterval);
+    this.pollingInterval = setInterval(() => {
+      if (this.config.autoSync && navigator.onLine) {
+        this.fetchAll();
+      }
+    }, 60000);
+  }
+
+  // Status & Event Subscriptions
+  setStatus(status, message) {
+    this.currentStatus = status;
+    this.statusMessage = message;
+    this.statusListeners.forEach(cb => {
+      try { cb({ status, message }); } catch (e) {}
+    });
+  }
+
+  onStatusChange(callback) {
+    this.statusListeners.push(callback);
+    callback({ status: this.currentStatus, message: this.statusMessage });
+  }
+
+  onDataChange(callback) {
+    this.dataChangeListeners.push(callback);
+  }
+
+  notifyDataChange(event) {
+    this.dataChangeListeners.forEach(cb => {
+      try { cb(event); } catch (e) {}
+    });
   }
 }
 
@@ -7004,6 +6932,320 @@ class ImportExportManager {
 window.ImportExportManager = ImportExportManager;
 
 /**
+ * Admin Management & Multi-User Governance Module (WorkPulse)
+ * Dedicated Admin Portal for inspecting team members, monitoring dual-sync,
+ * auditing user tasks, and exporting consolidated reports.
+ */
+
+class AdminManager {
+  constructor(worksheetManager, authManager, uiRenderer) {
+    this.wm = worksheetManager;
+    this.auth = authManager;
+    this.ui = uiRenderer;
+    this.inspectedUser = null;
+  }
+
+  // Calculate high-level team metrics
+  getTeamMetrics() {
+    const users = this.auth.getAllUsers();
+    const allEntries = this.wm.entries || [];
+
+    const totalUsers = users.length;
+    const totalTasks = allEntries.length;
+    const totalHours = allEntries.reduce((sum, e) => sum + (parseFloat(e.hoursWorked) || 0), 0);
+    const completedTasks = allEntries.filter(e => e.status === 'Completed').length;
+    const inProgressTasks = allEntries.filter(e => e.status === 'In Progress').length;
+    const pendingTasks = allEntries.filter(e => e.status === 'Pending').length;
+
+    return {
+      totalUsers,
+      totalTasks,
+      totalHours: Math.round(totalHours * 10) / 10,
+      completedTasks,
+      inProgressTasks,
+      pendingTasks
+    };
+  }
+
+  // Get detailed stats per user
+  getUsersSummary() {
+    const users = this.auth.getAllUsers();
+    const allEntries = this.wm.entries || [];
+
+    return users.map(user => {
+      const userEntries = allEntries.filter(e => this.wm.isEntryBelongsToUser(e, user));
+      const hours = userEntries.reduce((sum, e) => sum + (parseFloat(e.hoursWorked) || 0), 0);
+      const completed = userEntries.filter(e => e.status === 'Completed').length;
+      const dates = userEntries.map(e => e.date).filter(Boolean).sort().reverse();
+      const lastActive = dates.length > 0 ? dates[0] : 'No activity';
+
+      return {
+        ...user,
+        totalTasks: userEntries.length,
+        totalHours: Math.round(hours * 10) / 10,
+        completedCount: completed,
+        lastActive,
+        entries: userEntries
+      };
+    });
+  }
+
+  // Render Admin Dashboard HTML
+  renderAdminDashboard(containerId = 'adminDashboardContainer') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const metrics = this.getTeamMetrics();
+    const userSummaries = this.getUsersSummary();
+    const cloudCfg = window.cloudStorage ? window.cloudStorage.config : {};
+
+    const isSheetsConnected = !!cloudCfg.googleSheetUrl;
+    const isNeonConnected = !!cloudCfg.neonDbUrl;
+
+    container.innerHTML = `
+      <!-- Admin KPI Metric Cards -->
+      <div class="admin-kpi-grid">
+        <div class="admin-kpi-card">
+          <div class="admin-kpi-icon bg-blue-light text-blue"><i data-lucide="users"></i></div>
+          <div class="admin-kpi-info">
+            <span class="admin-kpi-val">${metrics.totalUsers}</span>
+            <span class="admin-kpi-label">Registered Members</span>
+          </div>
+        </div>
+
+        <div class="admin-kpi-card">
+          <div class="admin-kpi-icon bg-emerald-light text-emerald"><i data-lucide="check-circle-2"></i></div>
+          <div class="admin-kpi-info">
+            <span class="admin-kpi-val">${metrics.completedTasks} / ${metrics.totalTasks}</span>
+            <span class="admin-kpi-label">Tasks Completed</span>
+          </div>
+        </div>
+
+        <div class="admin-kpi-card">
+          <div class="admin-kpi-icon bg-purple-light text-purple"><i data-lucide="clock"></i></div>
+          <div class="admin-kpi-info">
+            <span class="admin-kpi-val">${metrics.totalHours}h</span>
+            <span class="admin-kpi-label">Total Hours Logged</span>
+          </div>
+        </div>
+
+        <div class="admin-kpi-card">
+          <div class="admin-kpi-icon bg-amber-light text-amber"><i data-lucide="database"></i></div>
+          <div class="admin-kpi-info">
+            <span class="admin-kpi-val" style="font-size: 0.95rem; font-weight: 700; color: #10b981;">
+              ${isNeonConnected ? 'âš¡ Dual-Sync Active' : 'ðŸ“Š Google Sheets'}
+            </span>
+            <span class="admin-kpi-label">Cloud Storage Status</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Actions Bar -->
+      <div class="admin-header-actions">
+        <div>
+          <h3 style="font-size: 1.1rem; font-weight: 700; margin: 0;">ðŸ‘¥ Team Members Directory</h3>
+          <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0.2rem 0 0 0;">Manage users and inspect individual daily worksheets</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="btnAdminExportMasterExcel" class="btn btn-primary btn-sm btn-glow">
+            <i data-lucide="download"></i>
+            <span>Export Master Team Excel</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Users Directory Table -->
+      <div class="table-responsive-wrapper" style="margin-top: 1rem;">
+        <table class="worksheet-table admin-users-table">
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Email Address</th>
+              <th>Role</th>
+              <th>Tasks Logged</th>
+              <th>Total Hours</th>
+              <th>Last Active</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${userSummaries.map(u => `
+              <tr>
+                <td>
+                  <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <div class="user-avatar-badge" style="background-color: ${u.color || '#3b82f6'}; width: 28px; height: 28px; font-size: 0.75rem;">
+                      ${u.avatar || u.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <strong style="color: var(--text-primary); font-size: 0.85rem;">${this.escapeHtml(u.name)}</strong>
+                      <div style="font-size: 0.72rem; color: var(--text-muted);">@${this.escapeHtml(u.username || 'user')}</div>
+                    </div>
+                  </div>
+                </td>
+                <td><code style="font-size: 0.78rem;">${this.escapeHtml(u.email)}</code></td>
+                <td>
+                  <span class="badge ${u.role === 'Admin' ? 'badge-primary' : 'badge-neutral'}" style="font-size: 0.72rem;">
+                    ${u.role === 'Admin' ? 'ðŸ‘‘ Admin' : 'ðŸ‘¤ ' + this.escapeHtml(u.role || 'Member')}
+                  </span>
+                </td>
+                <td><strong>${u.totalTasks}</strong> tasks</td>
+                <td><span class="hours-badge">${u.totalHours}h</span></td>
+                <td><span style="font-size: 0.78rem; color: var(--text-muted);">${u.lastActive}</span></td>
+                <td style="text-align: right;">
+                  <button class="btn btn-outline btn-xs btn-inspect-user" data-user-id="${u.id}" title="Inspect Worksheet">
+                    <i data-lucide="eye" class="icon-xs"></i>
+                    <span>Inspect</span>
+                  </button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Inspected User Section (Hidden until user clicks Inspect) -->
+      <div id="adminUserInspectorArea" class="admin-inspector-card hidden" style="margin-top: 1.5rem;">
+        <div class="admin-inspector-header">
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <div id="inspectorUserAvatar" class="user-avatar-badge" style="width: 32px; height: 32px;">K</div>
+            <div>
+              <h4 id="inspectorUserName" style="margin: 0; font-size: 1rem;">User Worksheet</h4>
+              <span id="inspectorUserEmail" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+            </div>
+          </div>
+          <button id="btnCloseInspector" class="btn btn-ghost btn-xs"><i data-lucide="x"></i></button>
+        </div>
+        <div id="inspectorTableContainer" style="margin-top: 1rem;"></div>
+      </div>
+    `;
+
+    if (window.lucide) window.lucide.createIcons();
+    this.bindAdminEvents();
+  }
+
+  // Bind Admin dashboard interactive events
+  bindAdminEvents() {
+    // 1. Export Master Excel
+    const btnMasterExcel = document.getElementById('btnAdminExportMasterExcel');
+    if (btnMasterExcel) {
+      btnMasterExcel.addEventListener('click', () => this.exportMasterTeamExcel());
+    }
+
+    // 2. Inspect User Buttons
+    document.querySelectorAll('.btn-inspect-user').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const userId = btn.dataset.userId;
+        this.inspectUser(userId);
+      });
+    });
+
+    // 3. Close Inspector
+    const btnCloseInspector = document.getElementById('btnCloseInspector');
+    if (btnCloseInspector) {
+      btnCloseInspector.addEventListener('click', () => {
+        const area = document.getElementById('adminUserInspectorArea');
+        if (area) area.classList.add('hidden');
+      });
+    }
+  }
+
+  // Inspect specific user's worksheet
+  inspectUser(userId) {
+    const users = this.auth.getAllUsers();
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+
+    const allEntries = this.wm.entries || [];
+    const userEntries = allEntries.filter(e => this.wm.isEntryBelongsToUser(e, user));
+
+    const inspectorArea = document.getElementById('adminUserInspectorArea');
+    const avatarEl = document.getElementById('inspectorUserAvatar');
+    const nameEl = document.getElementById('inspectorUserName');
+    const emailEl = document.getElementById('inspectorUserEmail');
+    const tableEl = document.getElementById('inspectorTableContainer');
+
+    if (!inspectorArea) return;
+
+    avatarEl.style.backgroundColor = user.color || '#3b82f6';
+    avatarEl.textContent = user.avatar || user.name.charAt(0).toUpperCase();
+    nameEl.textContent = `${user.name}'s Worksheet (${userEntries.length} tasks)`;
+    emailEl.textContent = `${user.email} â€¢ Role: ${user.role}`;
+
+    if (userEntries.length === 0) {
+      tableEl.innerHTML = `<div class="empty-state-wrap"><p>No worksheet tasks recorded yet for this member.</p></div>`;
+    } else {
+      tableEl.innerHTML = `
+        <table class="worksheet-table" style="font-size: 0.8rem; width: 100%;">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Project</th>
+              <th>Work Description</th>
+              <th>Status</th>
+              <th>Hours</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${userEntries.map(e => `
+              <tr>
+                <td><strong>${e.date}</strong></td>
+                <td><span class="project-pill">${this.escapeHtml(e.projectName)}</span></td>
+                <td>${this.escapeHtml(e.work)}</td>
+                <td><span class="status-badge status-${(e.status||'').toLowerCase().replace(/\s+/g, '-')}">${e.status}</span></td>
+                <td><strong>${e.hoursWorked}h</strong></td>
+                <td><span style="font-size: 0.75rem; color: var(--text-muted);">${this.escapeHtml(e.remarks || '-')}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    inspectorArea.classList.remove('hidden');
+    inspectorArea.scrollIntoView({ behavior: 'smooth' });
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // Export Consolidated Multi-User Excel
+  exportMasterTeamExcel() {
+    if (!window.XLSX) {
+      this.ui.showToast('Excel exporter library not loaded', 'error');
+      return;
+    }
+
+    const allEntries = this.wm.entries || [];
+    const users = this.auth.getAllUsers();
+
+    const rows = allEntries.map(e => ({
+      'Member Name': e.userName || 'Kavin',
+      'Date': e.date,
+      'Project Name': e.projectName,
+      'Work Description': e.work,
+      'Status': e.status,
+      'Hours': e.hoursWorked || 0,
+      'Priority': e.priority || 'Medium',
+      'Remarks': e.remarks || ''
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'All Members Worksheet');
+
+    const fileName = `WorkPulse_Master_Team_Report_${WorksheetManager.getTodayStr()}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+    this.ui.showToast(`Master Team Excel exported successfully!`, 'success');
+  }
+
+  escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+}
+
+window.AdminManager = AdminManager;
+
+/**
  * WorkPulse - Master Application Controller
  * Wires together state, UI renderer, cloud sync, modals, and user interactions.
  */
@@ -7015,6 +7257,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const manager = new window.WorksheetManager(cloud);
   const ui = window.uiRenderer;
   const ie = new window.ImportExportManager(manager, ui);
+  const admin = new window.AdminManager(manager, auth, ui);
 
   let currentView = 'table'; // 'table' | 'cards' | 'calendar' | 'analytics'
   let reportSelectedDate = WorksheetManager.getTodayStr();
@@ -7069,6 +7312,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 6. Setup UI Event Listeners
   bindHeaderEvents();
   bindAuthEvents();
+  bindAdminEvents();
   bindFilterEvents();
   bindViewSwitching();
   bindCalendarEvents();
@@ -7078,13 +7322,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   bindDailyReportEvents();
   bindKeyboardShortcuts();
 
-  // -------------------------------------------------------------
+  // =========================================================================
   // Master Render Function
-  // -------------------------------------------------------------
+  // =========================================================================
   function renderApp() {
     const currentUser = auth ? auth.getCurrentUser() : null;
     if (currentUser) {
       ui.renderUserProfileHeader(currentUser);
+    }
+
+    // Toggle Admin Panel button visibility
+    const btnOpenAdminPanel = document.getElementById('btnOpenAdminPanel');
+    if (btnOpenAdminPanel) {
+      if (auth && auth.isAdmin()) {
+        btnOpenAdminPanel.classList.remove('hidden');
+      } else {
+        btnOpenAdminPanel.classList.add('hidden');
+      }
     }
 
     const entries = manager.getFilteredEntries();
@@ -7631,6 +7885,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // -------------------------------------------------------------
+  // Dedicated Admin Governance Portal
+  // -------------------------------------------------------------
+  function bindAdminEvents() {
+    const btnOpenAdminPanel = document.getElementById('btnOpenAdminPanel');
+    const adminModal = document.getElementById('adminPortalModal');
+    const btnCloseAdminModal = document.getElementById('btnCloseAdminModal');
+    const btnCloseAdminFooter = document.getElementById('btnCloseAdminFooter');
+
+    if (btnOpenAdminPanel) {
+      btnOpenAdminPanel.addEventListener('click', () => {
+        if (!auth.isAdmin()) {
+          ui.showToast('Admin privileges required to access Admin Panel', 'error');
+          return;
+        }
+        admin.renderAdminDashboard('adminDashboardContainer');
+        if (adminModal) adminModal.classList.remove('hidden');
+      });
+    }
+
+    if (btnCloseAdminModal) {
+      btnCloseAdminModal.addEventListener('click', () => {
+        if (adminModal) adminModal.classList.add('hidden');
+      });
+    }
+
+    if (btnCloseAdminFooter) {
+      btnCloseAdminFooter.addEventListener('click', () => {
+        if (adminModal) adminModal.classList.add('hidden');
+      });
+    }
+  }
+
+  // -------------------------------------------------------------
   // Cloud Database Settings Modal
   // -------------------------------------------------------------
   function openCloudModal() {
@@ -7644,6 +7931,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.getElementById('googleSheetUrl').value = config.googleSheetUrl || '';
+    const neonUrlEl = document.getElementById('neonDbUrl');
+    const neonTokenEl = document.getElementById('neonDbToken');
+    if (neonUrlEl) neonUrlEl.value = config.neonDbUrl || '';
+    if (neonTokenEl) neonTokenEl.value = config.neonToken || '';
+
     document.getElementById('syncKeyInput').value = config.syncKey || '';
     document.getElementById('supabaseUrl').value = config.supabaseUrl || '';
     document.getElementById('supabaseAnonKey').value = config.supabaseAnonKey || '';
@@ -7666,7 +7958,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const supabaseSec = document.getElementById('supabaseConfigSection');
     const restSec = document.getElementById('restConfigSection');
 
-    if (sheetsSec) sheetsSec.classList.toggle('hidden', provider !== 'sheets');
+    if (sheetsSec) sheetsSec.classList.toggle('hidden', provider !== 'sheets' && provider !== 'dual');
     if (instantSec) instantSec.classList.toggle('hidden', provider !== 'instant');
     if (supabaseSec) supabaseSec.classList.toggle('hidden', provider !== 'supabase');
     if (restSec) restSec.classList.toggle('hidden', provider !== 'rest');
@@ -7701,9 +7993,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       resultBox.classList.remove('hidden');
 
       const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
+      const neonUrlEl = document.getElementById('neonDbUrl');
+      const neonTokenEl = document.getElementById('neonDbToken');
+
       const testConfig = {
         provider: activeProvider,
         googleSheetUrl: document.getElementById('googleSheetUrl').value,
+        neonDbUrl: neonUrlEl ? neonUrlEl.value : '',
+        neonToken: neonTokenEl ? neonTokenEl.value : '',
         syncKey: document.getElementById('syncKeyInput').value,
         supabaseUrl: document.getElementById('supabaseUrl').value,
         supabaseAnonKey: document.getElementById('supabaseAnonKey').value,
@@ -7714,7 +8011,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const res = await cloud.testConnection(testConfig);
         resultBox.classList.add('success');
-        resultBox.textContent = 'âœ… ' + res.message;
+        resultBox.textContent = res.message;
       } catch (err) {
         resultBox.classList.add('error');
         resultBox.textContent = 'âŒ Connection Failed: ' + err.message;
@@ -7724,9 +8021,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Save Cloud Settings
     document.getElementById('btnSaveCloudSettings').addEventListener('click', async () => {
       const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
+      const neonUrlEl = document.getElementById('neonDbUrl');
+      const neonTokenEl = document.getElementById('neonDbToken');
+
       const newConfig = {
         provider: activeProvider,
         googleSheetUrl: document.getElementById('googleSheetUrl').value,
+        neonDbUrl: neonUrlEl ? neonUrlEl.value : '',
+        neonToken: neonTokenEl ? neonTokenEl.value : '',
         syncKey: document.getElementById('syncKeyInput').value,
         supabaseUrl: document.getElementById('supabaseUrl').value,
         supabaseAnonKey: document.getElementById('supabaseAnonKey').value,

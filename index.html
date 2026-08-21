@@ -283,6 +283,11 @@
             </div>
           </div>
 
+          <button id="btnOpenAdminPanel" class="btn btn-outline btn-sm admin-header-btn hidden" title="Team Admin & User Management">
+            <i data-lucide="shield-check" class="text-amber"></i>
+            <span class="btn-text">Admin Panel</span>
+          </button>
+
           <button id="btnOpenReport" class="btn btn-outline btn-sm" title="Generate formatted daily report for WhatsApp/Slack">
             <i data-lucide="file-text"></i>
             <span class="btn-text">Daily Report</span>
@@ -1014,6 +1019,23 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
             </div>
           </div>
 
+          <!-- Dual-Sync & Neon DB Section -->
+          <div class="config-form-section" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
+            <h4 class="section-title" style="display: flex; align-items: center; gap: 0.4rem; color: #a78bfa;">
+              <i data-lucide="database" class="icon-xs"></i>
+              <span>Neon PostgreSQL DB (Dual-Sync Cloud)</span>
+            </h4>
+            <p class="section-desc">Connect your Neon Serverless PostgreSQL DB for real-time dual cloud sync alongside Google Sheets.</p>
+            <div class="form-group">
+              <label for="neonDbUrl" class="form-label">Neon DB Endpoint / Connection String</label>
+              <input type="text" id="neonDbUrl" class="form-input" placeholder="https://ep-xxx.neon.tech/sql or postgresql://...">
+            </div>
+            <div class="form-group">
+              <label for="neonDbToken" class="form-label">Neon Auth Bearer Token (Optional)</label>
+              <input type="password" id="neonDbToken" class="form-input" placeholder="Bearer your-neon-api-key">
+            </div>
+          </div>
+
           <!-- Connection Test Feedback -->
           <div id="cloudTestResult" class="test-result-box hidden"></div>
         </div>
@@ -1238,6 +1260,34 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       </div>
     </div>
 
+    <!-- 5. Dedicated Admin Governance & Multi-User Management Portal Modal -->
+    <div class="modal-overlay hidden" id="adminPortalModal">
+      <div class="modal-container modal-xl" role="dialog" aria-labelledby="adminModalTitle">
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <div class="modal-icon-badge bg-amber-light text-amber">
+              <i data-lucide="shield-check"></i>
+            </div>
+            <div>
+              <h2 id="adminModalTitle" class="modal-title">👑 WorkPulse Admin Dashboard</h2>
+              <p class="modal-subtitle">Team members governance, user worksheet inspector, and dual cloud sync</p>
+            </div>
+          </div>
+          <button class="btn-close-modal" id="btnCloseAdminModal" aria-label="Close modal">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body" id="adminDashboardContainer">
+          <!-- Dynamically populated by AdminManager -->
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="btnCloseAdminFooter">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
@@ -1250,6 +1300,7 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
   <script src="js/worksheetManager.js"></script>
   <script src="js/uiRenderer.js"></script>
   <script src="js/importExport.js"></script>
+  <script src="js/adminManager.js"></script>
   <script src="js/app.js"></script>
 
   <!-- PWA Service Worker Registration -->
