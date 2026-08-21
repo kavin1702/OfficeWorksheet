@@ -33,6 +33,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (loggedIn) {
       if (authPortal) authPortal.classList.add('hidden');
       if (appContainer) appContainer.classList.remove('hidden');
+
+      // Smart Role-Based Default View
+      const currentUser = auth.getCurrentUser();
+      const isAdmin = auth.isAdmin(currentUser);
+
+      if (isAdmin) {
+        // Admin Supervisor default: View all team members' work immediately
+        manager.setFilter('userScope', 'all');
+        const pillScopeAll = document.getElementById('pillScopeAll');
+        const pillScopeMe = document.getElementById('pillScopeMe');
+        if (pillScopeAll) pillScopeAll.classList.add('active');
+        if (pillScopeMe) pillScopeMe.classList.remove('active');
+      } else {
+        // Team Member default: View my personal daily worksheet
+        manager.setFilter('userScope', 'me');
+        const pillScopeMe = document.getElementById('pillScopeMe');
+        const pillScopeAll = document.getElementById('pillScopeAll');
+        if (pillScopeMe) pillScopeMe.classList.add('active');
+        if (pillScopeAll) pillScopeAll.classList.remove('active');
+      }
+
       renderApp();
     } else {
       if (authPortal) authPortal.classList.remove('hidden');

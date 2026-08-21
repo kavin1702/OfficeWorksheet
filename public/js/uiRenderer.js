@@ -263,8 +263,8 @@ class UIRenderer {
       dropAvatar.style.backgroundColor = color;
     }
     if (dropName) dropName.textContent = user.name;
-    if (dropRole) dropRole.textContent = isAdminUser ? '👑 Admin' : (user.role || 'Team Member');
-    if (myLabel) myLabel.textContent = `${user.name}'s Worksheet`;
+    if (dropRole) dropRole.textContent = isAdminUser ? '👑 Supervisor & Admin' : (user.role || 'Team Member');
+    if (myLabel) myLabel.textContent = isAdminUser ? '👑 Team Master View' : `${user.name}'s Worksheet`;
 
     const dropAdminLink = document.getElementById('btnDropdownAdmin');
     if (dropAdminLink) {
