@@ -91,6 +91,10 @@ export async function validateSession() {
         id: session.user.id,
         email: session.user.email,
         name: session.user.name,
+        username: session.user.username,
+        role: session.user.role,
+        color: session.user.color,
+        avatar: session.user.avatar,
       },
     };
   } catch (error) {
@@ -112,5 +116,26 @@ export async function destroySession() {
     console.error("Failed to delete session from database:", error);
   } finally {
     cookieStore.delete(SESSION_COOKIE_NAME);
+  }
+}
+
+export async function getAllRegisteredUsers() {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        username: true,
+        role: true,
+        color: true,
+        avatar: true,
+      },
+      orderBy: { name: "asc" }
+    });
+    return users;
+  } catch (error) {
+    console.error("Failed to get all registered users:", error);
+    return [];
   }
 }

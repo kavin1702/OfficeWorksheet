@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { validateSession } from "@/lib/auth";
+import { validateSession, getAllRegisteredUsers } from "@/lib/auth";
 import { getWorksheetEntries, dbHealthCheck } from "./actions";
 import WorksheetApp from "./WorksheetApp";
 
@@ -11,9 +11,10 @@ export default async function Page() {
     redirect("/login");
   }
 
-  const [initialEntries, isDbConnected] = await Promise.all([
-    getWorksheetEntries(),
+  const [initialEntries, isDbConnected, allUsers] = await Promise.all([
+    getWorksheetEntries("me"),
     dbHealthCheck(),
+    getAllRegisteredUsers(),
   ]);
 
   return (
@@ -21,6 +22,7 @@ export default async function Page() {
       initialEntries={initialEntries}
       isDbConnected={isDbConnected}
       currentUser={sessionResult.user}
+      allUsers={allUsers}
     />
   );
 }

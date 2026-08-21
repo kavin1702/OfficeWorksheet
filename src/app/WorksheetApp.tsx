@@ -40,7 +40,11 @@ import {
   Trash2,
   Copy,
   User,
-  LogOut
+  LogOut,
+  ChevronDown,
+  Users,
+  UserPlus,
+  ArrowRight
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import * as XLSX from "xlsx";
@@ -57,7 +61,7 @@ import {
   dbHealthCheck,
   WorksheetEntryDto 
 } from "./actions";
-import { logoutAction } from "./authActions";
+import { logoutAction, switchUserAction, addFriendProfileAction } from "./authActions";
 import { SAMPLE_WORKSHEET_DATA } from "./sampleData";
 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from "chart.js";
@@ -68,16 +72,82 @@ ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarEle
 interface WorksheetAppProps {
   initialEntries: WorksheetEntryDto[];
   isDbConnected: boolean;
-  currentUser: { id: string; email: string; name: string | null };
+  currentUser: { 
+    id: string; 
+    email: string; 
+    name: string | null;
+    username: string | null;
+    role: string;
+    color: string;
+    avatar: string | null;
+  };
+  allUsers: Array<{
+    id: string;
+    email: string;
+    name: string | null;
+    username: string | null;
+    role: string;
+    color: string;
+    avatar: string | null;
+  }>;
 }
 
-export default function WorksheetApp({ initialEntries, isDbConnected: serverDbConnected, currentUser }: WorksheetAppProps) {
+export default function WorksheetApp({ initialEntries, isDbConnected: serverDbConnected, currentUser, allUsers }: WorksheetAppProps) {
   // App State
   const [entries, setEntries] = useState<WorksheetEntryDto[]>(initialEntries);
   
   const handleLogout = async () => {
     if (confirm("Are you sure you want to sign out?")) {
       await logoutAction();
+    }
+  };
+
+  // Profile Switching & Scope States
+  const [userScope, setUserScope] = useState<'me' | 'all'>('me');
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState<boolean>(false);
+  const [isUserAuthModalOpen, setIsUserAuthModalOpen] = useState<boolean>(false);
+  const [activeUserAuthTab, setActiveUserAuthTab] = useState<'switch' | 'new'>('switch');
+  const [selectedAvatarColor, setSelectedAvatarColor] = useState<string>("#3b82f6");
+
+  const handleScopeChange = async (scope: 'me' | 'all') => {
+    setUserScope(scope);
+    setIsSyncing(true);
+    try {
+      const data = await getWorksheetEntries(scope);
+      setEntries(data);
+    } catch (error) {
+      console.error("Failed to change scope:", error);
+      showToast("Error updating worksheet scope", "error");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleSwitchUser = async (userId: string) => {
+    try {
+      showToast("Switching profile...", "info");
+      await switchUserAction(userId);
+    } catch (error: any) {
+      showToast("Failed to switch profile: " + error.message, "error");
+    }
+  };
+
+  const handleAddFriendProfile = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    formData.set("color", selectedAvatarColor);
+
+    try {
+      showToast("Creating friend profile...", "info");
+      const res = await addFriendProfileAction(formData);
+      if (res && !res.success) {
+        showToast(res.message, "error");
+      } else {
+        setIsUserAuthModalOpen(false);
+        showToast("Profile created successfully!", "success");
+      }
+    } catch (error: any) {
+      showToast("Failed to create profile: " + error.message, "error");
     }
   };
   const [dbConnected, setDbConnected] = useState<boolean>(serverDbConnected);
@@ -215,7 +285,7 @@ export default function WorksheetApp({ initialEntries, isDbConnected: serverDbCo
     setIsSyncing(true);
     showToast("Syncing with online database...", "info");
     try {
-      const activeEntries = await getWorksheetEntries();
+      const activeEntries = await getWorksheetEntries(userScope);
       const check = await dbHealthCheck();
       setEntries(activeEntries);
       setDbConnected(check);
@@ -236,7 +306,7 @@ export default function WorksheetApp({ initialEntries, isDbConnected: serverDbCo
         showToast(res.message, "success");
         confetti({ particleCount: 80, spread: 60, origin: { y: 0.8 } });
         // Refresh
-        const updated = await getWorksheetEntries();
+        const updated = await getWorksheetEntries(userScope);
         setEntries(updated);
       } else {
         showToast(res.message, "info");
@@ -253,7 +323,7 @@ export default function WorksheetApp({ initialEntries, isDbConnected: serverDbCo
       const success = await bulkImportEntries(SAMPLE_WORKSHEET_DATA);
       if (success) {
         showToast("Sample office data loaded successfully!", "success");
-        const updated = await getWorksheetEntries();
+        const updated = await getWorksheetEntries(userScope);
         setEntries(updated);
         confetti({ particleCount: 50, spread: 40 });
       } else {
@@ -854,7 +924,7 @@ export default function WorksheetApp({ initialEntries, isDbConnected: serverDbCo
         setIsImportExportOpen(false);
         setParsedImportData([]);
         // Reload
-        const updated = await getWorksheetEntries();
+        const updated = await getWorksheetEntries(userScope);
         setEntries(updated);
       } else {
         showToast("Database import failed", "error");
@@ -1159,20 +1229,86 @@ export default function WorksheetApp({ initialEntries, isDbConnected: serverDbCo
               <span>Log Work</span>
             </button>
 
-            <div className="current-date-pill user-profile-pill" style={{ marginLeft: "0.25rem", padding: "0.35rem 0.65rem", background: "var(--bg-subtle)", borderRadius: "var(--radius-md)" }} title={`Logged in as ${currentUser.email}`}>
-              <User className="icon-sm" />
-              <span className="btn-text">{currentUser.name || currentUser.email}</span>
-            </div>
+            <div className="user-profile-wrapper" style={{ position: "relative", marginLeft: "0.25rem" }}>
+              <button 
+                id="btnUserProfile" 
+                className="user-profile-btn" 
+                title="Click to switch account or add friend profile"
+                onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+              >
+                <span 
+                  className="user-avatar-badge" 
+                  id="headerUserAvatar" 
+                  style={{ backgroundColor: currentUser.color || "#3b82f6" }}
+                >
+                  {currentUser.avatar || (currentUser.name || currentUser.email).charAt(0).toUpperCase()}
+                </span>
+                <span className="user-name-label" id="headerUserName">
+                  {currentUser.name || currentUser.email.split('@')[0]}
+                </span>
+                <ChevronDown className="icon-xs" />
+              </button>
 
-            <button 
-              className="btn btn-outline btn-sm btn-delete" 
-              title="Sign Out"
-              style={{ padding: "0.45rem 0.75rem" }}
-              onClick={handleLogout}
-            >
-              <LogOut className="icon-sm" />
-              <span className="btn-text">Sign Out</span>
-            </button>
+              {isUserDropdownOpen && (
+                <div className="user-dropdown-menu" id="userDropdownMenu" style={{ display: "block" }}>
+                  <div className="user-dropdown-header">
+                    <div 
+                      className="user-avatar-large" 
+                      id="dropdownUserAvatar" 
+                      style={{ backgroundColor: currentUser.color || "#3b82f6" }}
+                    >
+                      {currentUser.avatar || (currentUser.name || currentUser.email).charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="dropdown-user-name" id="dropdownUserName">
+                        {currentUser.name || currentUser.email.split('@')[0]}
+                      </div>
+                      <div className="dropdown-user-role" id="dropdownUserRole">
+                        {currentUser.role || "Team Member"}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="dropdown-divider"></div>
+                  <button 
+                    className="dropdown-item" 
+                    id="btnDropdownSwitchUser"
+                    onClick={() => {
+                      setIsUserDropdownOpen(false);
+                      setActiveUserAuthTab("switch");
+                      setIsUserAuthModalOpen(true);
+                    }}
+                  >
+                    <Users className="icon-sm" />
+                    <span>Switch User Account</span>
+                  </button>
+                  <button 
+                    className="dropdown-item" 
+                    id="btnDropdownAddUser"
+                    onClick={() => {
+                      setIsUserDropdownOpen(false);
+                      setActiveUserAuthTab("new");
+                      setIsUserAuthModalOpen(true);
+                    }}
+                  >
+                    <UserPlus className="icon-sm" />
+                    <span>Add Friend / New Profile</span>
+                  </button>
+                  <div className="dropdown-divider"></div>
+                  <button 
+                    className="dropdown-item" 
+                    id="btnDropdownLogout" 
+                    style={{ color: "#ef4444" }}
+                    onClick={() => {
+                      setIsUserDropdownOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    <LogOut className="icon-sm" />
+                    <span>Log Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -1239,6 +1375,26 @@ export default function WorksheetApp({ initialEntries, isDbConnected: serverDbCo
         <section className="control-panel">
           <div className="filters-row">
             
+            {/* User Workspace Scope Selector */}
+            <div className="date-pills-group" id="userScopePills">
+              <button 
+                className={`filter-pill ${userScope === "me" ? "active" : ""}`} 
+                onClick={() => handleScopeChange("me")}
+                id="pillScopeMe"
+              >
+                <User className="icon-xs" style={{ marginRight: "4px" }} />
+                <span>My Worksheet</span>
+              </button>
+              <button 
+                className={`filter-pill ${userScope === "all" ? "active" : ""}`} 
+                onClick={() => handleScopeChange("all")}
+                id="pillScopeAll"
+              >
+                <Users className="icon-xs" style={{ marginRight: "4px" }} />
+                <span>All Friends / Team</span>
+              </button>
+            </div>
+
             {/* Date Filter Pills */}
             <div className="date-pills-group" id="dateFilterPills">
               <button className={`filter-pill ${dateFilter === "today" ? "active" : ""}`} onClick={() => setDateFilter("today")}>Today</button>
@@ -1427,26 +1583,43 @@ export default function WorksheetApp({ initialEntries, isDbConnected: serverDbCo
                       return (
                         <tr key={e.id}>
                           <td>{formatDisplayDate(e.date)}</td>
-                          <td><strong>{e.projectName}</strong></td>
+                          <td>
+                            {userScope === "all" && e.userName && (
+                              <span 
+                                className="user-badge-pill" 
+                                style={{ backgroundColor: e.userColor || "#3b82f6", marginRight: "6px" }}
+                              >
+                                <User className="icon-xs" style={{ width: "10px", height: "10px", display: "inline", marginRight: "3px" }} />
+                                {e.userName}
+                              </span>
+                            )}
+                            <strong>{e.projectName}</strong>
+                          </td>
                           <td style={{ whiteSpace: "pre-line" }}>
                             {e.work}
                             {e.remarks && <div className="table-remarks">Remarks: {e.remarks}</div>}
                           </td>
                           <td>
-                            <div className="select-wrap table-select-wrap">
-                              <select 
-                                value={e.status}
-                                onChange={(evt) => handleStatusChange(e.id, evt.target.value)}
-                                className={`status-badge-inline ${statusMeta.cls}`}
-                              >
-                                <option value="Completed">✅ Completed</option>
-                                <option value="In Progress">🔄 In Progress</option>
-                                <option value="Pending">⏳ Pending</option>
-                                <option value="Blocked">🛑 Blocked</option>
-                                <option value="Under Review">🔍 Under Review</option>
-                                <option value="Leave">🏖️ Leave / Off</option>
-                              </select>
-                            </div>
+                            {e.userId === currentUser.id ? (
+                              <div className="select-wrap table-select-wrap">
+                                <select 
+                                  value={e.status}
+                                  onChange={(evt) => handleStatusChange(e.id, evt.target.value)}
+                                  className={`status-badge-inline ${statusMeta.cls}`}
+                                >
+                                  <option value="Completed">✅ Completed</option>
+                                  <option value="In Progress">🔄 In Progress</option>
+                                  <option value="Pending">⏳ Pending</option>
+                                  <option value="Blocked">🛑 Blocked</option>
+                                  <option value="Under Review">🔍 Under Review</option>
+                                  <option value="Leave">🏖️ Leave / Off</option>
+                                </select>
+                              </div>
+                            ) : (
+                              <span className={`status-badge-inline ${statusMeta.cls}`} style={{ display: "inline-block", padding: "0.25rem 0.65rem", borderRadius: "12px", fontSize: "0.75rem" }}>
+                                {statusMeta.label}
+                              </span>
+                            )}
                           </td>
                           <td><strong>{e.hoursWorked > 0 ? `${e.hoursWorked}h` : "-"}</strong></td>
                           <td>
@@ -1456,15 +1629,19 @@ export default function WorksheetApp({ initialEntries, isDbConnected: serverDbCo
                           </td>
                           <td>
                             <div className="table-actions">
-                              <button className="btn-action" title="Edit entry" onClick={() => openWorkModal(e)}>
-                                <Edit3 className="icon-xs" />
-                              </button>
+                              {e.userId === currentUser.id && (
+                                <button className="btn-action" title="Edit entry" onClick={() => openWorkModal(e)}>
+                                  <Edit3 className="icon-xs" />
+                                </button>
+                              )}
                               <button className="btn-action" title="Duplicate task to today" onClick={() => handleDuplicateEntry(e.id)}>
                                 <Copy className="icon-xs" />
                               </button>
-                              <button className="btn-action btn-delete" title="Delete entry" onClick={() => handleDeleteEntry(e.id)}>
-                                <Trash2 className="icon-xs" />
-                              </button>
+                              {e.userId === currentUser.id && (
+                                <button className="btn-action btn-delete" title="Delete entry" onClick={() => handleDeleteEntry(e.id)}>
+                                  <Trash2 className="icon-xs" />
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -1488,7 +1665,18 @@ export default function WorksheetApp({ initialEntries, isDbConnected: serverDbCo
                         <span className="card-date">{formatDisplayDate(e.date)}</span>
                         <span className={`priority-badge ${getPriorityClass(e.priority)}`}>{e.priority}</span>
                       </div>
-                      <h4 className="card-project">{e.projectName}</h4>
+                      <h4 className="card-project">
+                        {userScope === "all" && e.userName && (
+                          <span 
+                            className="user-badge-pill" 
+                            style={{ backgroundColor: e.userColor || "#3b82f6", marginRight: "6px", fontSize: "0.68rem" }}
+                          >
+                            <User className="icon-xs" style={{ width: "10px", height: "10px", display: "inline", marginRight: "3px" }} />
+                            {e.userName}
+                          </span>
+                        )}
+                        {e.projectName}
+                      </h4>
                       <p className="card-work" style={{ whiteSpace: "pre-line" }}>{e.work}</p>
                       {e.remarks && <div className="card-remarks"><strong>Remarks:</strong> {e.remarks}</div>}
                       
@@ -1498,30 +1686,40 @@ export default function WorksheetApp({ initialEntries, isDbConnected: serverDbCo
                           <span>{e.hoursWorked > 0 ? `${e.hoursWorked} hrs` : "0 hrs"}</span>
                         </div>
                         <div className="select-wrap">
-                          <select 
-                            value={e.status}
-                            onChange={(evt) => handleStatusChange(e.id, evt.target.value)}
-                            className={`status-badge-inline ${statusMeta.cls}`}
-                          >
-                            <option value="Completed">✅ Completed</option>
-                            <option value="In Progress">🔄 In Progress</option>
-                            <option value="Pending">⏳ Pending</option>
-                            <option value="Blocked">🛑 Blocked</option>
-                            <option value="Under Review">🔍 Under Review</option>
-                            <option value="Leave">🏖️ Leave / Off</option>
-                          </select>
+                          {e.userId === currentUser.id ? (
+                            <select 
+                              value={e.status}
+                              onChange={(evt) => handleStatusChange(e.id, evt.target.value)}
+                              className={`status-badge-inline ${statusMeta.cls}`}
+                            >
+                              <option value="Completed">✅ Completed</option>
+                              <option value="In Progress">🔄 In Progress</option>
+                              <option value="Pending">⏳ Pending</option>
+                              <option value="Blocked">🛑 Blocked</option>
+                              <option value="Under Review">🔍 Under Review</option>
+                              <option value="Leave">🏖️ Leave / Off</option>
+                            </select>
+                          ) : (
+                            <span className={`status-badge-inline ${statusMeta.cls}`} style={{ display: "inline-block", padding: "0.25rem 0.65rem", borderRadius: "12px", fontSize: "0.75rem" }}>
+                              {statusMeta.label}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="card-action-bar">
-                        <button className="btn btn-outline btn-xs" onClick={() => openWorkModal(e)}>
-                          <Edit3 className="icon-xs" /> Edit
-                        </button>
+                        {e.userId === currentUser.id && (
+                          <button className="btn btn-outline btn-xs" onClick={() => openWorkModal(e)}>
+                            <Edit3 className="icon-xs" /> Edit
+                          </button>
+                        )}
                         <button className="btn btn-outline btn-xs" onClick={() => handleDuplicateEntry(e.id)}>
                           <Copy className="icon-xs" /> Duplicate
                         </button>
-                        <button className="btn btn-outline btn-xs btn-delete" onClick={() => handleDeleteEntry(e.id)}>
-                          <Trash2 className="icon-xs" /> Delete
-                        </button>
+                        {e.userId === currentUser.id && (
+                          <button className="btn btn-outline btn-xs btn-delete" onClick={() => handleDeleteEntry(e.id)}>
+                            <Trash2 className="icon-xs" /> Delete
+                          </button>
+                        )}
                       </div>
                     </div>
                   );
@@ -2337,6 +2535,183 @@ export default function WorksheetApp({ initialEntries, isDbConnected: serverDbCo
                 <Copy className="icon-sm" />
                 <span>Copy to Clipboard</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. User Account Switcher & Profile Modal */}
+      {isUserAuthModalOpen && (
+        <div className="modal-overlay" id="userAuthModal">
+          <div className="modal-container modal-md" role="dialog" aria-labelledby="userModalTitle">
+            <div className="modal-header">
+              <div className="modal-header-left">
+                <Users className="modal-header-icon text-blue icon-sm" />
+                <h2 id="userModalTitle" className="modal-title">User Accounts & Profiles</h2>
+              </div>
+              <button 
+                className="btn-close-modal" 
+                id="btnCloseUserModal" 
+                aria-label="Close modal" 
+                onClick={() => setIsUserAuthModalOpen(false)}
+              >
+                <X className="icon-sm" />
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="user-tabs-nav">
+                <button 
+                  className={`user-tab-btn ${activeUserAuthTab === "switch" ? "active" : ""}`} 
+                  id="tabBtnSwitchUser"
+                  onClick={() => setActiveUserAuthTab("switch")}
+                >
+                  👥 Switch User
+                </button>
+                <button 
+                  className={`user-tab-btn ${activeUserAuthTab === "new" ? "active" : ""}`} 
+                  id="tabBtnNewUser"
+                  onClick={() => setActiveUserAuthTab("new")}
+                >
+                  ➕ New Profile
+                </button>
+              </div>
+
+              {/* Tab 1: Switch Account */}
+              {activeUserAuthTab === "switch" && (
+                <div id="tabContentSwitchUser" className="user-tab-pane">
+                  <p className="section-hint" style={{ marginBottom: "0.85rem", fontSize: "0.8125rem", color: "var(--text-muted)" }}>
+                    Select an account below to view their personal worksheet or separate records:
+                  </p>
+                  <div className="users-list-grid" id="usersListContainer">
+                    {allUsers.length === 0 ? (
+                      <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", padding: "1rem 0" }}>No user profiles found.</p>
+                    ) : (
+                      allUsers.map((user) => {
+                        const initial = (user.name || "U").charAt(0).toUpperCase();
+                        const isActive = user.id === currentUser.id;
+                        return (
+                          <div 
+                            key={user.id} 
+                            className={`user-profile-card ${isActive ? "active" : ""}`}
+                            onClick={() => handleSwitchUser(user.id)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <div className="user-card-info">
+                              <div 
+                                className="user-avatar-large" 
+                                style={{ 
+                                  backgroundColor: user.color || "#3b82f6", 
+                                  width: "34px", 
+                                  height: "34px", 
+                                  fontSize: "0.85rem",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyItems: "center"
+                                }}
+                              >
+                                {initial}
+                              </div>
+                              <div>
+                                <div className="user-card-name" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                  <strong>{user.name}</strong>
+                                  {isActive && <span style={{ fontSize: "0.72rem", color: "var(--brand-primary)", fontWeight: "normal" }}>(Active)</span>}
+                                </div>
+                                <div className="user-card-role">@{user.username} • {user.role || "Member"}</div>
+                              </div>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                              <button 
+                                className={`btn btn-xs ${isActive ? "btn-primary" : "btn-outline"} btn-select-user`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSwitchUser(user.id);
+                                }}
+                              >
+                                {isActive ? "✓ Active" : "Switch"}
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 2: Register New Profile */}
+              {activeUserAuthTab === "new" && (
+                <div id="tabContentNewUser" className="user-tab-pane">
+                  <form id="newUserForm" className="modal-form" onSubmit={handleAddFriendProfile}>
+                    <div className="form-group">
+                      <label htmlFor="newUserName" className="form-label required">Display Name</label>
+                      <input 
+                        type="text" 
+                        name="name"
+                        id="newUserName" 
+                        className="form-input" 
+                        placeholder="e.g. Rahul Sharma, Priya" 
+                        required 
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="newUserUsername" className="form-label required">Username (Unique ID)</label>
+                      <input 
+                        type="text" 
+                        name="username"
+                        id="newUserUsername" 
+                        className="form-input" 
+                        placeholder="e.g. rahul, priya_dev" 
+                        required 
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="newUserRole" className="form-label">Role / Designation</label>
+                      <input 
+                        type="text" 
+                        name="role"
+                        id="newUserRole" 
+                        className="form-input" 
+                        placeholder="e.g. Frontend Developer, QA Engineer" 
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Profile Avatar Color</label>
+                      <div className="color-picker-row">
+                        {["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#ec4899", "#06b6d4"].map((color) => (
+                          <label 
+                            key={color} 
+                            className={`color-circle ${selectedAvatarColor === color ? "selected" : ""}`} 
+                            style={{ backgroundColor: color, cursor: "pointer", position: "relative" }}
+                          >
+                            <input 
+                              type="radio" 
+                              name="userColor" 
+                              value={color}
+                              checked={selectedAvatarColor === color}
+                              onChange={() => setSelectedAvatarColor(color)}
+                              style={{ opacity: 0, position: "absolute", width: "100%", height: "100%", cursor: "pointer" }}
+                            />
+                            {selectedAvatarColor === color && (
+                              <span className="selected-dot"></span>
+                            )}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="modal-footer" style={{ borderTop: "none", marginTop: "1rem", padding: "10px 0 0 0" }}>
+                      <button type="submit" className="btn btn-primary" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                        <UserPlus className="icon-sm" />
+                        <span>Create & Switch to Profile</span>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
             </div>
           </div>
         </div>

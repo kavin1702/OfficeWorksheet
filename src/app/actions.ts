@@ -16,6 +16,10 @@ export interface WorksheetEntryDto {
   remarks: string;
   createdAt: string;
   updatedAt: string;
+  userId: string;
+  userName: string;
+  userColor: string;
+  userRole?: string;
 }
 
 // Mapper
@@ -31,6 +35,10 @@ function mapToDto(entry: any): WorksheetEntryDto {
     remarks: entry.remarks || "",
     createdAt: entry.createdAt instanceof Date ? entry.createdAt.toISOString() : String(entry.createdAt),
     updatedAt: entry.updatedAt instanceof Date ? entry.updatedAt.toISOString() : String(entry.updatedAt),
+    userId: entry.userId,
+    userName: entry.user?.name || "User",
+    userColor: entry.user?.color || "#3b82f6",
+    userRole: entry.user?.role || "Team Member",
   };
 }
 
@@ -44,13 +52,18 @@ export async function dbHealthCheck(): Promise<boolean> {
   }
 }
 
-export async function getWorksheetEntries(): Promise<WorksheetEntryDto[]> {
+export async function getWorksheetEntries(scope: 'me' | 'all' = 'me'): Promise<WorksheetEntryDto[]> {
   const sessionResult = await validateSession();
   if (!sessionResult) return [];
 
   try {
+    const whereClause = scope === 'all' ? {} : { userId: sessionResult.user.id };
+
     const entries = await prisma.worksheetEntry.findMany({
-      where: { userId: sessionResult.user.id },
+      where: whereClause,
+      include: {
+        user: true
+      },
       orderBy: [
         { date: "desc" },
         { createdAt: "desc" }
@@ -87,6 +100,9 @@ export async function createWorksheetEntry(data: {
         priority: data.priority,
         remarks: data.remarks || "",
       },
+      include: {
+        user: true
+      }
     });
     revalidatePath("/");
     return mapToDto(created);
@@ -112,11 +128,19 @@ export async function updateWorksheetEntry(
   if (!sessionResult) throw new Error("Unauthorized");
 
   try {
-    // Verify ownership
+    // If scope is 'all', admin or any user can edit (matching local collaborative sheet style, or enforcing ownership if needed)
+    // To allow full team collaboration like the static user switcher app, we allow editing any log or restrict it. 
+    // The static app allows any profile switcher to edit logs, so we allow it but log the update, or we can enforce ownership. Let's enforce ownership for security, or check: 
+    // In kavin's static app, switching users lets them edit the workspace. So let's allow editing if the user owns it or if we are in shared mode. Let's allow editing owned entries.
     const existing = await prisma.worksheetEntry.findFirst({
-      where: { id, userId: sessionResult.user.id },
+      where: { id },
     });
-    if (!existing) throw new Error("Entry not found or unauthorized");
+    if (!existing) throw new Error("Entry not found");
+
+    // Enforce that user can only edit their own logs
+    if (existing.userId !== sessionResult.user.id) {
+      throw new Error("Unauthorized to edit this entry");
+    }
 
     const dataToUpdate: any = { ...updates };
     if (updates.date) {
@@ -126,6 +150,9 @@ export async function updateWorksheetEntry(
     const updated = await prisma.worksheetEntry.update({
       where: { id },
       data: dataToUpdate,
+      include: {
+        user: true
+      }
     });
     revalidatePath("/");
     return mapToDto(updated);
@@ -140,11 +167,15 @@ export async function deleteWorksheetEntry(id: string): Promise<boolean> {
   if (!sessionResult) throw new Error("Unauthorized");
 
   try {
-    // Verify ownership
     const existing = await prisma.worksheetEntry.findFirst({
-      where: { id, userId: sessionResult.user.id },
+      where: { id },
     });
     if (!existing) return false;
+
+    // Enforce ownership
+    if (existing.userId !== sessionResult.user.id) {
+      throw new Error("Unauthorized to delete this entry");
+    }
 
     await prisma.worksheetEntry.delete({
       where: { id },
@@ -162,12 +193,12 @@ export async function duplicateWorksheetEntry(id: string): Promise<WorksheetEntr
   if (!sessionResult) throw new Error("Unauthorized");
 
   try {
-    // Verify ownership
     const source = await prisma.worksheetEntry.findFirst({
-      where: { id, userId: sessionResult.user.id },
+      where: { id },
     });
     if (!source) return null;
 
+    // Duplicate creates a log for the currently active user (today)
     const cloned = await prisma.worksheetEntry.create({
       data: {
         userId: sessionResult.user.id,
@@ -179,6 +210,9 @@ export async function duplicateWorksheetEntry(id: string): Promise<WorksheetEntr
         priority: source.priority,
         remarks: source.remarks ? `Continuation: ${source.remarks}` : "Continuation",
       },
+      include: {
+        user: true
+      }
     });
     revalidatePath("/");
     return mapToDto(cloned);
@@ -204,7 +238,7 @@ export async function carryForwardYesterdayPending(): Promise<{ count: number; m
       where: {
         userId,
         date: yesterday,
-        status: { in: ["In Progress", "Pending", "Blocked"] },
+        status: { in: ["In Progress", "Pending", "Blocked", "Under Review"] },
       },
     });
 

@@ -2,10 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Briefcase, Key, Mail, AlertCircle, ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Briefcase, Key, Mail, AlertCircle, LogIn, UserPlus } from "lucide-react";
 import { loginAction } from "../authActions";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -19,42 +21,59 @@ export default function LoginPage() {
       const res = await loginAction(formData);
       if (res && !res.success) {
         setError(res.message);
+        setIsLoading(false);
+      } else {
+        router.push("/");
       }
     } catch (err: any) {
       setError("An unexpected error occurred. Please try again.");
-    } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <div className="auth-logo">
-            <Briefcase className="brand-icon" style={{ width: "24px", height: "24px", color: "#ffffff" }} />
+    <div className="auth-portal-screen">
+      <div className="auth-portal-card">
+        <div className="auth-portal-header">
+          <div className="auth-brand-badge">
+            <Briefcase className="brand-icon-lg" style={{ color: "#ffffff" }} />
           </div>
-          <h1 className="auth-title">Welcome Back</h1>
-          <p className="auth-subtitle">Sign in to update your daily timesheet</p>
+          <h1 className="auth-portal-title">WorkPulse</h1>
+          <p className="auth-portal-subtitle">Office Daily Worksheet & Multi-User Tracker</p>
+          <div className="auth-sync-status">
+            <span className="status-dot online"></span>
+            <span>Google Sheets & Cloud Connected</span>
+          </div>
+        </div>
+
+        <div className="auth-portal-tabs">
+          <div className="auth-tab-btn active">
+            <LogIn className="icon-xs" />
+            <span>Sign In</span>
+          </div>
+          <Link href="/register" className="auth-tab-btn">
+            <UserPlus className="icon-xs" />
+            <span>Create Account</span>
+          </Link>
         </div>
 
         {error && (
-          <div className="auth-error-box">
-            <AlertCircle className="icon-sm" style={{ flexShrink: 0 }} />
+          <div className="auth-alert-box error">
+            <AlertCircle className="icon-xs" style={{ flexShrink: 0 }} />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="portal-form">
           <div className="form-group">
-            <label className="form-label required">Email Address</label>
-            <div className="auth-input-wrapper">
-              <Mail className="auth-input-icon" />
+            <label className="form-label required">Email Address or Username</label>
+            <div className="input-with-icon">
+              <Mail className="input-icon" />
               <input 
-                type="email" 
+                type="text" 
                 name="email" 
-                className="form-input auth-input" 
-                placeholder="you@company.com" 
+                className="form-input" 
+                placeholder="e.g. kavin@office.com or your email" 
                 required 
                 disabled={isLoading}
               />
@@ -63,13 +82,13 @@ export default function LoginPage() {
 
           <div className="form-group">
             <label className="form-label required">Password</label>
-            <div className="auth-input-wrapper">
-              <Key className="auth-input-icon" />
+            <div className="input-with-icon">
+              <Key className="input-icon" />
               <input 
                 type="password" 
                 name="password" 
-                className="form-input auth-input" 
-                placeholder="••••••••" 
+                className="form-input" 
+                placeholder="Enter your password" 
                 required 
                 disabled={isLoading}
               />
@@ -78,24 +97,31 @@ export default function LoginPage() {
 
           <button 
             type="submit" 
-            className="btn btn-primary btn-glow auth-submit-btn"
+            className="btn btn-primary btn-block btn-glow"
             disabled={isLoading}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginTop: "1rem" }}
           >
-            {isLoading ? "Signing In..." : "Sign In"}
-            <ArrowRight className="icon-sm" style={{ marginLeft: "8px" }} />
+            <LogIn className="icon-sm" />
+            <span>{isLoading ? "Signing In..." : "Sign In to My Worksheet"}</span>
           </button>
         </form>
 
-        <div className="auth-footer">
-          Don't have an account?{" "}
-          <Link href="/register" className="auth-link">
-            Create Account
+        <div className="auth-switch-link">
+          <span>Don't have an account? </span>
+          <Link href="/register" className="link-btn">
+            Create one now
           </Link>
+        </div>
+
+        <div className="auth-features-footer">
+          <div className="feature-item"><span className="text-emerald">✓</span> Separate Workspaces</div>
+          <div className="feature-item"><span className="text-blue">✓</span> Interactive Calendar</div>
+          <div className="feature-item"><span className="text-purple">✓</span> Phone & PC Sync</div>
         </div>
       </div>
 
       <style jsx global>{`
-        .auth-container {
+        .auth-portal-screen {
           display: flex;
           align-items: center;
           justify-content: center;
@@ -103,94 +129,166 @@ export default function LoginPage() {
           background-color: var(--bg-primary);
           padding: 1.5rem;
         }
-        .auth-card {
+        .auth-portal-card {
           width: 100%;
           max-width: 440px;
           background-color: var(--bg-surface);
           border: 1px solid var(--border-color);
           border-radius: var(--radius-lg);
-          padding: 2.5rem;
+          padding: 2rem;
           box-shadow: var(--shadow-lg);
         }
-        .auth-header {
+        .auth-portal-header {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
           text-align: center;
-          margin-bottom: 2rem;
+          margin-bottom: 1.5rem;
         }
-        .auth-logo {
+        .auth-brand-badge {
           width: 48px;
           height: 48px;
           background: linear-gradient(135deg, #2563eb, #3b82f6);
-          border-radius: var(--radius-md);
-          display: inline-flex;
+          border-radius: 12px;
+          display: flex;
           align-items: center;
           justify-content: center;
-          margin-bottom: 1rem;
+          margin-bottom: 0.75rem;
           box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
         }
-        .auth-title {
-          font-size: 1.5rem;
+        .auth-portal-title {
+          font-family: 'Outfit', sans-serif;
+          font-size: 1.75rem;
           font-weight: 700;
           color: var(--text-primary);
-          margin-bottom: 0.25rem;
+          margin: 0;
         }
-        .auth-subtitle {
+        .auth-portal-subtitle {
           font-size: 0.85rem;
           color: var(--text-muted);
+          margin: 0.25rem 0 0.5rem 0;
         }
-        .auth-form {
-          display: flex;
-          flex-direction: column;
-          gap: 1.25rem;
+        .auth-sync-status {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background-color: var(--bg-subtle);
+          padding: 0.25rem 0.65rem;
+          border-radius: 20px;
+          font-size: 0.7rem;
+          color: var(--text-secondary);
+          border: 1px solid var(--border-color);
         }
-        .auth-input-wrapper {
-          position: relative;
+        .status-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+        }
+        .status-dot.online {
+          background-color: #10b981;
+          box-shadow: 0 0 8px #10b981;
+        }
+        .auth-portal-tabs {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          background-color: var(--bg-subtle);
+          padding: 0.25rem;
+          border-radius: var(--radius-md);
+          margin-bottom: 1.5rem;
+          border: 1px solid var(--border-color);
+        }
+        .auth-tab-btn {
           display: flex;
           align-items: center;
-        }
-        .auth-input-icon {
-          position: absolute;
-          left: 12px;
-          color: var(--text-muted);
-          width: 16px;
-          height: 16px;
-          pointer-events: none;
-        }
-        .auth-input {
-          padding-left: 36px !important;
-          width: 100%;
-        }
-        .auth-submit-btn {
-          width: 100%;
-          padding: 0.75rem !important;
-          font-weight: 600 !important;
-          margin-top: 0.5rem;
-        }
-        .auth-error-box {
-          background-color: var(--status-blocked-bg);
-          border: 1px solid var(--status-blocked-border);
-          color: var(--status-blocked-text);
-          padding: 0.75rem 1rem;
-          border-radius: var(--radius-sm);
+          justify-content: center;
+          gap: 8px;
+          padding: 0.55rem;
           font-size: 0.85rem;
-          margin-bottom: 1.5rem;
+          font-weight: 500;
+          color: var(--text-secondary);
+          border: none;
+          background: none;
+          border-radius: var(--radius-sm);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          text-decoration: none;
+        }
+        .auth-tab-btn.active {
+          background-color: var(--bg-surface);
+          color: var(--text-primary);
+          box-shadow: var(--shadow-sm);
+        }
+        .auth-alert-box {
           display: flex;
           align-items: center;
           gap: 8px;
+          padding: 0.75rem 1rem;
+          border-radius: var(--radius-sm);
+          font-size: 0.8rem;
+          margin-bottom: 1.25rem;
         }
-        .auth-footer {
+        .auth-alert-box.error {
+          background-color: var(--status-blocked-bg);
+          border: 1px solid var(--status-blocked-border);
+          color: var(--status-blocked-text);
+        }
+        .portal-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1.1rem;
+        }
+        .input-with-icon {
+          position: relative;
+          display: flex;
+          align-items: center;
+          width: 100%;
+        }
+        .input-icon {
+          position: absolute;
+          left: 12px;
+          width: 16px;
+          height: 16px;
+          color: var(--text-muted);
+          pointer-events: none;
+        }
+        .form-input {
+          padding-left: 36px !important;
+          width: 100%;
+        }
+        .auth-switch-link {
           text-align: center;
-          margin-top: 1.5rem;
-          font-size: 0.875rem;
+          margin-top: 1.25rem;
+          font-size: 0.85rem;
           color: var(--text-secondary);
         }
-        .auth-link {
+        .link-btn {
           color: var(--brand-primary);
           font-weight: 500;
+          border: none;
+          background: none;
+          cursor: pointer;
           text-decoration: none;
         }
-        .auth-link:hover {
+        .link-btn:hover {
           text-decoration: underline;
         }
+        .auth-features-footer {
+          display: flex;
+          justify-content: space-between;
+          border-top: 1px solid var(--border-color);
+          margin-top: 1.75rem;
+          padding-top: 1rem;
+          font-size: 0.72rem;
+          color: var(--text-muted);
+        }
+        .feature-item {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .text-emerald { color: #10b981; }
+        .text-blue { color: #3b82f6; }
+        .text-purple { color: #8b5cf6; }
       `}</style>
     </div>
   );
