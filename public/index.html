@@ -121,8 +121,11 @@
           </div>
 
           <div class="form-group">
-            <label for="portalSignInPassword" class="form-label required">Password</label>
-            <div class="input-with-icon">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label for="portalSignInPassword" class="form-label required" style="margin-bottom: 0;">Password</label>
+              <button type="button" class="link-btn" id="btnOpenForgotPassword" style="font-size: 0.75rem; color: #60a5fa; cursor: pointer; text-decoration: none;">Forgot Password?</button>
+            </div>
+            <div class="input-with-icon" style="margin-top: 0.35rem;">
               <i data-lucide="lock" class="input-icon"></i>
               <input type="password" id="portalSignInPassword" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
               <button type="button" class="btn-toggle-pwd" data-target="portalSignInPassword" title="Toggle password visibility">
@@ -139,6 +142,45 @@
           <div class="auth-switch-link">
             <span>Don't have an account?</span>
             <button type="button" id="btnSwitchToSignUp" class="link-btn">Create one now</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tab 3: Forgot Password (Instant Password Reset) -->
+      <div id="portalPaneForgotPassword" class="auth-tab-pane hidden">
+        <form id="portalForgotForm" class="portal-form">
+          <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Enter your account email and your new password to reset and sign in immediately.
+          </p>
+
+          <div class="form-group">
+            <label for="portalForgotEmail" class="form-label required">Account Email</label>
+            <div class="input-with-icon">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="portalForgotEmail" class="form-input" placeholder="e.g. kavin@8chili.com or mnkavin2006@gmail.com" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="portalForgotNewPassword" class="form-label required">New Password</label>
+            <div class="input-with-icon">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="portalForgotNewPassword" class="form-input" placeholder="Enter new password" required autocomplete="new-password">
+              <button type="button" class="btn-toggle-pwd" data-target="portalForgotNewPassword" title="Toggle password visibility">
+                <i data-lucide="eye" class="icon-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-glow">
+            <i data-lucide="key-round"></i>
+            <span>Reset Password & Sign In</span>
+          </button>
+
+          <div class="auth-switch-link">
+            <button type="button" id="btnForgotBackToSignIn" class="link-btn" style="text-decoration: none;">
+              <i data-lucide="arrow-left" class="icon-xs"></i> Back to Sign In
+            </button>
           </div>
         </form>
       </div>

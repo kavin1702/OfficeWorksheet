@@ -1143,6 +1143,8 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       if (portalTabBtnSignUp) portalTabBtnSignUp.classList.remove('active');
       if (portalPaneSignIn) portalPaneSignIn.classList.remove('hidden');
       if (portalPaneSignUp) portalPaneSignUp.classList.add('hidden');
+      const portalPaneForgotPassword = document.getElementById('portalPaneForgotPassword');
+      if (portalPaneForgotPassword) portalPaneForgotPassword.classList.add('hidden');
       const emailInput = document.getElementById('portalSignInEmail');
       if (emailInput) emailInput.focus();
     }
@@ -1153,8 +1155,24 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       if (portalTabBtnSignIn) portalTabBtnSignIn.classList.remove('active');
       if (portalPaneSignUp) portalPaneSignUp.classList.remove('hidden');
       if (portalPaneSignIn) portalPaneSignIn.classList.add('hidden');
+      const portalPaneForgotPassword = document.getElementById('portalPaneForgotPassword');
+      if (portalPaneForgotPassword) portalPaneForgotPassword.classList.add('hidden');
       const nameInput = document.getElementById('portalSignUpName');
       if (nameInput) nameInput.focus();
+    }
+
+    function switchToForgotTab() {
+      hideAuthAlert();
+      if (portalTabBtnSignIn) portalTabBtnSignIn.classList.remove('active');
+      if (portalTabBtnSignUp) portalTabBtnSignUp.classList.remove('active');
+      if (portalPaneSignIn) portalPaneSignIn.classList.add('hidden');
+      if (portalPaneSignUp) portalPaneSignUp.classList.add('hidden');
+      const portalPaneForgotPassword = document.getElementById('portalPaneForgotPassword');
+      if (portalPaneForgotPassword) portalPaneForgotPassword.classList.remove('hidden');
+      const forgotEmail = document.getElementById('portalForgotEmail');
+      const signInEmail = document.getElementById('portalSignInEmail');
+      if (forgotEmail && signInEmail && signInEmail.value) forgotEmail.value = signInEmail.value;
+      if (forgotEmail) forgotEmail.focus();
     }
 
     // 1. Landing Portal Tabs
@@ -1162,6 +1180,30 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
     if (portalTabBtnSignUp) portalTabBtnSignUp.addEventListener('click', switchToSignUpTab);
     if (btnSwitchToSignUp) btnSwitchToSignUp.addEventListener('click', switchToSignUpTab);
     if (btnSwitchToSignIn) btnSwitchToSignIn.addEventListener('click', switchToSignInTab);
+
+    const btnOpenForgotPassword = document.getElementById('btnOpenForgotPassword');
+    const btnForgotBackToSignIn = document.getElementById('btnForgotBackToSignIn');
+    const portalForgotForm = document.getElementById('portalForgotForm');
+
+    if (btnOpenForgotPassword) btnOpenForgotPassword.addEventListener('click', switchToForgotTab);
+    if (btnForgotBackToSignIn) btnForgotBackToSignIn.addEventListener('click', switchToSignInTab);
+
+    if (portalForgotForm) {
+      portalForgotForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        hideAuthAlert();
+        const email = document.getElementById('portalForgotEmail').value;
+        const newPassword = document.getElementById('portalForgotNewPassword').value;
+        try {
+          const logged = auth.resetPassword(email, newPassword);
+          ui.showToast(`Password updated! Welcome back, ${logged.name}!`, 'success');
+          portalForgotForm.reset();
+        } catch (err) {
+          showAuthAlert(err.message);
+          ui.showToast(err.message, 'error');
+        }
+      });
+    }
 
     // 2. Password Visibility Toggle Buttons
     document.querySelectorAll('.btn-toggle-pwd').forEach(btn => {
