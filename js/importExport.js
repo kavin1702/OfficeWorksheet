@@ -1,7 +1,8 @@
 /**
  * Import & Export Management Module (WorkPulse)
- * High-compatibility Excel (.xlsx, .xls), CSV, JSON importer with smart column detection,
- * automatic date normalization, multi-user tagging, and live Google Sheets sync.
+ * High-compatibility Excel (.xlsx, .xls), CSV, JSON, and Direct Copy-Paste Importer
+ * with smart column heuristic detection, automatic multi-format date normalization,
+ * multi-user tagging, and live Google Sheets sync.
  */
 
 class ImportExportManager {
@@ -19,7 +20,7 @@ class ImportExportManager {
     }
 
     if (!window.XLSX) {
-      this.ui.showToast('Excel exporter library not loaded', 'error');
+      this.ui.showToast('Excel exporter library loading...', 'info');
       return;
     }
 
@@ -112,12 +113,19 @@ class ImportExportManager {
   parseExcelDate(val) {
     if (!val) return WorksheetManager.getTodayStr();
 
-    // 1. If already ISO YYYY-MM-DD
-    if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val.trim())) {
-      return val.trim();
+    let str = String(val).trim();
+
+    // 1. If year is 2001 or 01, fix to 2026
+    if (str.startsWith('2001-08-') || str.startsWith('2001-8-')) {
+      str = '2026-08-' + str.substring(str.lastIndexOf('-') + 1).padStart(2, '0');
     }
 
-    // 2. If Excel numeric serial date (e.g. 46237)
+    // 2. If already ISO YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+      return str;
+    }
+
+    // 3. If Excel numeric serial date (e.g. 46237)
     if (typeof val === 'number' || (!isNaN(val) && !isNaN(parseFloat(val)) && parseFloat(val) > 20000 && parseFloat(val) < 60000)) {
       try {
         const num = parseFloat(val);
@@ -128,39 +136,138 @@ class ImportExportManager {
       } catch (e) {}
     }
 
-    // 3. String formats: DD/MM/YYYY or DD-MM-YYYY or MM/DD/YYYY
-    if (typeof val === 'string') {
-      const str = val.trim();
-      const match = str.match(/^(\d{1,2})[./\-](\d{1,2})[./\-](\d{2,4})$/);
-      if (match) {
-        let p1 = parseInt(match[1], 10);
-        let p2 = parseInt(match[2], 10);
-        let year = parseInt(match[3], 10);
-        if (year < 100) year += 2000;
+    // 4. String formats: DD/MM/YYYY or DD-MM-YYYY or MM/DD/YYYY
+    const match = str.match(/^(\d{1,2})[./\-](\d{1,2})[./\-](\d{2,4})$/);
+    if (match) {
+      let p1 = parseInt(match[1], 10);
+      let p2 = parseInt(match[2], 10);
+      let year = parseInt(match[3], 10);
+      if (year < 100) year += 2000;
+      if (year === 2001) year = 2026;
 
-        // If p1 > 12, it's definitely DD/MM/YYYY
-        let day = p1;
-        let month = p2;
-        if (p1 <= 12 && p2 > 12) {
-          // MM/DD/YYYY
-          month = p1;
-          day = p2;
-        }
-
-        const dObj = new Date(year, month - 1, day);
-        if (!isNaN(dObj.getTime())) {
-          return WorksheetManager.formatDateIso(dObj);
-        }
+      let day = p1;
+      let month = p2;
+      if (p1 <= 12 && p2 > 12) {
+        month = p1;
+        day = p2;
       }
 
-      // Try general Date parser
-      const parsed = new Date(str);
-      if (!isNaN(parsed.getTime())) {
-        return WorksheetManager.formatDateIso(parsed);
+      const dObj = new Date(year, month - 1, day);
+      if (!isNaN(dObj.getTime())) {
+        return WorksheetManager.formatDateIso(dObj);
       }
     }
 
+    // 5. Try general Date parser
+    try {
+      const parsed = new Date(str);
+      if (!isNaN(parsed.getTime())) {
+        let yr = parsed.getFullYear();
+        if (yr === 2001) yr = 2026;
+        const mo = String(parsed.getMonth() + 1).padStart(2, '0');
+        const da = String(parsed.getDate()).padStart(2, '0');
+        return `${yr}-${mo}-${da}`;
+      }
+    } catch (e) {}
+
     return WorksheetManager.getTodayStr();
+  }
+
+  // Parse Direct Pasted Text from Excel or Google Sheets
+  handlePastedText(rawText) {
+    if (!rawText || !rawText.trim()) {
+      this.ui.showToast('Please paste data from Excel into the box first.', 'error');
+      return;
+    }
+
+    const lines = rawText.trim().split(/\r?\n/).filter(line => line.trim().length > 0);
+    if (lines.length === 0) {
+      this.ui.showToast('No data found in pasted text', 'error');
+      return;
+    }
+
+    const rows = lines.map(line => {
+      // Split by tab (Excel standard) or comma (CSV)
+      if (line.includes('\t')) {
+        return line.split('\t').map(c => c.trim());
+      }
+      return line.split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
+    });
+
+    // Check if first line is header
+    const firstLineLower = lines[0].toLowerCase();
+    const hasHeader = firstLineLower.includes('date') || firstLineLower.includes('project') || firstLineLower.includes('work') || firstLineLower.includes('task');
+    const dataRows = hasHeader ? rows.slice(1) : rows;
+
+    const list = dataRows.map(cols => {
+      let dateVal = WorksheetManager.getTodayStr();
+      let projectVal = 'General';
+      let workVal = '';
+      let statusVal = 'In Progress';
+      let hoursVal = 8;
+      let priorityVal = 'Medium';
+      let remarksVal = '';
+
+      cols.forEach((col, idx) => {
+        const clean = col.trim();
+        if (!clean) return;
+
+        // Check if date
+        if (/^\d{1,4}[-/. ]\w+[-/. ]\d{1,4}$|^\d{1,4}[-/.]\d{1,2}[-/.]\d{1,4}$/.test(clean)) {
+          dateVal = this.parseExcelDate(clean);
+        }
+        // Check if status
+        else if (/^(completed|in progress|pending|blocked|under review|leave)$/i.test(clean)) {
+          const s = clean.toLowerCase();
+          if (s.includes('comp') || s.includes('done')) statusVal = 'Completed';
+          else if (s.includes('prog')) statusVal = 'In Progress';
+          else if (s.includes('pend')) statusVal = 'Pending';
+          else if (s.includes('block')) statusVal = 'Blocked';
+          else if (s.includes('rev')) statusVal = 'Under Review';
+          else if (s.includes('leave')) statusVal = 'Leave';
+        }
+        // Check if hours (numeric)
+        else if (!isNaN(parseFloat(clean)) && parseFloat(clean) <= 24 && idx >= 2 && !clean.includes('-') && !clean.includes('/')) {
+          hoursVal = parseFloat(clean);
+        }
+        // Check if priority
+        else if (/^(high|medium|low|urgent)$/i.test(clean)) {
+          priorityVal = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+        }
+        // Otherwise text (Project or Work or Remarks)
+        else {
+          if (projectVal === 'General' && clean.length < 40 && !workVal) {
+            projectVal = clean;
+          } else if (!workVal) {
+            workVal = clean;
+          } else {
+            remarksVal = (remarksVal ? remarksVal + ' | ' : '') + clean;
+          }
+        }
+      });
+
+      if (!workVal && projectVal !== 'General') {
+        workVal = projectVal;
+        projectVal = 'General';
+      }
+
+      const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+
+      return {
+        id: 'paste-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 7),
+        userId: currentUser ? currentUser.id : 'user_kavin',
+        userName: currentUser ? currentUser.name : 'Kavin',
+        date: dateVal,
+        projectName: projectVal || 'General',
+        work: workVal,
+        status: statusVal,
+        hoursWorked: hoursVal || 0,
+        priority: priorityVal,
+        remarks: remarksVal
+      };
+    }).filter(r => r.work.length > 0 || r.projectName !== 'General');
+
+    this.previewImport(list);
   }
 
   // Parse Uploaded CSV / Excel / JSON File
@@ -177,32 +284,23 @@ class ImportExportManager {
           this.ui.showToast('Invalid JSON structure: Expected an array of records', 'error');
         }
       } else if (fileName.endsWith('.csv')) {
-        if (window.Papa) {
-          Papa.parse(file, {
-            header: true,
-            skipEmptyLines: 'greedy',
-            complete: (results) => {
-              const list = this.mapImportRows(results.data);
-              this.previewImport(list);
-            },
-            error: (err) => this.ui.showToast(`CSV parse error: ${err.message}`, 'error')
-          });
-        }
+        const text = await file.text();
+        this.handlePastedText(text);
       } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
         if (!window.XLSX) {
-          this.ui.showToast('Excel reader library loading... Please try again in a moment.', 'error');
+          this.ui.showToast('Loading Excel reader... Please try again in a few seconds.', 'info');
           return;
         }
 
         const data = await file.arrayBuffer();
         const workbook = XLSX.read(data, {
           type: 'array',
-          cellDates: false,
-          raw: true
+          cellDates: true,
+          dateNF: 'yyyy-mm-dd',
+          raw: false
         });
 
-        // Read first non-empty sheet
-        let sheetJson = [];
+        let allRows = [];
         for (const sheetName of workbook.SheetNames) {
           const sheet = workbook.Sheets[sheetName];
           const rows = XLSX.utils.sheet_to_json(sheet, {
@@ -211,20 +309,19 @@ class ImportExportManager {
             blankrows: false
           });
           if (rows && rows.length > 0) {
-            sheetJson = rows;
-            break;
+            allRows = allRows.concat(rows);
           }
         }
 
-        if (sheetJson.length === 0) {
+        if (allRows.length === 0) {
           this.ui.showToast('The uploaded Excel file appears to be empty', 'error');
           return;
         }
 
-        const list = this.mapImportRows(sheetJson);
+        const list = this.mapImportRows(allRows);
         this.previewImport(list);
       } else {
-        this.ui.showToast('Unsupported file type. Please upload an Excel (.xlsx, .xls) or CSV (.csv) file.', 'error');
+        this.ui.showToast('Unsupported file type. Please upload .xlsx, .xls, or .csv', 'error');
       }
     } catch (err) {
       console.error('File upload error:', err);
@@ -248,7 +345,7 @@ class ImportExportManager {
       const dateVal = this.parseExcelDate(rawDate);
 
       // 2. Project Name Finder
-      const projectVal = normalized['projectname'] || normalized['project'] || normalized['client'] || normalized['module'] || normalized['feature'] || 'General';
+      const projectVal = normalized['projectname'] || normalized['project'] || normalized['client'] || normalized['module'] || normalized['feature'] || normalized['title'] || 'General';
 
       // 3. Work Description Finder
       const workVal = normalized['workdescription'] || normalized['work'] || normalized['task'] || normalized['taskdescription'] || normalized['description'] || normalized['workdone'] || normalized['activity'] || normalized['details'] || normalized['summary'] || '';
@@ -267,7 +364,7 @@ class ImportExportManager {
       }
 
       // 5. Hours Finder
-      let hoursRaw = normalized['hours'] || normalized['hoursworked'] || normalized['hoursspent'] || normalized['duration'] || normalized['time'] || normalized['hrs'] || 0;
+      let hoursRaw = normalized['hours'] || normalized['hoursworked'] || normalized['hoursspent'] || normalized['duration'] || normalized['time'] || normalized['hrs'] || 8;
       let hoursVal = parseFloat(String(hoursRaw).replace(/[^0-9.]/g, '')) || 0;
 
       // 6. Priority Finder
@@ -328,12 +425,12 @@ class ImportExportManager {
     if (!previewBox || !previewCount || !tableWrap) return;
 
     if (list.length === 0) {
-      this.ui.showToast('No valid worksheet tasks found in file. Please ensure columns include Date, Project, and Work Description.', 'error');
+      this.ui.showToast('No valid tasks found. Please ensure data includes Date, Project, or Work Description.', 'error');
       previewBox.classList.add('hidden');
       return;
     }
 
-    previewCount.textContent = `✨ ${list.length} task(s) successfully detected & ready to import`;
+    previewCount.textContent = `✨ ${list.length} task(s) ready to import`;
     
     // Build preview table
     const sample = list.slice(0, 6);
@@ -363,7 +460,7 @@ class ImportExportManager {
     `;
 
     previewBox.classList.remove('hidden');
-    this.ui.showToast(`Found ${list.length} tasks in Excel sheet! Click "Confirm & Import Data" below.`, 'success');
+    this.ui.showToast(`Detected ${list.length} tasks! Click "Confirm & Import Data" below.`, 'success');
   }
 
   escapeHtml(str) {
@@ -389,6 +486,8 @@ class ImportExportManager {
       if (previewBox) previewBox.classList.add('hidden');
       const fileInput = document.getElementById('importFileInput');
       if (fileInput) fileInput.value = '';
+      const pasteArea = document.getElementById('importPasteTextarea');
+      if (pasteArea) pasteArea.value = '';
     } catch (err) {
       console.error('Import error:', err);
       this.ui.showToast(`Import failed: ${err.message}`, 'error');

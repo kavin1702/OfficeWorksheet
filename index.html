@@ -1119,25 +1119,41 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
 
           <!-- Import Tab -->
           <div id="tabImportContent" class="ie-tab-content hidden">
-            <p class="tab-desc">Upload a CSV or Excel file to instantly import all your past office worksheet data.</p>
+            <p class="tab-desc">Upload an Excel (.xlsx) / CSV file, or copy and paste cells directly from your spreadsheet!</p>
             
             <div class="drop-zone" id="fileDropZone">
               <i data-lucide="upload-cloud" class="drop-icon"></i>
-              <p class="drop-title">Drag & Drop your CSV or Excel file here</p>
+              <p class="drop-title">Drag & Drop your Excel (.xlsx) or CSV file here</p>
               <p class="drop-sub">or click to browse files from your computer</p>
-              <input type="file" id="importFileInput" accept=".csv, .xlsx, .xls, .json" class="hidden">
+              <input type="file" id="importFileInput" accept=".xlsx, .xls, .csv, .json" class="hidden">
               <button type="button" class="btn btn-outline btn-sm" id="btnBrowseFile">Choose File</button>
             </div>
 
-            <div class="import-format-guide">
+            <!-- Direct Paste from Excel / Google Sheets -->
+            <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+              <details>
+                <summary style="cursor: pointer; font-size: 0.8125rem; font-weight: 600; color: #60a5fa; display: flex; align-items: center; gap: 0.35rem;">
+                  <i data-lucide="clipboard" class="icon-xs"></i>
+                  <span>Or Copy & Paste directly from Excel / Google Sheets (Instant)</span>
+                </summary>
+                <div style="margin-top: 0.6rem;">
+                  <textarea id="importPasteTextarea" class="form-input" rows="4" placeholder="Copy rows from Excel and paste here (e.g. 2026-08-03 [Tab] MDI Project [Tab] Task details [Tab] Completed [Tab] 8)"></textarea>
+                  <button type="button" id="btnParsePastedData" class="btn btn-outline btn-xs" style="margin-top: 0.4rem;">
+                    <i data-lucide="sparkles"></i> Parse Pasted Rows
+                  </button>
+                </div>
+              </details>
+            </div>
+
+            <div class="import-format-guide" style="margin-top: 0.75rem;">
               <span class="guide-title">Supported Columns in CSV / Excel:</span>
               <p class="guide-sample"><code>Date, Project Name, Work Description, Status, Hours, Priority, Remarks</code></p>
             </div>
 
-            <div id="importPreviewArea" class="import-preview-box hidden">
+            <div id="importPreviewArea" class="import-preview-box hidden" style="margin-top: 1rem;">
               <div class="preview-header">
                 <span id="importPreviewCount">0 rows found</span>
-                <button type="button" id="btnConfirmImport" class="btn btn-primary btn-sm">Confirm Import</button>
+                <button type="button" id="btnConfirmImport" class="btn btn-primary btn-sm btn-glow">Confirm & Import Data</button>
               </div>
               <div class="preview-table-wrap" id="previewTableWrap"></div>
             </div>

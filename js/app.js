@@ -960,6 +960,15 @@ CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true)
       }
     });
 
+    // Direct Paste handler
+    const btnParsePastedData = document.getElementById('btnParsePastedData');
+    if (btnParsePastedData) {
+      btnParsePastedData.addEventListener('click', () => {
+        const text = document.getElementById('importPasteTextarea').value;
+        ie.handlePastedText(text);
+      });
+    }
+
     document.getElementById('btnConfirmImport').addEventListener('click', async () => {
       await ie.confirmImport();
       closeImportExportModal();

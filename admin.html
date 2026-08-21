@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WorkPulse - Admin Governance & Team Dashboard</title>
+  
+  <!-- SEO & Mobile -->
+  <meta name="description" content="WorkPulse Admin Portal - Multi-User Governance, Team Worksheet Inspection, and Dual-Sync Cloud Database Management.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0f172a">
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- External Libraries -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <style>
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-page-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .admin-crown-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+    }
+    .admin-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .admin-main {
+      flex: 1;
+      padding: 1.75rem 1.5rem 3rem 1.5rem;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .admin-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .admin-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .auth-gate-screen {
+      position: fixed;
+      inset: 0;
+      background: #090d16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+  </style>
+</head>
+<body class="theme-light">
+
+  <!-- =========================================================================
+       Admin Authentication Gatekeeper (Shown if not logged in as Admin)
+       ========================================================================= -->
+  <div id="adminAuthGate" class="auth-gate-screen hidden">
+    <div class="auth-portal-card">
+      <div class="auth-portal-header">
+        <div class="admin-crown-badge" style="margin: 0 auto 0.75rem auto;">
+          <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>
+        </div>
+        <h1 class="auth-portal-title">Admin Portal</h1>
+        <p class="auth-portal-subtitle">Sign in with your Admin credentials to continue</p>
+      </div>
+
+      <div id="adminGateAlert" class="auth-alert-box hidden">
+        <i data-lucide="alert-circle" class="icon-xs"></i>
+        <span id="adminGateAlertText"></span>
+      </div>
+
+      <form id="adminGateLoginForm" class="portal-form">
+        <div class="form-group">
+          <label for="adminEmail" class="form-label required">Admin Email</label>
+          <div class="input-with-icon">
+            <i data-lucide="mail" class="input-icon"></i>
+            <input type="email" id="adminEmail" class="form-input" placeholder="e.g. mnkavin2006@gmail.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="adminPassword" class="form-label required">Password</label>
+          <div class="input-with-icon">
+            <i data-lucide="lock" class="input-icon"></i>
+            <input type="password" id="adminPassword" class="form-input" placeholder="Enter password" required autocomplete="current-password">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-glow">
+          <i data-lucide="shield-check"></i>
+          <span>Sign In to Admin Portal</span>
+        </button>
+
+        <div class="auth-switch-link">
+          <a href="index.html" class="link-btn" style="text-decoration: none;">
+            <i data-lucide="arrow-left" class="icon-xs"></i> Back to User Worksheet
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Top Admin Navigation Header
+       ========================================================================= -->
+  <header class="admin-page-header">
+    <div class="admin-brand">
+      <div class="admin-crown-badge">
+        <i data-lucide="shield-check"></i>
+      </div>
+      <div>
+        <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-heading); color: #ffffff; display: flex; align-items: center; gap: 0.4rem;">
+          WorkPulse <span class="badge badge-primary" style="background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); font-size: 0.7rem;">ADMIN SUITE</span>
+        </div>
+        <div style="font-size: 0.75rem; color: #94a3b8;">Multi-User Governance & Dual-Cloud Sync</div>
+      </div>
+    </div>
+
+    <div class="admin-nav-actions">
+      <a href="index.html" class="btn btn-outline btn-sm" style="border-color: rgba(59,130,246,0.4); color: #93c5fd; text-decoration: none;">
+        <i data-lucide="layout-dashboard"></i>
+        <span>User Worksheet</span>
+      </a>
+
+      <button id="btnAdminExportMaster" class="btn btn-primary btn-sm btn-glow">
+        <i data-lucide="download"></i>
+        <span>Export Team Excel</span>
+      </button>
+
+      <button id="btnAdminLogout" class="btn btn-ghost btn-sm" style="color: #ef4444;" title="Sign Out">
+        <i data-lucide="log-out"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       Main Admin Dashboard Content
+       ========================================================================= -->
+  <main class="admin-main">
+    
+    <!-- KPI Overview Cards -->
+    <div class="admin-kpi-grid" id="adminKpiGrid">
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-icon bg-blue-light text-blue"><i data-lucide="users"></i></div>
+        <div class="admin-kpi-info">
+          <span class="admin-kpi-val" id="kpiTotalUsers">0</span>
+          <span class="admin-kpi-label">Registered Members</span>
+        </div>
+      </div>
+
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-icon bg-emerald-light text-emerald"><i data-lucide="check-circle-2"></i></div>
+        <div class="admin-kpi-info">
+          <span class="admin-kpi-val" id="kpiCompletedTasks">0</span>
+          <span class="admin-kpi-label">Completed Tasks</span>
+        </div>
+      </div>
+
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-icon bg-purple-light text-purple"><i data-lucide="clock"></i></div>
+        <div class="admin-kpi-info">
+          <span class="admin-kpi-val" id="kpiTotalHours">0h</span>
+          <span class="admin-kpi-label">Team Hours Logged</span>
+        </div>
+      </div>
+
+      <div class="admin-kpi-card">
+        <div class="admin-kpi-icon bg-amber-light text-amber"><i data-lucide="database"></i></div>
+        <div class="admin-kpi-info">
+          <span class="admin-kpi-val" id="kpiCloudStatus" style="font-size: 0.95rem; font-weight: 700; color: #10b981;">⚡ Dual-Sync Ready</span>
+          <span class="admin-kpi-label">Cloud Status</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Directory Card -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <div>
+          <h2 style="font-size: 1.15rem; font-weight: 700; margin: 0;">👥 Team Members Directory</h2>
+          <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0.25rem 0 0 0;">Inspect individual member daily worksheets and audit hours</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="btnRefreshAdminData" class="btn btn-outline btn-xs">
+            <i data-lucide="refresh-cw"></i> Refresh Data
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive-wrapper">
+        <table class="worksheet-table admin-users-table">
+          <thead>
+            <tr>
+              <th>Team Member</th>
+              <th>Email Address</th>
+              <th>Role</th>
+              <th>Tasks Logged</th>
+              <th>Total Hours</th>
+              <th>Last Active</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminUsersTableBody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Member Worksheet Inspector (Dynamic) -->
+    <div id="inspectorSection" class="admin-card hidden" style="border-color: rgba(59, 130, 246, 0.4);">
+      <div class="admin-card-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div id="inspAvatar" class="user-avatar-badge" style="width: 36px; height: 36px; font-size: 0.9rem;">K</div>
+          <div>
+            <h3 id="inspName" style="font-size: 1.05rem; font-weight: 700; margin: 0;">Member Worksheet</h3>
+            <span id="inspEmail" style="font-size: 0.78rem; color: var(--text-muted);"></span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="btnExportInspectedUser" class="btn btn-outline btn-xs">
+            <i data-lucide="download"></i> Export Member XLSX
+          </button>
+          <button id="btnCloseInspectorSection" class="btn btn-ghost btn-xs">
+            <i data-lucide="x"></i> Close
+          </button>
+        </div>
+      </div>
+
+      <div id="inspTableContainer" class="table-responsive-wrapper">
+        <!-- Inspected User's Worksheet Table -->
+      </div>
+    </div>
+
+    <!-- Cloud Dual-Sync Monitor Card -->
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <div>
+          <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0;">☁️ Cloud Dual-Sync Monitor</h3>
+          <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0.2rem 0 0 0;">Status of Google Sheets and Neon DB data pipelines</p>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+        <div style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+              <i data-lucide="file-spreadsheet" class="text-emerald"></i> Google Sheets Web App
+            </div>
+            <span class="badge badge-success" style="font-size: 0.7rem;">Active</span>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; word-break: break-all;">
+            Endpoint: <code style="color: #60a5fa;">https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec</code>
+          </div>
+        </div>
+
+        <div style="background: rgba(15,23,42,0.4); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+              <i data-lucide="database" class="text-purple"></i> Neon PostgreSQL DB
+            </div>
+            <span class="badge badge-primary" style="font-size: 0.7rem;">Dual-Sync Ready</span>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+            Status: Dual write enabled on every task mutation.
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- JavaScript Modules -->
+  <script src="js/authManager.js"></script>
+  <script src="js/sampleData.js"></script>
+  <script src="js/cloudStorage.js"></script>
+  <script src="js/worksheetManager.js"></script>
+  <script src="js/uiRenderer.js"></script>
+  <script src="js/importExport.js"></script>
+  <script src="js/adminManager.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const auth = window.authManager;
+      const cloud = window.cloudStorage;
+      const wm = new window.WorksheetManager(cloud);
+      const ui = window.uiRenderer;
+      const admin = new window.AdminManager(wm, auth, ui);
+
+      const authGate = document.getElementById('adminAuthGate');
+      const gateForm = document.getElementById('adminGateLoginForm');
+      const gateAlert = document.getElementById('adminGateAlert');
+      const gateAlertText = document.getElementById('adminGateAlertText');
+
+      let inspectedUserObj = null;
+
+      function checkAdminAuth() {
+        if (!auth.isLoggedIn() || !auth.isAdmin()) {
+          authGate.classList.remove('hidden');
+          return false;
+        }
+        authGate.classList.add('hidden');
+        return true;
+      }
+
+      if (gateForm) {
+        gateForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const email = document.getElementById('adminEmail').value;
+          const password = document.getElementById('adminPassword').value;
+
+          try {
+            const user = auth.login(email, password);
+            if (!auth.isAdmin(user)) {
+              gateAlertText.textContent = 'This account does not have Admin privileges. Please use an Admin account.';
+              gateAlert.classList.remove('hidden');
+              return;
+            }
+            authGate.classList.add('hidden');
+            loadAdminData();
+          } catch (err) {
+            gateAlertText.textContent = err.message;
+            gateAlert.classList.remove('hidden');
+          }
+        });
+      }
+
+      const btnLogout = document.getElementById('btnAdminLogout');
+      if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+          auth.logout();
+          checkAdminAuth();
+        });
+      }
+
+      async function loadAdminData() {
+        await wm.initialize();
+        const metrics = admin.getTeamMetrics();
+        const users = admin.getUsersSummary();
+
+        // Update KPIs
+        document.getElementById('kpiTotalUsers').textContent = metrics.totalUsers;
+        document.getElementById('kpiCompletedTasks').textContent = `${metrics.completedTasks} / ${metrics.totalTasks}`;
+        document.getElementById('kpiTotalHours').textContent = `${metrics.totalHours}h`;
+
+        // Render Users Table
+        const tbody = document.getElementById('adminUsersTableBody');
+        tbody.innerHTML = users.map(u => `
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <div class="user-avatar-badge" style="background-color: ${u.color || '#3b82f6'}; width: 30px; height: 30px; font-size: 0.8rem;">
+                  ${u.avatar || u.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <strong style="color: var(--text-primary); font-size: 0.88rem;">${u.name}</strong>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">@${u.username || 'user'}</div>
+                </div>
+              </div>
+            </td>
+            <td><code style="font-size: 0.78rem;">${u.email}</code></td>
+            <td>
+              <span class="badge ${u.role === 'Admin' ? 'badge-primary' : 'badge-neutral'}" style="font-size: 0.72rem;">
+                ${u.role === 'Admin' ? '👑 Admin' : '👤 ' + (u.role || 'Member')}
+              </span>
+            </td>
+            <td><strong>${u.totalTasks}</strong> tasks</td>
+            <td><span class="hours-badge">${u.totalHours}h</span></td>
+            <td><span style="font-size: 0.78rem; color: var(--text-muted);">${u.lastActive}</span></td>
+            <td style="text-align: right;">
+              <button class="btn btn-outline btn-xs btn-inspect-member" data-user-id="${u.id}">
+                <i data-lucide="eye" class="icon-xs"></i> Inspect
+              </button>
+            </td>
+          </tr>
+        `).join('');
+
+        // Bind Inspect Buttons
+        document.querySelectorAll('.btn-inspect-member').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const uid = btn.dataset.userId;
+            const target = users.find(u => u.id === uid);
+            if (target) inspectMember(target);
+          });
+        });
+
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      function inspectMember(user) {
+        inspectedUserObj = user;
+        const section = document.getElementById('inspectorSection');
+        const inspAvatar = document.getElementById('inspAvatar');
+        const inspName = document.getElementById('inspName');
+        const inspEmail = document.getElementById('inspEmail');
+        const container = document.getElementById('inspTableContainer');
+
+        inspAvatar.style.backgroundColor = user.color || '#3b82f6';
+        inspAvatar.textContent = user.avatar || user.name.charAt(0).toUpperCase();
+        inspName.textContent = `${user.name}'s Worksheet (${user.entries.length} tasks)`;
+        inspEmail.textContent = `${user.email} • Role: ${user.role} • Total: ${user.totalHours} hours`;
+
+        if (user.entries.length === 0) {
+          container.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No worksheet entries recorded yet for this member.</div>`;
+        } else {
+          container.innerHTML = `
+            <table class="worksheet-table" style="font-size: 0.8rem; width: 100%;">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Project</th>
+                  <th>Work Description</th>
+                  <th>Status</th>
+                  <th>Hours</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${user.entries.map(e => `
+                  <tr>
+                    <td><strong>${e.date}</strong></td>
+                    <td><span class="project-pill">${e.projectName}</span></td>
+                    <td>${e.work}</td>
+                    <td><span class="status-badge status-${(e.status||'').toLowerCase().replace(/\s+/g, '-')}">${e.status}</span></td>
+                    <td><strong>${e.hoursWorked}h</strong></td>
+                    <td><span style="font-size: 0.75rem; color: var(--text-muted);">${e.remarks || '-'}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+        }
+
+        section.classList.remove('hidden');
+        section.scrollIntoView({ behavior: 'smooth' });
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      // Close inspector
+      document.getElementById('btnCloseInspectorSection').addEventListener('click', () => {
+        document.getElementById('inspectorSection').classList.add('hidden');
+      });
+
+      // Export single user
+      document.getElementById('btnExportInspectedUser').addEventListener('click', () => {
+        if (!inspectedUserObj || !window.XLSX) return;
+        const rows = inspectedUserObj.entries.map(e => ({
+          'Date': e.date,
+          'Project Name': e.projectName,
+          'Work Description': e.work,
+          'Status': e.status,
+          'Hours': e.hoursWorked || 0,
+          'Priority': e.priority || 'Medium',
+          'Remarks': e.remarks || ''
+        }));
+        const ws = XLSX.utils.json_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, `${inspectedUserObj.name}_Worksheet`);
+        XLSX.writeFile(wb, `${inspectedUserObj.name}_Worksheet_${WorksheetManager.getTodayStr()}.xlsx`);
+      });
+
+      // Export Master Team Excel
+      document.getElementById('btnAdminExportMaster').addEventListener('click', () => {
+        admin.exportMasterTeamExcel();
+      });
+
+      document.getElementById('btnRefreshAdminData').addEventListener('click', loadAdminData);
+
+      if (checkAdminAuth()) {
+        loadAdminData();
+      }
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
