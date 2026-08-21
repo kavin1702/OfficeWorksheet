@@ -591,12 +591,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('workEntryForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('workEntryId').value;
+      const chosenDate = document.getElementById('workDate').value || WorksheetManager.getTodayStr();
       const formData = {
-        date: document.getElementById('workDate').value,
+        date: chosenDate,
         projectName: document.getElementById('projectNameInput').value,
         work: document.getElementById('workDescription').value,
         status: document.getElementById('workStatus').value,
-        hoursWorked: document.getElementById('workHours').value,
+        hoursWorked: parseFloat(document.getElementById('workHours').value) || 0,
         priority: document.getElementById('workPriority').value,
         remarks: document.getElementById('workRemarks').value
       };
@@ -604,11 +605,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         if (id) {
           await manager.updateEntry(id, formData);
-          ui.showToast('Work log updated successfully!', 'success');
+          ui.showToast('✅ Work log updated and synced to Google Sheets!', 'success');
         } else {
           await manager.addEntry(formData);
-          ui.showToast('New daily work log added!', 'success');
+          ui.showToast(`✅ Saved ${chosenDate} task & synced to Google Sheets!`, 'success');
           if (formData.status === 'Completed') ui.triggerConfetti();
+        }
+
+        // Auto-switch filter if date is not today, so the user instantly sees their newly saved log
+        const todayStr = WorksheetManager.getTodayStr();
+        if (chosenDate !== todayStr && manager.filters.dateRange === 'today') {
+          manager.setFilter('dateRange', 'this-month');
+          updateDatePillsUI('this-month');
         }
 
         closeWorkModal();
