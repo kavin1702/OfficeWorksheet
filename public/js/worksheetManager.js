@@ -304,14 +304,13 @@ class WorksheetManager {
       // 5. Search keyword
       if (this.filters.search) {
         const q = this.filters.search.toLowerCase().trim();
-        // If user typed their email/name in search, don't filter out all their tasks
-        const isSelfQuery = currentUser && (
-          (currentUser.email && currentUser.email.toLowerCase() === q) ||
-          (currentUser.username && currentUser.username.toLowerCase() === q) ||
-          (currentUser.name && currentUser.name.toLowerCase() === q)
-        );
+        // If search query is an email or matches current user name/username/email, ignore or match user
+        const isEmailOrUser = q.includes('@') || (currentUser && (
+          (currentUser.email && currentUser.email.toLowerCase().includes(q)) ||
+          (currentUser.name && currentUser.name.toLowerCase().includes(q))
+        ));
 
-        if (!isSelfQuery) {
+        if (!isEmailOrUser) {
           const inProject = (entry.projectName || '').toLowerCase().includes(q);
           const inWork = (entry.work || '').toLowerCase().includes(q);
           const inRemarks = (entry.remarks || '').toLowerCase().includes(q);

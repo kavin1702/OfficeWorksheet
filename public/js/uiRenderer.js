@@ -58,13 +58,29 @@ class UIRenderer {
 
   // Render Metric Cards
   renderMetrics(metrics, dateContext = 'Filtered') {
-    document.getElementById('metricTotalTasks').textContent = metrics.totalTasks;
-    document.getElementById('metricCompletedTasks').textContent = metrics.completedCount;
-    document.getElementById('metricCompletionRate').textContent = `${metrics.completionRate}%`;
-    document.getElementById('metricInProgressTasks').textContent = metrics.inProgressCount + metrics.pendingCount;
-    document.getElementById('metricPendingSub').textContent = `${metrics.pendingCount} pending, ${metrics.blockedCount} blocked`;
-    document.getElementById('metricTotalHours').textContent = metrics.totalHours.toFixed(1);
-    document.getElementById('metricFilterContext').textContent = dateContext;
+    const totalEl = document.getElementById('metricTotalTasks');
+    const compEl = document.getElementById('metricCompletedTasks');
+    const rateEl = document.getElementById('metricCompletionRate');
+    const progEl = document.getElementById('metricInProgressTasks');
+    const pendSubEl = document.getElementById('metricPendingSub');
+    const hoursEl = document.getElementById('metricTotalHours');
+    const ctxEl = document.getElementById('metricFilterContext');
+
+    const completed = metrics.completed || 0;
+    const inProgress = metrics.inProgress || 0;
+    const pending = metrics.pending || 0;
+    const blocked = metrics.blocked || 0;
+    const totalHours = metrics.totalHours || 0;
+    const totalTasks = metrics.totalTasks || 0;
+    const rate = metrics.completionRate || 0;
+
+    if (totalEl) totalEl.textContent = totalTasks;
+    if (compEl) compEl.textContent = completed;
+    if (rateEl) rateEl.textContent = `${rate}%`;
+    if (progEl) progEl.textContent = inProgress + pending;
+    if (pendSubEl) pendSubEl.textContent = `${pending} pending, ${blocked} blocked`;
+    if (hoursEl) hoursEl.textContent = typeof totalHours === 'number' ? totalHours.toFixed(1) : parseFloat(totalHours || 0).toFixed(1);
+    if (ctxEl) ctxEl.textContent = dateContext;
   }
 
   // Render Table View (Desktop & Tablet)
