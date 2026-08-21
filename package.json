@@ -1,0 +1,9 @@
+{
+  "name": "office-worksheet",
+  "version": "2.0.0",
+  "description": "WorkPulse - Daily Worksheet & Multi-User Management Portal",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static build successful'"
+  }
+}
