@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://office-worksheet.vercel.app/sitemap.xml
