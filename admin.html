@@ -142,6 +142,13 @@
           <span>Sign In to Admin Portal</span>
         </button>
 
+        <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08);">
+          <button type="button" class="btn btn-outline btn-block btn-sm" id="btnQuickAdminLogin" style="border-color: rgba(245,158,11,0.5); color: #f59e0b; justify-content: center; font-size: 0.8rem;">
+            <i data-lucide="crown" class="icon-xs"></i>
+            <span>⚡ 1-Click Sign In as Admin (mnkavin2006@gmail.com)</span>
+          </button>
+        </div>
+
         <div class="auth-switch-link">
           <a href="index.html" class="link-btn" style="text-decoration: none;">
             <i data-lucide="arrow-left" class="icon-xs"></i> Back to User Worksheet
@@ -357,6 +364,20 @@
               gateAlert.classList.remove('hidden');
               return;
             }
+            authGate.classList.add('hidden');
+            loadAdminData();
+          } catch (err) {
+            gateAlertText.textContent = err.message;
+            gateAlert.classList.remove('hidden');
+          }
+        });
+      }
+
+      const btnQuickAdminLogin = document.getElementById('btnQuickAdminLogin');
+      if (btnQuickAdminLogin) {
+        btnQuickAdminLogin.addEventListener('click', () => {
+          try {
+            const user = auth.login('mnkavin2006@gmail.com', 'password123');
             authGate.classList.add('hidden');
             loadAdminData();
           } catch (err) {

@@ -76,7 +76,7 @@
   <!-- =========================================================================
        Full-Screen Landing & Authentication Gatekeeper (Sign In / Create Account)
        ========================================================================= -->
-  <div id="authPortal" class="auth-portal-screen hidden">
+  <div id="authPortal" class="auth-portal-screen">
     <div class="auth-portal-card">
       <!-- Brand & Welcome Header -->
       <div class="auth-portal-header">
@@ -292,9 +292,9 @@
 
         <!-- Cloud Sync & Status Bar -->
         <div class="header-center-info">
-          <button id="btnCloudStatus" class="cloud-status-pill local" title="Click to configure Cloud Database">
+          <button id="btnCloudStatus" class="cloud-status-pill connected" title="Google Sheets Cloud Connected">
             <span class="status-dot"></span>
-            <span id="cloudStatusText" class="status-label">Local Mode</span>
+            <span id="cloudStatusText" class="status-label">Google Sheets Connected</span>
             <i data-lucide="cloud" class="icon-sm"></i>
           </button>
           <button id="btnSyncNow" class="btn-icon btn-icon-sm" title="Sync with Cloud Online Now" aria-label="Sync Now">

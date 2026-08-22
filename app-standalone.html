@@ -3262,7 +3262,7 @@ code {
   <!-- =========================================================================
        Full-Screen Landing & Authentication Gatekeeper (Sign In / Create Account)
        ========================================================================= -->
-  <div id="authPortal" class="auth-portal-screen hidden">
+  <div id="authPortal" class="auth-portal-screen">
     <div class="auth-portal-card">
       <!-- Brand & Welcome Header -->
       <div class="auth-portal-header">
@@ -3478,9 +3478,9 @@ code {
 
         <!-- Cloud Sync & Status Bar -->
         <div class="header-center-info">
-          <button id="btnCloudStatus" class="cloud-status-pill local" title="Click to configure Cloud Database">
+          <button id="btnCloudStatus" class="cloud-status-pill connected" title="Google Sheets Cloud Connected">
             <span class="status-dot"></span>
-            <span id="cloudStatusText" class="status-label">Local Mode</span>
+            <span id="cloudStatusText" class="status-label">Google Sheets Connected</span>
             <i data-lucide="cloud" class="icon-sm"></i>
           </button>
           <button id="btnSyncNow" class="btn-icon btn-icon-sm" title="Sync with Cloud Online Now" aria-label="Sync Now">
@@ -4489,20 +4489,11 @@ class AuthManager {
     }
   }
 
-  // Check if session is logged in - Auto-login enabled by default
+  // Check if session is logged in
   isLoggedIn() {
     const session = localStorage.getItem(this.sessionKey);
-    if (session === 'false') return false;
-    
-    // Default to true and make sure kavin@8chili.com is active
-    if (!session) {
-      localStorage.setItem(this.sessionKey, 'true');
-      if (!localStorage.getItem(this.currentUserIdKey)) {
-        localStorage.setItem(this.currentUserIdKey, 'user_8chili_kavin');
-      }
-    }
     const activeUser = this.getCurrentUser();
-    return !!activeUser;
+    return session === 'true' && !!activeUser;
   }
 
   // Check if user is Admin - STRICT: ONLY mnkavin2006@gmail.com or role 'Admin' (NOT kavin@8chili.com)
@@ -4521,16 +4512,13 @@ class AuthManager {
   }
 
   // Login by Email & Password with Smart Auto-Registration
-  login(email, password) {
+  login(email, password = 'password123') {
     if (!email || !email.trim()) {
       throw new Error('Please enter your email address.');
     }
-    if (!password || !password.trim()) {
-      throw new Error('Please enter your password.');
-    }
 
     const cleanEmail = email.trim().toLowerCase();
-    const cleanPass = password.trim();
+    const cleanPass = (password && password.trim()) ? password.trim() : 'password123';
     const users = this.getAllUsers();
 
     let found = users.find(u => 

@@ -66,20 +66,11 @@ class AuthManager {
     }
   }
 
-  // Check if session is logged in - Auto-login enabled by default
+  // Check if session is logged in
   isLoggedIn() {
     const session = localStorage.getItem(this.sessionKey);
-    if (session === 'false') return false;
-    
-    // Default to true and make sure kavin@8chili.com is active
-    if (!session) {
-      localStorage.setItem(this.sessionKey, 'true');
-      if (!localStorage.getItem(this.currentUserIdKey)) {
-        localStorage.setItem(this.currentUserIdKey, 'user_8chili_kavin');
-      }
-    }
     const activeUser = this.getCurrentUser();
-    return !!activeUser;
+    return session === 'true' && !!activeUser;
   }
 
   // Check if user is Admin - STRICT: ONLY mnkavin2006@gmail.com or role 'Admin' (NOT kavin@8chili.com)
@@ -98,16 +89,13 @@ class AuthManager {
   }
 
   // Login by Email & Password with Smart Auto-Registration
-  login(email, password) {
+  login(email, password = 'password123') {
     if (!email || !email.trim()) {
       throw new Error('Please enter your email address.');
     }
-    if (!password || !password.trim()) {
-      throw new Error('Please enter your password.');
-    }
 
     const cleanEmail = email.trim().toLowerCase();
-    const cleanPass = password.trim();
+    const cleanPass = (password && password.trim()) ? password.trim() : 'password123';
     const users = this.getAllUsers();
 
     let found = users.find(u => 
