@@ -874,6 +874,8 @@ async function initWorkPulseApp() {
         await cloud.syncAllToGoogleSheets(manager.entries);
         await manager.initialize();
         renderApp();
+      });
+    }
   }
 
   // -------------------------------------------------------------

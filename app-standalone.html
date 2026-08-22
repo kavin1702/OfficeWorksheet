@@ -4770,7 +4770,7 @@ window.authManager = new AuthManager();
  * Assigned directly to user: kavin@8chili.com (Kavin)
  */
 
-window.SAMPLE_WORKSHEET_DATA = [
+const SAMPLE_WORKSHEET_DATA = [
   {
     id: "task-aug-03",
     userId: "user_8chili_kavin",
@@ -8353,6 +8353,8 @@ async function initWorkPulseApp() {
         await cloud.syncAllToGoogleSheets(manager.entries);
         await manager.initialize();
         renderApp();
+      });
+    }
   }
 
   // -------------------------------------------------------------
