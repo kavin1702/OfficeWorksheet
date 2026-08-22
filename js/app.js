@@ -21,6 +21,50 @@ async function initWorkPulseApp() {
   let calendarMonth = 7; // August (0-indexed)
   let calendarSelectedDate = '2026-08-06';
 
+  // Expose window.workPulseApp actions for zero-lag direct HTML click handlers
+  window.workPulseApp = {
+    openWorkModal: () => openWorkModal(),
+    closeWorkModal: () => closeWorkModal(),
+    openReport: () => openDailyReportModal(),
+    closeReport: () => closeDailyReportModal(),
+    openImportExport: () => openImportExportModal(),
+    closeImportExport: () => closeImportExportModal(),
+    openCloud: () => openCloudModal(),
+    closeCloud: () => closeCloudModal(),
+    switchView: (v) => switchView(v),
+    setDateFilter: (filterType) => {
+      if (filterType === 'custom') {
+        const c = document.getElementById('customDateContainer');
+        if (c) c.classList.remove('hidden');
+        return;
+      }
+      const c = document.getElementById('customDateContainer');
+      if (c) c.classList.add('hidden');
+      manager.setFilter('dateRange', filterType);
+      updateDatePillsUI(filterType);
+      renderApp();
+    },
+    setUserScope: (scope) => {
+      manager.setFilter('userScope', scope);
+      const pillMe = document.getElementById('pillScopeMe');
+      const pillAll = document.getElementById('pillScopeAll');
+      if (pillMe) pillMe.classList.toggle('active', scope === 'me');
+      if (pillAll) pillAll.classList.toggle('active', scope === 'all');
+      renderApp();
+    },
+    carryForward: async () => {
+      const res = await manager.carryForwardPendingTasks();
+      if (res.count > 0) {
+        ui.showToast(res.message, 'success');
+        manager.setFilter('dateRange', 'today');
+        updateDatePillsUI('today');
+        renderApp();
+      } else {
+        ui.showToast(res.message, 'info');
+      }
+    }
+  };
+
   // 2. Initialize Theme
   initTheme();
 

@@ -396,17 +396,17 @@
             <span class="btn-text">Admin Panel</span>
           </a>
 
-          <button id="btnOpenReport" class="btn btn-outline btn-sm" title="Generate formatted daily report for WhatsApp/Slack">
+          <button id="btnOpenReport" class="btn btn-outline btn-sm" title="Generate formatted daily report for WhatsApp/Slack" onclick="window.workPulseApp && window.workPulseApp.openReport()">
             <i data-lucide="file-text"></i>
             <span class="btn-text">Daily Report</span>
           </button>
           
-          <button id="btnOpenImportExport" class="btn btn-outline btn-sm" title="Import / Export Excel and CSV data">
+          <button id="btnOpenImportExport" class="btn btn-outline btn-sm" title="Import / Export Excel and CSV data" onclick="window.workPulseApp && window.workPulseApp.openImportExport()">
             <i data-lucide="arrow-up-down"></i>
             <span class="btn-text">Import / Export</span>
           </button>
 
-          <button id="btnOpenCloudModal" class="btn btn-outline btn-sm cloud-btn" title="Cloud Database Settings">
+          <button id="btnOpenCloudModal" class="btn btn-outline btn-sm cloud-btn" title="Cloud Database Settings" onclick="window.workPulseApp && window.workPulseApp.openCloud()">
             <i data-lucide="database"></i>
             <span class="btn-text">Cloud Sync</span>
           </button>
@@ -415,7 +415,7 @@
             <i data-lucide="moon" id="themeIcon"></i>
           </button>
 
-          <button id="btnNewWorksheetEntry" class="btn btn-primary btn-sm btn-glow">
+          <button id="btnNewWorksheetEntry" class="btn btn-primary btn-sm btn-glow" onclick="window.workPulseApp && window.workPulseApp.openWorkModal()">
             <i data-lucide="plus-circle"></i>
             <span>Log Work</span>
           </button>
@@ -487,11 +487,11 @@
           
           <!-- User Workspace Scope Selector -->
           <div class="date-pills-group" id="userScopePills">
-            <button class="filter-pill active" data-user-scope="me" id="pillScopeMe">
+            <button class="filter-pill active" data-user-scope="me" id="pillScopeMe" onclick="window.workPulseApp && window.workPulseApp.setUserScope('me')">
               <i data-lucide="user" class="icon-xs"></i>
               <span id="labelMyWorksheet">My Worksheet</span>
             </button>
-            <button class="filter-pill" data-user-scope="all" id="pillScopeAll">
+            <button class="filter-pill" data-user-scope="all" id="pillScopeAll" onclick="window.workPulseApp && window.workPulseApp.setUserScope('all')">
               <i data-lucide="users" class="icon-xs"></i>
               <span>All Friends / Team</span>
             </button>
@@ -499,12 +499,12 @@
 
           <!-- Date Filter Pills -->
           <div class="date-pills-group" id="dateFilterPills">
-            <button class="filter-pill" data-date-filter="today">Today</button>
-            <button class="filter-pill" data-date-filter="yesterday">Yesterday</button>
-            <button class="filter-pill" data-date-filter="this-week">This Week</button>
-            <button class="filter-pill active" data-date-filter="this-month">This Month</button>
-            <button class="filter-pill" data-date-filter="all">All Dates</button>
-            <button class="filter-pill" data-date-filter="custom" id="btnCustomDatePill">
+            <button class="filter-pill" data-date-filter="today" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('today')">Today</button>
+            <button class="filter-pill" data-date-filter="yesterday" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('yesterday')">Yesterday</button>
+            <button class="filter-pill" data-date-filter="this-week" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('this-week')">This Week</button>
+            <button class="filter-pill active" data-date-filter="this-month" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('this-month')">This Month</button>
+            <button class="filter-pill" data-date-filter="all" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('all')">All Dates</button>
+            <button class="filter-pill" data-date-filter="custom" id="btnCustomDatePill" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('custom')">
               <i data-lucide="calendar" class="icon-xs"></i>
               <span>Custom Date</span>
             </button>
@@ -526,7 +526,7 @@
 
           <!-- Quick Actions & Carry Forward -->
           <div class="panel-secondary-actions">
-            <button id="btnCarryForward" class="btn btn-outline btn-sm btn-subtle" title="Bring unfinished tasks from yesterday into today's worksheet">
+            <button id="btnCarryForward" class="btn btn-outline btn-sm btn-subtle" title="Bring unfinished tasks from yesterday into today's worksheet" onclick="window.workPulseApp && window.workPulseApp.carryForward()">
               <i data-lucide="corner-down-right"></i>
               <span class="btn-text">Carry Forward Pending</span>
             </button>
@@ -565,16 +565,16 @@
 
           <!-- View Mode Switcher -->
           <div class="view-switcher" role="tablist">
-            <button class="view-btn active" data-view="table" title="Table View" aria-label="Table View">
+            <button class="view-btn active" data-view="table" title="Table View" aria-label="Table View" onclick="window.workPulseApp && window.workPulseApp.switchView('table')">
               <i data-lucide="table"></i>
             </button>
-            <button class="view-btn" data-view="cards" title="Mobile / Card View" aria-label="Card View">
+            <button class="view-btn" data-view="cards" title="Mobile / Card View" aria-label="Card View" onclick="window.workPulseApp && window.workPulseApp.switchView('cards')">
               <i data-lucide="layout-grid"></i>
             </button>
-            <button class="view-btn" data-view="calendar" title="Calendar View" aria-label="Calendar View">
+            <button class="view-btn" data-view="calendar" title="Calendar View" aria-label="Calendar View" onclick="window.workPulseApp && window.workPulseApp.switchView('calendar')">
               <i data-lucide="calendar"></i>
             </button>
-            <button class="view-btn" data-view="analytics" title="Analytics & Charts" aria-label="Analytics View">
+            <button class="view-btn" data-view="analytics" title="Analytics & Charts" aria-label="Analytics View" onclick="window.workPulseApp && window.workPulseApp.switchView('analytics')">
               <i data-lucide="bar-chart-3"></i>
             </button>
           </div>

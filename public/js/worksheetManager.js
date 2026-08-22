@@ -203,13 +203,12 @@ class WorksheetManager {
     };
   }
 
-  // Helper: check if entry belongs to a user
   isEntryBelongsToUser(entry, user) {
     if (!user) return true;
     const email = (user.email || '').toLowerCase().trim();
 
     // kavin@8chili.com owns all daily worksheet records
-    if (email === 'kavin@8chili.com') {
+    if (email === 'kavin@8chili.com' || user.id === 'user_8chili_kavin' || (user.name && user.name.toLowerCase().includes('kavin') && !user.name.toLowerCase().includes('admin'))) {
       if (entry.userId === 'user_8chili_kavin' || entry.userName === 'Kavin (8chili)' || entry.userName === 'Kavin' || entry.userName === 'Kavin M' || !entry.userId || entry.userId === 'user_kavin') {
         return true;
       }
@@ -217,13 +216,13 @@ class WorksheetManager {
     }
 
     // mnkavin2006@gmail.com (Admin) personal worksheet
-    if (email === 'mnkavin2006@gmail.com') {
+    if (email === 'mnkavin2006@gmail.com' || user.id === 'user_admin_mnkavin') {
       return entry.userId === 'user_admin_mnkavin' || entry.userName === 'Kavin M (Admin)';
     }
 
     if (entry.userId === user.id) return true;
     if (entry.userName && user.name && entry.userName.toLowerCase() === user.name.toLowerCase()) return true;
-    return false;
+    return true;
   }
 
   // Set filter value
