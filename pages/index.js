@@ -1,20 +1,26 @@
 import fs from 'fs';
 import path from 'path';
 
-export default function Home() {
-  return null;
+export default function Home({ htmlContent }) {
+  return (
+    <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+  );
 }
 
-export async function getServerSideProps({ res }) {
+export async function getStaticProps() {
   try {
-    const filePath = path.join(process.cwd(), 'public', 'index.html');
-    const html = fs.readFileSync(filePath, 'utf8');
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.write(html);
-    res.end();
+    const filePath = path.join(process.cwd(), 'public', 'app-standalone.html');
+    const htmlContent = fs.readFileSync(filePath, 'utf8');
+    return {
+      props: {
+        htmlContent
+      }
+    };
   } catch (e) {
-    res.writeHead(302, { Location: '/index.html' });
-    res.end();
+    return {
+      props: {
+        htmlContent: '<p>Loading WorkPulse...</p>'
+      }
+    };
   }
-  return { props: {} };
 }

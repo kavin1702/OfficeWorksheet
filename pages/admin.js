@@ -1,20 +1,26 @@
 import fs from 'fs';
 import path from 'path';
 
-export default function AdminPage() {
-  return null;
+export default function AdminPage({ htmlContent }) {
+  return (
+    <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+  );
 }
 
-export async function getServerSideProps({ res }) {
+export async function getStaticProps() {
   try {
     const filePath = path.join(process.cwd(), 'public', 'admin.html');
-    const html = fs.readFileSync(filePath, 'utf8');
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.write(html);
-    res.end();
+    const htmlContent = fs.readFileSync(filePath, 'utf8');
+    return {
+      props: {
+        htmlContent
+      }
+    };
   } catch (e) {
-    res.writeHead(302, { Location: '/admin.html' });
-    res.end();
+    return {
+      props: {
+        htmlContent: '<p>Loading Admin Portal...</p>'
+      }
+    };
   }
-  return { props: {} };
 }
