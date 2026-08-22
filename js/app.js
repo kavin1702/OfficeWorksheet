@@ -38,6 +38,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const currentUser = auth.getCurrentUser();
       const isAdmin = auth.isAdmin(currentUser);
 
+      // Default date filter to 'this-month' so all past August tasks are immediately visible
+      manager.setFilter('dateRange', 'this-month');
+      updateDatePillsUI('this-month');
+
       if (isAdmin) {
         // Admin Supervisor default: View all team members' work immediately
         manager.setFilter('userScope', 'all');
@@ -68,22 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 4. Initialize Cloud Sync Status Listener & Real-time Remote Sync
-  cloud.onStatusChange((status, message) => {
-    updateCloudStatusBadge(status, message);
-  });
-
-  // Automatically update laptop screen in real-time when changes are made on mobile phone
-  cloud.onDataChange(async () => {
-    await manager.initialize();
-    renderApp();
-  });
-
-  // 5. Load Data & Initialize Gatekeeper
-  await manager.initialize();
-  updateAuthGate();
-
-  // 6. Setup UI Event Listeners
+  // 4. Setup UI Event Listeners IMMEDIATELY (Synchronous - zero lag on click)
   bindHeaderEvents();
   bindAuthEvents();
   bindAdminEvents();
@@ -95,6 +84,27 @@ document.addEventListener('DOMContentLoaded', async () => {
   bindImportExportEvents();
   bindDailyReportEvents();
   bindKeyboardShortcuts();
+
+  // 5. Initialize Cloud Sync Status Listener
+  cloud.onStatusChange((status, message) => {
+    updateCloudStatusBadge(status, message);
+  });
+
+  cloud.onDataChange(async () => {
+    await manager.initialize();
+    renderApp();
+  });
+
+  // 6. Initialize Gatekeeper UI
+  updateAuthGate();
+
+  // 7. Load Data in background
+  try {
+    await manager.initialize();
+    renderApp();
+  } catch (err) {
+    console.warn('Initial data load notice:', err);
+  }
 
   // =========================================================================
   // Master Render Function
@@ -585,6 +595,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('chipYesterday').addEventListener('click', () => {
       document.getElementById('workDate').value = WorksheetManager.getYesterdayStr();
+    });
+
+    document.querySelectorAll('.chip-past-date').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.getElementById('workDate').value = chip.dataset.date;
+      });
     });
 
     // Save Form Submission
