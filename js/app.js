@@ -1122,6 +1122,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
+    // 3.5 1-Click Instant Sign In Buttons
+    document.querySelectorAll('.btn-quick-login').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const email = btn.dataset.email;
+        try {
+          const logged = auth.login(email, 'password123');
+          ui.showToast(`Welcome back, ${logged.name}!`, 'success');
+        } catch (err) {
+          showAuthAlert(err.message);
+        }
+      });
+    });
+
     // 4. Portal Sign Up Form (Create Account with Email & Password)
     if (portalSignUpForm) {
       portalSignUpForm.addEventListener('submit', (e) => {

@@ -15,7 +15,7 @@ class CloudStorageService {
     this.pollingInterval = null;
 
     // Default live Google Apps Script Web App endpoint
-    this.defaultSheetUrl = 'https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec';
+    this.defaultSheetUrl = 'https://script.google.com/macros/s/AKfycbxfaG9lH-EfdXODX7toUQw4V7r1rZS8uMcuT9hLp_799Fpk3XWPv4sVWmPV30ZjMeQRqw/exec';
 
     // Load configuration
     this.config = this.loadConfig();

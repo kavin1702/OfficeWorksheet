@@ -3325,6 +3325,21 @@ code {
             <span>Sign In to My Worksheet</span>
           </button>
 
+          <!-- 1-Click Instant Sign In Options -->
+          <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08);">
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; text-align: center;">âš¡ 1-Click Instant Sign In:</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <button type="button" class="btn btn-outline btn-xs btn-quick-login" data-email="kavin@8chili.com" style="border-color: rgba(59,130,246,0.4); color: #60a5fa; padding: 0.5rem 0.25rem; font-size: 0.75rem; justify-content: center;">
+                <i data-lucide="user" class="icon-xs"></i>
+                <span>Kavin (8chili)</span>
+              </button>
+              <button type="button" class="btn btn-outline btn-xs btn-quick-login" data-email="mnkavin2006@gmail.com" style="border-color: rgba(245,158,11,0.4); color: #f59e0b; padding: 0.5rem 0.25rem; font-size: 0.75rem; justify-content: center;">
+                <i data-lucide="crown" class="icon-xs"></i>
+                <span>Admin</span>
+              </button>
+            </div>
+          </div>
+
           <div class="auth-switch-link">
             <span>Don't have an account?</span>
             <button type="button" id="btnSwitchToSignUp" class="link-btn">Create one now</button>
@@ -4030,7 +4045,7 @@ code {
           <div class="config-form-section" style="margin-top: 1rem;">
             <div class="form-group">
               <label for="googleSheetUrl" class="form-label required">Google Apps Script Web App URL</label>
-              <input type="url" id="googleSheetUrl" class="form-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec" value="https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec">
+              <input type="url" id="googleSheetUrl" class="form-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec" value="https://script.google.com/macros/s/AKfycbxfaG9lH-EfdXODX7toUQw4V7r1rZS8uMcuT9hLp_799Fpk3XWPv4sVWmPV30ZjMeQRqw/exec">
               <span class="form-hint">Every task you save will automatically write rows into your Google Sheet in real-time!</span>
             </div>
 
@@ -4961,7 +4976,7 @@ class CloudStorageService {
     this.pollingInterval = null;
 
     // Default live Google Apps Script Web App endpoint
-    this.defaultSheetUrl = 'https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec';
+    this.defaultSheetUrl = 'https://script.google.com/macros/s/AKfycbxfaG9lH-EfdXODX7toUQw4V7r1rZS8uMcuT9hLp_799Fpk3XWPv4sVWmPV30ZjMeQRqw/exec';
 
     // Load configuration
     this.config = this.loadConfig();
@@ -8529,6 +8544,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       });
     }
+
+    // 3.5 1-Click Instant Sign In Buttons
+    document.querySelectorAll('.btn-quick-login').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const email = btn.dataset.email;
+        try {
+          const logged = auth.login(email, 'password123');
+          ui.showToast(`Welcome back, ${logged.name}!`, 'success');
+        } catch (err) {
+          showAuthAlert(err.message);
+        }
+      });
+    });
 
     // 4. Portal Sign Up Form (Create Account with Email & Password)
     if (portalSignUpForm) {
