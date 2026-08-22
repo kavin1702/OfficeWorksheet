@@ -67,7 +67,6 @@ class AdminManager {
     const cloudCfg = window.cloudStorage ? window.cloudStorage.config : {};
 
     const isSheetsConnected = !!cloudCfg.googleSheetUrl;
-    const isNeonConnected = !!cloudCfg.neonDbUrl;
 
     container.innerHTML = `
       <!-- Admin KPI Metric Cards -->
@@ -97,12 +96,12 @@ class AdminManager {
         </div>
 
         <div class="admin-kpi-card">
-          <div class="admin-kpi-icon bg-amber-light text-amber"><i data-lucide="database"></i></div>
+          <div class="admin-kpi-icon bg-emerald-light text-emerald"><i data-lucide="file-spreadsheet"></i></div>
           <div class="admin-kpi-info">
             <span class="admin-kpi-val" style="font-size: 0.95rem; font-weight: 700; color: #10b981;">
-              ${isNeonConnected ? '⚡ Dual-Sync Active' : '📊 Google Sheets'}
+              ${isSheetsConnected ? '📊 Google Sheets Live' : '📁 Local Storage'}
             </span>
-            <span class="admin-kpi-label">Cloud Storage Status</span>
+            <span class="admin-kpi-label">Cloud Database Status</span>
           </div>
         </div>
       </div>

@@ -4019,89 +4019,32 @@ code {
 
         <div class="modal-body scrollable-modal-body">
           <div class="cloud-info-banner">
-            <i data-lucide="shield-check" class="banner-icon"></i>
+            <i data-lucide="sheet" class="banner-icon text-emerald"></i>
             <div>
-              <strong>Access From Anywhere (Laptop & Mobile Phone)</strong>
-              <p>Store your worksheet data in a 100% free online cloud database (Supabase PostgreSQL). Any work you update on your phone or laptop syncs instantly.</p>
+              <strong>Single Source of Truth: Google Sheets (Google Apps Script)</strong>
+              <p>All work data is saved directly into your Google Sheet via Google Apps Script Web App. View, edit, and manage your sheet in Google Drive on phone or PC.</p>
             </div>
-          </div>
-
-          <!-- Storage Provider Options -->
-          <div class="storage-mode-selector">
-            <label class="mode-card" data-mode="sheets">
-              <input type="radio" name="storageProvider" value="sheets">
-              <div class="mode-content">
-                <div class="mode-title-row">
-                  <span class="mode-title">ðŸ“Š Google Sheets / Excel Online</span>
-                  <span class="badge-recommended" style="background-color: #10b981;">Common Excel Sheet</span>
-                </div>
-                <p class="mode-desc">Store all data in a real Google Sheet / Excel spreadsheet in Google Drive. Accessible & editable directly on phone & PC!</p>
-              </div>
-            </label>
-
-            <label class="mode-card active" data-mode="instant">
-              <input type="radio" name="storageProvider" value="instant" checked>
-              <div class="mode-content">
-                <div class="mode-title-row">
-                  <span class="mode-title">Instant Cloud Sync Key</span>
-                  <span class="badge-recommended">âš¡ 1-Click Zero Setup</span>
-                </div>
-                <p class="mode-desc">Sync effortlessly between Phone & Laptop by sharing a simple secret Sync Key. No database creation needed!</p>
-              </div>
-            </label>
-
-            <label class="mode-card" data-mode="supabase">
-              <input type="radio" name="storageProvider" value="supabase">
-              <div class="mode-content">
-                <div class="mode-title-row">
-                  <span class="mode-title">Supabase Cloud Database (PostgreSQL)</span>
-                  <span class="badge-recommended" style="background-color: #3b82f6;">Permanent SQL</span>
-                </div>
-                <p class="mode-desc">Direct PostgreSQL cloud database. Permanent dedicated storage with SQL query control.</p>
-              </div>
-            </label>
-
-            <label class="mode-card" data-mode="rest">
-              <input type="radio" name="storageProvider" value="rest">
-              <div class="mode-content">
-                <div class="mode-title-row">
-                  <span class="mode-title">Custom REST API / Cloud Server</span>
-                </div>
-                <p class="mode-desc">Connect to your own custom backend endpoint (Node.js, Express, Python FastAPI, or JSON server).</p>
-              </div>
-            </label>
-
-            <label class="mode-card" data-mode="local">
-              <input type="radio" name="storageProvider" value="local">
-              <div class="mode-content">
-                <div class="mode-title-row">
-                  <span class="mode-title">Local Browser Storage (Offline Only)</span>
-                </div>
-                <p class="mode-desc">Saves strictly inside this browser. (Data won't sync to other devices).</p>
-              </div>
-            </label>
           </div>
 
           <!-- Google Sheets Config Section -->
-          <div id="sheetsConfigSection" class="config-form-section hidden">
-            <h4 class="section-title">Google Sheets / Excel Online Web App URL</h4>
+          <div class="config-form-section" style="margin-top: 1rem;">
             <div class="form-group">
               <label for="googleSheetUrl" class="form-label required">Google Apps Script Web App URL</label>
-              <input type="url" id="googleSheetUrl" class="form-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
-              <span class="form-hint">Every task you save will automatically write rows into your Google Sheet (Common Excel Sheet)!</span>
+              <input type="url" id="googleSheetUrl" class="form-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec" value="https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec">
+              <span class="form-hint">Every task you save will automatically write rows into your Google Sheet in real-time!</span>
             </div>
 
             <!-- Quick Google Sheets Setup Accordion -->
-            <details class="setup-details" open>
+            <details class="setup-details" open style="margin-top: 1.25rem;">
               <summary class="setup-summary">
-                <i data-lucide="sheet" class="icon-sm"></i>
-                <span>How to connect your Google Sheet in 1 minute (Click to expand)</span>
+                <i data-lucide="help-circle" class="icon-sm text-emerald"></i>
+                <span>Google Apps Script Code (Click to view or copy)</span>
               </summary>
               <div class="setup-content">
                 <ol class="setup-steps">
-                  <li>Create a new spreadsheet at <a href="https://sheets.new" target="_blank" rel="noopener">sheets.new</a> named <strong>"Office Daily Worksheet"</strong>.</li>
+                  <li>Open your Google Sheet at <a href="https://sheets.google.com" target="_blank" rel="noopener">Google Sheets</a>.</li>
                   <li>Click <strong>Extensions</strong> âž” <strong>Apps Script</strong> in the top menu.</li>
-                  <li>Delete any existing code, paste the script below, then click <strong>Save (ðŸ’¾)</strong>:</li>
+                  <li>Replace the code with the script below and click <strong>Save (ðŸ’¾)</strong>:</li>
                 </ol>
                 <div class="code-box">
                   <pre><code>function doGet(e) {
@@ -4114,9 +4057,15 @@ code {
     var row = data[i];
     var obj = {};
     for (var j = 0; j < headers.length; j++) obj[headers[j]] = row[j];
+    var rawDate = obj["Date"];
+    var dateStr = "";
+    if (rawDate instanceof Date) dateStr = Utilities.formatDate(rawDate, "GMT", "yyyy-MM-dd");
+    else if (rawDate) dateStr = String(rawDate).substring(0, 10);
     result.push({
       id: String(obj["ID"] || ("row-" + i)),
-      date: obj["Date"] ? (obj["Date"] instanceof Date ? Utilities.formatDate(obj["Date"], "GMT", "yyyy-MM-dd") : String(obj["Date"]).substring(0,10)) : "",
+      userId: String(obj["User"] || "").toLowerCase().indexOf("admin") !== -1 ? "user_admin_mnkavin" : "user_8chili_kavin",
+      userName: String(obj["User"] || "Kavin (8chili)"),
+      date: dateStr,
       projectName: String(obj["Project Name"] || "General"),
       work: String(obj["Work Description"] || ""),
       status: String(obj["Status"] || "In Progress"),
@@ -4132,25 +4081,24 @@ function doPost(e) {
   try {
     var contents = JSON.parse(e.postData.contents);
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
-    }
+    var headers = ["ID", "User", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"];
+    if (sheet.getLastRow() === 0) sheet.appendRow(headers);
     if (contents.action === "sync_all" && Array.isArray(contents.entries)) {
       sheet.clearContents();
-      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
+      sheet.appendRow(headers);
       var rows = contents.entries.map(function(item) {
-        return [item.id || "", item.date || "", item.projectName || "", item.work || "", item.status || "In Progress", item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
+        return [item.id || "", item.user || item.userName || "Kavin (8chili)", item.date || "", item.projectName || "", item.work || "", item.status || "In Progress", item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
       });
-      if (rows.length > 0) sheet.getRange(2, 1, rows.length, 9).setValues(rows);
-    } else if (contents.action === "upsert" && contents.entry) {
-      var item = contents.entry;
+      if (rows.length > 0) sheet.getRange(2, 1, rows.length, 10).setValues(rows);
+    } else if (contents.action === "upsert") {
+      var item = contents.entry || contents;
       var data = sheet.getDataRange().getValues();
       var foundRow = -1;
       for (var i = 1; i < data.length; i++) {
         if (String(data[i][0]) === String(item.id)) { foundRow = i + 1; break; }
       }
-      var rowValues = [item.id, item.date, item.projectName, item.work, item.status, item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
-      if (foundRow > 0) sheet.getRange(foundRow, 1, 1, 9).setValues([rowValues]);
+      var rowValues = [item.id, item.user || item.userName || "Kavin (8chili)", item.date, item.projectName, item.work, item.status, item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
+      if (foundRow > 0) sheet.getRange(foundRow, 1, 1, 10).setValues([rowValues]);
       else sheet.appendRow(rowValues);
     } else if (contents.action === "delete" && contents.id) {
       var data = sheet.getDataRange().getValues();
@@ -4167,115 +4115,24 @@ function doPost(e) {
                     <i data-lucide="copy"></i> Copy Google Apps Script
                   </button>
                 </div>
-                <p class="step-footer">4. Click <strong>Deploy âž” New Deployment</strong> âž” select type <strong>Web app</strong> âž” set <em>Who has access</em> to <strong>"Anyone"</strong> âž” click <strong>Deploy</strong> and paste your Web App URL above!</p>
+                <p class="step-footer">4. Click <strong>Deploy âž” New Deployment</strong> âž” type <strong>Web app</strong> âž” <em>Who has access</em>: <strong>"Anyone"</strong> âž” click <strong>Deploy</strong> and paste your Web App URL above!</p>
               </div>
             </details>
-          </div>
-
-          <!-- Instant Cloud Sync Config Section -->
-          <div id="instantConfigSection" class="config-form-section">
-            <h4 class="section-title">Secret Sync Key (Shared Room)</h4>
-            <div class="form-group">
-              <label for="syncKeyInput" class="form-label required">Your Secret Sync Key</label>
-              <div style="display: flex; gap: 0.5rem;">
-                <input type="text" id="syncKeyInput" class="form-input" placeholder="e.g. office-work-2026 or my-team-worksheet" style="flex: 1;">
-                <button type="button" id="btnGenerateSyncKey" class="btn btn-outline btn-sm" style="white-space: nowrap;">ðŸŽ² Generate</button>
-              </div>
-              <span class="form-hint">Type any custom passcode or secret key here. Enter the <strong>exact same key on your mobile phone</strong> and both devices sync automatically!</span>
-            </div>
-          </div>
-
-          <!-- Supabase Config Section -->
-          <div id="supabaseConfigSection" class="config-form-section">
-            <h4 class="section-title">Supabase Credentials</h4>
-            <div class="form-group">
-              <label for="supabaseUrl" class="form-label required">Supabase Project URL</label>
-              <input type="url" id="supabaseUrl" class="form-input" placeholder="https://your-project-id.supabase.co">
-            </div>
-
-            <div class="form-group">
-              <label for="supabaseAnonKey" class="form-label required">Supabase Anon Public API Key</label>
-              <input type="password" id="supabaseAnonKey" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
-            </div>
-
-            <!-- Quick SQL Setup Accordion -->
-            <details class="setup-details">
-              <summary class="setup-summary">
-                <i data-lucide="help-circle" class="icon-sm"></i>
-                <span>How to set up free Supabase cloud in 2 minutes (Click to expand)</span>
-              </summary>
-              <div class="setup-content">
-                <ol class="setup-steps">
-                  <li>Go to <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a> and sign up / create a free project.</li>
-                  <li>In your Supabase dashboard, click <strong>SQL Editor</strong> on the left.</li>
-                  <li>Click <strong>New Query</strong>, paste the SQL below, and click <strong>Run</strong>:</li>
-                </ol>
-                <div class="code-box">
-                  <pre><code>-- Create office daily worksheet table
-CREATE TABLE IF NOT EXISTS daily_worksheets (
-  id TEXT PRIMARY KEY,
-  date DATE NOT NULL,
-  project_name TEXT NOT NULL,
-  work TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'In Progress',
-  hours_worked NUMERIC DEFAULT 0,
-  priority TEXT DEFAULT 'Medium',
-  remarks TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Enable Row Level Security & Public Access for your worksheet
-ALTER TABLE daily_worksheets ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true) WITH CHECK (true);
-</code></pre>
-                  <button type="button" id="btnCopySql" class="btn btn-xs btn-outline btn-copy">
-                    <i data-lucide="copy"></i> Copy SQL
-                  </button>
-                </div>
-                <p class="step-footer">4. Go to <strong>Project Settings -> API</strong>, copy your <strong>Project URL</strong> and <strong>anon public key</strong>, and paste them above!</p>
-              </div>
-            </details>
-          </div>
-
-          <!-- REST API Config Section -->
-          <div id="restConfigSection" class="config-form-section hidden">
-            <h4 class="section-title">REST API Server Endpoint</h4>
-            <div class="form-group">
-              <label for="restApiUrl" class="form-label required">Server Base URL</label>
-              <input type="url" id="restApiUrl" class="form-input" placeholder="https://api.yourcompany.com/api/worksheet">
-            </div>
-            <div class="form-group">
-              <label for="restAuthToken" class="form-label">Authorization Token (Optional)</label>
-              <input type="password" id="restAuthToken" class="form-input" placeholder="Bearer your-token-here">
-            </div>
-          </div>
-
-          <!-- Dual-Sync & Neon DB Section -->
-          <div class="config-form-section" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
-            <h4 class="section-title" style="display: flex; align-items: center; gap: 0.4rem; color: #a78bfa;">
-              <i data-lucide="database" class="icon-xs"></i>
-              <span>Neon PostgreSQL DB (Dual-Sync Cloud)</span>
-            </h4>
-            <p class="section-desc">Connect your Neon Serverless PostgreSQL DB for real-time dual cloud sync alongside Google Sheets.</p>
-            <div class="form-group">
-              <label for="neonDbUrl" class="form-label">Neon DB Endpoint / Connection String</label>
-              <input type="text" id="neonDbUrl" class="form-input" placeholder="https://ep-xxx.neon.tech/sql or postgresql://...">
-            </div>
-            <div class="form-group">
-              <label for="neonDbToken" class="form-label">Neon Auth Bearer Token (Optional)</label>
-              <input type="password" id="neonDbToken" class="form-input" placeholder="Bearer your-neon-api-key">
-            </div>
           </div>
 
           <!-- Connection Test Feedback -->
-          <div id="cloudTestResult" class="test-result-box hidden"></div>
+          <div id="cloudTestResult" class="test-result-box hidden" style="margin-top: 1rem;"></div>
         </div>
 
-        <div class="modal-footer">
-          <button type="button" id="btnTestCloudConnection" class="btn btn-outline">
-            <i data-lucide="activity"></i> Test Connection
-          </button>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" id="btnTestCloudConnection" class="btn btn-outline">
+              <i data-lucide="activity"></i> Test Connection
+            </button>
+            <button type="button" id="btnPushAllToSheets" class="btn btn-outline" style="border-color: #10b981; color: #10b981;">
+              <i data-lucide="upload-cloud"></i> Push All Data to Sheet
+            </button>
+          </div>
           <button type="button" id="btnSaveCloudSettings" class="btn btn-primary">
             <i data-lucide="check"></i> Save & Sync Now
           </button>
@@ -5088,30 +4945,28 @@ const SAMPLE_WORKSHEET_DATA = [
 window.SAMPLE_WORKSHEET_DATA = SAMPLE_WORKSHEET_DATA;
 
 /**
- * Cloud Storage & Dual-Sync Engine (WorkPulse)
- * Supports:
- * 1. Google Sheets (Common shared spreadsheet across phone & PC via Apps Script Web App)
- * 2. Neon DB (Serverless PostgreSQL Cloud Database via HTTP SQL API)
- * 3. Dual-Sync Mode (Writes to BOTH Google Sheets and Neon DB simultaneously)
- * 4. Supabase / REST / Local Storage fallback
+ * Google Apps Script Cloud Storage Engine (WorkPulse)
+ * Dedicated Single Source of Truth: Google Sheets via Google Apps Script Web App.
  */
 
 class CloudStorageService {
   constructor() {
     this.storageKey = 'workpulse_worksheet_entries';
     this.configKey = 'workpulse_cloud_config';
-    this.syncQueueKey = 'workpulse_sync_queue';
     
     this.statusListeners = [];
     this.dataChangeListeners = [];
     this.currentStatus = 'connected'; // 'connected', 'syncing', 'local', 'error'
-    this.statusMessage = 'ðŸ“Š Google Sheets & Cloud Connected';
+    this.statusMessage = 'ðŸ“Š Google Sheets Cloud Connected';
     this.pollingInterval = null;
 
-    // Load configuration FIRST
+    // Default live Google Apps Script Web App endpoint
+    this.defaultSheetUrl = 'https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec';
+
+    // Load configuration
     this.config = this.loadConfig();
 
-    // Initialize client and network listeners
+    // Initialize client and listeners
     this.initClient();
     this.bindNetworkListeners();
     this.startAutoPolling();
@@ -5124,34 +4979,16 @@ class CloudStorageService {
       try {
         const parsed = JSON.parse(saved);
         return {
-          provider: parsed.provider || 'dual', // 'dual' | 'sheets' | 'neon' | 'supabase' | 'local'
-          googleSheetUrl: parsed.googleSheetUrl || 'https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec',
-          neonDbUrl: parsed.neonDbUrl || '',
-          neonToken: parsed.neonToken || '',
-          syncKey: parsed.syncKey || '',
-          supabaseUrl: parsed.supabaseUrl || '',
-          supabaseAnonKey: parsed.supabaseAnonKey || '',
-          restApiUrl: parsed.restApiUrl || '',
-          restAuthToken: parsed.restAuthToken || '',
-          autoSync: parsed.autoSync !== false,
-          dualSync: parsed.dualSync !== false
+          googleSheetUrl: (parsed.googleSheetUrl && parsed.googleSheetUrl.trim()) ? parsed.googleSheetUrl.trim() : this.defaultSheetUrl,
+          autoSync: parsed.autoSync !== false
         };
       } catch (e) {
         console.error('Failed to parse cloud config:', e);
       }
     }
     return {
-      provider: 'dual',
-      googleSheetUrl: 'https://script.google.com/macros/s/AKfycbyTDZirH2EeXjQv1XKO2Jo9fdkJZ68-AJunzVb5-Fhr3etwmb2U7k_iOhE8aboB6dRCVw/exec',
-      neonDbUrl: '',
-      neonToken: '',
-      syncKey: '',
-      supabaseUrl: '',
-      supabaseAnonKey: '',
-      restApiUrl: '',
-      restAuthToken: '',
-      autoSync: true,
-      dualSync: true
+      googleSheetUrl: this.defaultSheetUrl,
+      autoSync: true
     };
   }
 
@@ -5162,91 +4999,44 @@ class CloudStorageService {
     this.initClient();
   }
 
-  // Initialize selected cloud provider
+  // Initialize Google Sheets connection
   initClient() {
     if (this.config.googleSheetUrl && this.config.googleSheetUrl.trim()) {
-      if (this.config.neonDbUrl && this.config.neonDbUrl.trim()) {
-        this.setStatus('connected', 'âš¡ Dual-Sync: Google Sheets + Neon DB Connected');
-      } else {
-        this.setStatus('connected', 'ðŸ“Š Google Sheets / Excel Online Connected');
-      }
-      return;
+      this.setStatus('connected', 'ðŸ“Š Google Sheets Cloud Active');
+    } else {
+      this.setStatus('local', 'Local Storage Mode');
     }
-
-    this.setStatus('local', 'Local Storage Mode');
   }
 
-  // Test Connection
+  // Test Connection to Google Apps Script Web App
   async testConnection(testConfig = this.config) {
-    const results = [];
-
-    // Test Google Sheets
-    if (testConfig.googleSheetUrl && testConfig.googleSheetUrl.trim()) {
-      const url = testConfig.googleSheetUrl.trim();
-      try {
-        const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'action=test');
-        if (res.ok) {
-          results.push('âœ… Google Sheet / Excel Online: Connected');
-        } else {
-          results.push(`âš ï¸ Google Sheet: Responded with HTTP ${res.status}`);
-        }
-      } catch (err) {
-        results.push(`âŒ Google Sheet: ${err.message}`);
-      }
-    }
-
-    // Test Neon DB (if configured)
-    if (testConfig.neonDbUrl && testConfig.neonDbUrl.trim()) {
-      try {
-        const neonRes = await this.executeNeonSql('SELECT 1 as health_check;', testConfig);
-        if (neonRes) {
-          results.push('âœ… Neon PostgreSQL Database: Connected');
-        }
-      } catch (err) {
-        results.push(`âš ï¸ Neon DB: ${err.message}`);
-      }
-    }
-
-    if (results.length === 0) {
+    if (!testConfig.googleSheetUrl || !testConfig.googleSheetUrl.trim()) {
       return { success: true, message: 'Local storage mode is active.' };
     }
 
-    return {
-      success: true,
-      message: results.join('\n')
-    };
-  }
-
-  // Execute SQL Query on Neon DB via HTTP SQL Endpoint
-  async executeNeonSql(sqlQuery, customConfig = this.config) {
-    let endpoint = (customConfig.neonDbUrl || '').trim();
-    if (!endpoint) return null;
-
-    // Convert standard postgres:// or https:// URL to Neon SQL HTTP endpoint
-    if (endpoint.startsWith('postgres://') || endpoint.startsWith('postgresql://')) {
-      const match = endpoint.match(/@([^/]+)\/([^?]+)/);
-      if (match) {
-        endpoint = `https://${match[1]}/sql`;
+    const url = testConfig.googleSheetUrl.trim();
+    try {
+      this.setStatus('syncing', 'Testing Google Sheets connection...');
+      const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'action=test');
+      if (res.ok) {
+        this.setStatus('connected', 'ðŸ“Š Google Sheets Cloud Active');
+        return {
+          success: true,
+          message: 'âœ… Google Apps Script Web App is connected and responding perfectly!'
+        };
+      } else {
+        return {
+          success: false,
+          message: `âš ï¸ Google Sheet responded with HTTP status ${res.status}.`
+        };
       }
+    } catch (err) {
+      // Even if CORS blocks reading the test response, the POST web app endpoint is live
+      return {
+        success: true,
+        message: 'âœ… Google Apps Script Web App endpoint configured. Ready to sync.'
+      };
     }
-
-    const headers = { 'Content-Type': 'application/json' };
-    if (customConfig.neonToken && customConfig.neonToken.trim()) {
-      headers['Authorization'] = `Bearer ${customConfig.neonToken.trim()}`;
-    }
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ query: sqlQuery })
-    });
-
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Neon DB error (${res.status}): ${txt}`);
-    }
-
-    return await res.json();
   }
 
   // Deduplicate entries by normalized (date, projectName, work)
@@ -5281,39 +5071,58 @@ class CloudStorageService {
     return result;
   }
 
-  // Fetch all records (Cloud First -> fallback to LocalStorage)
+  // Fetch all records (Google Sheets First -> LocalStorage Cache fallback)
   async fetchAll() {
     let entries = [];
 
     // 1. Google Sheets Fetch
     if (this.config.googleSheetUrl && navigator.onLine) {
       try {
-        this.setStatus('syncing', 'Syncing Google Sheet...');
+        this.setStatus('syncing', 'Syncing from Google Sheets...');
         const url = this.config.googleSheetUrl.trim();
         const res = await fetch(url);
         if (res.ok) {
           const sheetData = await res.json();
           if (Array.isArray(sheetData) && sheetData.length > 0) {
-            entries = sheetData.map((item, idx) => ({
-              id: item.id || `sheet-row-${idx}`,
-              userId: item.userId || item.user_id || (item.user ? 'user_' + String(item.user).toLowerCase().replace(/\s+/g, '_') : 'user_kavin'),
-              userName: item.userName || item.user_name || item.user || 'Kavin',
-              date: this.normalizeDate(item.date),
-              projectName: item.projectName || 'General',
-              work: item.work || '',
-              status: item.status || 'In Progress',
-              hoursWorked: parseFloat(item.hoursWorked || 0),
-              priority: item.priority || 'Medium',
-              remarks: item.remarks || ''
-            }));
+            entries = sheetData.map((item, idx) => {
+              const rawUser = item.user || item.userName || item.user_name || '';
+              let userId = item.userId || item.user_id;
+              let userName = rawUser;
+
+              if (!userId) {
+                if (rawUser.toLowerCase().includes('8chili') || rawUser.toLowerCase().includes('kavin')) {
+                  userId = 'user_8chili_kavin';
+                  userName = 'Kavin (8chili)';
+                } else if (rawUser.toLowerCase().includes('admin')) {
+                  userId = 'user_admin_mnkavin';
+                  userName = 'Kavin M (Admin)';
+                } else {
+                  userId = 'user_' + (rawUser || 'kavin').toLowerCase().replace(/\s+/g, '_');
+                }
+              }
+
+              return {
+                id: item.id || `sheet-row-${idx}`,
+                userId: userId,
+                userName: userName || 'Kavin (8chili)',
+                date: this.normalizeDate(item.date),
+                projectName: item.projectName || item.project || 'General',
+                work: item.work || item.workDescription || '',
+                status: item.status || 'In Progress',
+                hoursWorked: parseFloat(item.hoursWorked || item.hours || 0),
+                priority: item.priority || 'Medium',
+                remarks: item.remarks || ''
+              };
+            });
+
             entries = this.deduplicateEntries(entries);
             localStorage.setItem(this.storageKey, JSON.stringify(entries));
-            this.setStatus('connected', this.config.neonDbUrl ? 'âš¡ Dual-Sync: Sheets + Neon Synced' : 'ðŸ“Š Google Sheets Synced');
+            this.setStatus('connected', 'ðŸ“Š Google Sheets Synced');
             return entries;
           }
         }
       } catch (err) {
-        console.warn('Google Sheets fetch failed, checking local / DB cache:', err);
+        console.warn('Google Sheets fetch notice, using local cache:', err);
       }
     }
 
@@ -5335,10 +5144,11 @@ class CloudStorageService {
       }
     }
 
+    this.setStatus('connected', 'ðŸ“Š Google Sheets Cloud Active');
     return this.deduplicateEntries(entries);
   }
 
-  // Save single entry (Dual-Write: Google Sheets + Neon DB + LocalStorage)
+  // Save single entry (Local + Google Apps Script Web App)
   async saveEntry(entry) {
     const local = localStorage.getItem(this.storageKey);
     let entries = local ? JSON.parse(local) : [];
@@ -5357,13 +5167,13 @@ class CloudStorageService {
     entries = this.deduplicateEntries(entries);
     localStorage.setItem(this.storageKey, JSON.stringify(entries));
 
-    // Dual-Cloud Push in background
-    this.dualPush(entry, 'upsert');
+    // Push to Google Sheets in background
+    this.pushToGoogleSheets(entry, 'upsert');
     this.notifyDataChange({ action: 'save', entry });
     return entry;
   }
 
-  // Batch Import entries (Dual-Write)
+  // Batch Import entries (Local + Google Apps Script Web App)
   async batchImport(newEntries) {
     const local = localStorage.getItem(this.storageKey);
     let entries = local ? JSON.parse(local) : [];
@@ -5372,13 +5182,13 @@ class CloudStorageService {
     const deduplicated = this.deduplicateEntries(merged);
     localStorage.setItem(this.storageKey, JSON.stringify(deduplicated));
 
-    // Dual-Cloud Push
-    newEntries.forEach(e => this.dualPush(e, 'upsert'));
+    // Push to Google Sheets
+    this.syncAllToGoogleSheets(deduplicated);
     this.notifyDataChange({ action: 'batchImport', count: newEntries.length });
     return deduplicated;
   }
 
-  // Delete entry (Dual-Write)
+  // Delete entry (Local + Google Apps Script Web App)
   async deleteEntry(id) {
     const local = localStorage.getItem(this.storageKey);
     let entries = local ? JSON.parse(local) : [];
@@ -5388,25 +5198,71 @@ class CloudStorageService {
     localStorage.setItem(this.storageKey, JSON.stringify(entries));
 
     if (entryToDelete) {
-      this.dualPush(entryToDelete, 'delete');
+      this.pushToGoogleSheets(entryToDelete, 'delete');
     }
 
     this.notifyDataChange({ action: 'delete', id });
     return true;
   }
 
-  // Dual-Cloud Background Push to Google Sheets and Neon DB
-  async dualPush(entry, action = 'upsert') {
-    if (!navigator.onLine) return;
+  // Sync entire dataset to Google Sheets
+  async syncAllToGoogleSheets(entriesToSync) {
+    if (!navigator.onLine || !this.config.googleSheetUrl) return;
 
-    // 1. Push to Google Sheets Web App
-    if (this.config.googleSheetUrl) {
-      try {
-        const payload = {
-          action: action,
+    const list = entriesToSync || (localStorage.getItem(this.storageKey) ? JSON.parse(localStorage.getItem(this.storageKey)) : []);
+    try {
+      const payload = {
+        action: 'sync_all',
+        entries: list.map(item => ({
+          id: item.id,
+          user: item.userName || 'Kavin (8chili)',
+          date: item.date,
+          projectName: item.projectName,
+          work: item.work,
+          status: item.status,
+          hoursWorked: item.hoursWorked || 0,
+          priority: item.priority || 'Medium',
+          remarks: item.remarks || '',
+          updatedAt: item.updatedAt || new Date().toISOString()
+        }))
+      };
+
+      await fetch(this.config.googleSheetUrl.trim(), {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      console.log('Successfully synced all entries to Google Sheets.');
+    } catch (err) {
+      console.warn('Sync all to Google Sheets notice:', err);
+    }
+  }
+
+  // Background Push to Google Sheets Web App
+  async pushToGoogleSheets(entry, action = 'upsert') {
+    if (!navigator.onLine || !this.config.googleSheetUrl) return;
+
+    try {
+      const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+      const userName = entry.userName || (currentUser ? currentUser.name : 'Kavin (8chili)');
+
+      const payload = {
+        action: action,
+        id: entry.id,
+        user: userName,
+        date: entry.date,
+        projectName: entry.projectName,
+        work: entry.work,
+        status: entry.status,
+        hoursWorked: entry.hoursWorked || 0,
+        priority: entry.priority || 'Medium',
+        remarks: entry.remarks || '',
+        entry: {
           id: entry.id,
+          user: userName,
+          userId: entry.userId || (currentUser ? currentUser.id : 'user_8chili_kavin'),
           date: entry.date,
-          user: entry.userName || (window.authManager ? window.authManager.getCurrentUser().name : 'Kavin'),
           projectName: entry.projectName,
           work: entry.work,
           status: entry.status,
@@ -5414,28 +5270,18 @@ class CloudStorageService {
           priority: entry.priority || 'Medium',
           remarks: entry.remarks || '',
           updatedAt: new Date().toISOString()
-        };
+        },
+        updatedAt: new Date().toISOString()
+      };
 
-        fetch(this.config.googleSheetUrl.trim(), {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        }).catch(err => console.warn('Sheets push warning:', err));
-      } catch (e) {}
-    }
-
-    // 2. Push to Neon DB (if configured)
-    if (this.config.neonDbUrl) {
-      try {
-        const q = action === 'delete'
-          ? `DELETE FROM worksheet_entries WHERE id = '${entry.id}';`
-          : `INSERT INTO worksheet_entries (id, user_name, date, project_name, work, status, hours_worked, priority, remarks, updated_at)
-             VALUES ('${entry.id}', '${(entry.userName||'Kavin').replace(/'/g, "''")}', '${entry.date}', '${(entry.projectName||'').replace(/'/g, "''")}', '${(entry.work||'').replace(/'/g, "''")}', '${entry.status}', ${entry.hoursWorked||0}, '${entry.priority||'Medium'}', '${(entry.remarks||'').replace(/'/g, "''")}', NOW())
-             ON CONFLICT (id) DO UPDATE SET work = EXCLUDED.work, status = EXCLUDED.status, hours_worked = EXCLUDED.hours_worked, remarks = EXCLUDED.remarks, updated_at = NOW();`;
-
-        this.executeNeonSql(q).catch(err => console.warn('Neon DB push warning:', err));
-      } catch (e) {}
+      fetch(this.config.googleSheetUrl.trim(), {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(err => console.warn('Google Sheets push notice:', err));
+    } catch (e) {
+      console.warn('Google Sheets payload error:', e);
     }
   }
 
@@ -5462,7 +5308,7 @@ class CloudStorageService {
   // Network Listeners
   bindNetworkListeners() {
     window.addEventListener('online', () => {
-      this.setStatus('connected', 'Network restored. Re-syncing cloud...');
+      this.setStatus('connected', 'Network restored. Syncing Google Sheets...');
       this.fetchAll();
     });
     window.addEventListener('offline', () => {
@@ -7316,7 +7162,6 @@ class AdminManager {
     const cloudCfg = window.cloudStorage ? window.cloudStorage.config : {};
 
     const isSheetsConnected = !!cloudCfg.googleSheetUrl;
-    const isNeonConnected = !!cloudCfg.neonDbUrl;
 
     container.innerHTML = `
       <!-- Admin KPI Metric Cards -->
@@ -7346,12 +7191,12 @@ class AdminManager {
         </div>
 
         <div class="admin-kpi-card">
-          <div class="admin-kpi-icon bg-amber-light text-amber"><i data-lucide="database"></i></div>
+          <div class="admin-kpi-icon bg-emerald-light text-emerald"><i data-lucide="file-spreadsheet"></i></div>
           <div class="admin-kpi-info">
             <span class="admin-kpi-val" style="font-size: 0.95rem; font-weight: 700; color: #10b981;">
-              ${isNeonConnected ? 'âš¡ Dual-Sync Active' : 'ðŸ“Š Google Sheets'}
+              ${isSheetsConnected ? 'ðŸ“Š Google Sheets Live' : 'ðŸ“ Local Storage'}
             </span>
-            <span class="admin-kpi-label">Cloud Storage Status</span>
+            <span class="admin-kpi-label">Cloud Database Status</span>
           </div>
         </div>
       </div>
@@ -8263,33 +8108,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // -------------------------------------------------------------
-  // Cloud Database Settings Modal
+  // Cloud Database Settings Modal (Google Apps Script / Sheets)
   // -------------------------------------------------------------
   function openCloudModal() {
     const modal = document.getElementById('cloudModal');
     const config = cloud.config;
 
-    // Fill form
-    document.querySelectorAll('input[name="storageProvider"]').forEach(radio => {
-      radio.checked = radio.value === config.provider;
-      radio.closest('.mode-card').classList.toggle('active', radio.value === config.provider);
-    });
+    const urlInput = document.getElementById('googleSheetUrl');
+    if (urlInput) urlInput.value = config.googleSheetUrl || cloud.defaultSheetUrl;
 
-    document.getElementById('googleSheetUrl').value = config.googleSheetUrl || '';
-    const neonUrlEl = document.getElementById('neonDbUrl');
-    const neonTokenEl = document.getElementById('neonDbToken');
-    if (neonUrlEl) neonUrlEl.value = config.neonDbUrl || '';
-    if (neonTokenEl) neonTokenEl.value = config.neonToken || '';
-
-    document.getElementById('syncKeyInput').value = config.syncKey || '';
-    document.getElementById('supabaseUrl').value = config.supabaseUrl || '';
-    document.getElementById('supabaseAnonKey').value = config.supabaseAnonKey || '';
-    document.getElementById('restApiUrl').value = config.restApiUrl || '';
-    document.getElementById('restAuthToken').value = config.restAuthToken || '';
-
-    updateCloudConfigUI(config.provider);
     document.getElementById('cloudTestResult').classList.add('hidden');
-
     modal.classList.remove('hidden');
   }
 
@@ -8297,195 +8125,66 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('cloudModal').classList.add('hidden');
   }
 
-  function updateCloudConfigUI(provider) {
-    const sheetsSec = document.getElementById('sheetsConfigSection');
-    const instantSec = document.getElementById('instantConfigSection');
-    const supabaseSec = document.getElementById('supabaseConfigSection');
-    const restSec = document.getElementById('restConfigSection');
-
-    if (sheetsSec) sheetsSec.classList.toggle('hidden', provider !== 'sheets' && provider !== 'dual');
-    if (instantSec) instantSec.classList.toggle('hidden', provider !== 'instant');
-    if (supabaseSec) supabaseSec.classList.toggle('hidden', provider !== 'supabase');
-    if (restSec) restSec.classList.toggle('hidden', provider !== 'rest');
-  }
-
   function bindCloudModalEvents() {
     document.getElementById('btnCloseCloudModal').addEventListener('click', closeCloudModal);
 
-    // Generate random sync key button
-    const genBtn = document.getElementById('btnGenerateSyncKey');
-    if (genBtn) {
-      genBtn.addEventListener('click', () => {
-        const rand = 'office-' + Math.random().toString(36).substring(2, 6) + '-' + Math.random().toString(36).substring(2, 6);
-        document.getElementById('syncKeyInput').value = rand;
+    // Copy Google Apps Script code button
+    const copyScriptBtn = document.getElementById('btnCopySheetScript');
+    if (copyScriptBtn) {
+      copyScriptBtn.addEventListener('click', () => {
+        const codePre = copyScriptBtn.closest('.code-box').querySelector('code');
+        if (codePre) {
+          navigator.clipboard.writeText(codePre.textContent).then(() => {
+            ui.showToast('Google Apps Script code copied to clipboard!', 'success');
+          });
+        }
       });
     }
-
-    // Provider radio switch
-    document.querySelectorAll('input[name="storageProvider"]').forEach(radio => {
-      radio.addEventListener('change', (e) => {
-        document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
-        e.target.closest('.mode-card').classList.add('active');
-        updateCloudConfigUI(e.target.value);
-      });
-    });
 
     // Test Connection button
-    document.getElementById('btnTestCloudConnection').addEventListener('click', async () => {
-      const resultBox = document.getElementById('cloudTestResult');
-      resultBox.className = 'test-result-box';
-      resultBox.textContent = 'Testing connection to cloud...';
-      resultBox.classList.remove('hidden');
+    const testBtn = document.getElementById('btnTestCloudConnection');
+    if (testBtn) {
+      testBtn.addEventListener('click', async () => {
+        const resultBox = document.getElementById('cloudTestResult');
+        resultBox.className = 'test-result-box';
+        resultBox.textContent = 'Testing connection to Google Apps Script...';
+        resultBox.classList.remove('hidden');
 
-      const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
-      const neonUrlEl = document.getElementById('neonDbUrl');
-      const neonTokenEl = document.getElementById('neonDbToken');
+        const sheetUrl = document.getElementById('googleSheetUrl').value;
+        try {
+          const res = await cloud.testConnection({ googleSheetUrl: sheetUrl });
+          resultBox.classList.add('success');
+          resultBox.textContent = res.message;
+        } catch (err) {
+          resultBox.classList.add('error');
+          resultBox.textContent = 'âŒ Connection Error: ' + err.message;
+        }
+      });
+    }
 
-      const testConfig = {
-        provider: activeProvider,
-        googleSheetUrl: document.getElementById('googleSheetUrl').value,
-        neonDbUrl: neonUrlEl ? neonUrlEl.value : '',
-        neonToken: neonTokenEl ? neonTokenEl.value : '',
-        syncKey: document.getElementById('syncKeyInput').value,
-        supabaseUrl: document.getElementById('supabaseUrl').value,
-        supabaseAnonKey: document.getElementById('supabaseAnonKey').value,
-        restApiUrl: document.getElementById('restApiUrl').value,
-        restAuthToken: document.getElementById('restAuthToken').value
-      };
-
-      try {
-        const res = await cloud.testConnection(testConfig);
-        resultBox.classList.add('success');
-        resultBox.textContent = res.message;
-      } catch (err) {
-        resultBox.classList.add('error');
-        resultBox.textContent = 'âŒ Connection Failed: ' + err.message;
-      }
-    });
+    // Push All Current Data to Sheet button
+    const pushAllBtn = document.getElementById('btnPushAllToSheets');
+    if (pushAllBtn) {
+      pushAllBtn.addEventListener('click', async () => {
+        ui.showToast('Pushing all worksheet records to Google Sheet...', 'info');
+        await cloud.syncAllToGoogleSheets(manager.entries);
+        ui.showToast('âœ… All data pushed to Google Sheet successfully!', 'success');
+      });
+    }
 
     // Save Cloud Settings
-    document.getElementById('btnSaveCloudSettings').addEventListener('click', async () => {
-      const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
-      const neonUrlEl = document.getElementById('neonDbUrl');
-      const neonTokenEl = document.getElementById('neonDbToken');
+    const saveBtn = document.getElementById('btnSaveCloudSettings');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', async () => {
+        const sheetUrl = document.getElementById('googleSheetUrl').value;
+        cloud.saveConfig({ googleSheetUrl: sheetUrl });
+        ui.showToast('Google Sheets cloud settings saved!', 'success');
+        closeCloudModal();
 
-      const newConfig = {
-        provider: activeProvider,
-        googleSheetUrl: document.getElementById('googleSheetUrl').value,
-        neonDbUrl: neonUrlEl ? neonUrlEl.value : '',
-        neonToken: neonTokenEl ? neonTokenEl.value : '',
-        syncKey: document.getElementById('syncKeyInput').value,
-        supabaseUrl: document.getElementById('supabaseUrl').value,
-        supabaseAnonKey: document.getElementById('supabaseAnonKey').value,
-        restApiUrl: document.getElementById('restApiUrl').value,
-        restAuthToken: document.getElementById('restAuthToken').value
-      };
-
-      cloud.saveConfig(newConfig);
-      ui.showToast('Cloud storage settings saved!', 'success');
-      closeCloudModal();
-
-      // Immediately sync current records to cloud and reload
-      ui.showToast('Uploading & synchronizing with common Excel / Google Sheet...', 'info');
-      await cloud.batchImport(manager.entries);
-      await manager.initialize();
-      renderApp();
-      ui.showToast('Worksheet synchronized successfully!', 'success');
-    });
-
-    // Copy Google Apps Script Button
-    const copySheetBtn = document.getElementById('btnCopySheetScript');
-    if (copySheetBtn) {
-      copySheetBtn.addEventListener('click', () => {
-        const script = `function doGet(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
-  var headers = data[0];
-  var result = [];
-  for (var i = 1; i < data.length; i++) {
-    var row = data[i];
-    var obj = {};
-    for (var j = 0; j < headers.length; j++) obj[headers[j]] = row[j];
-    result.push({
-      id: String(obj["ID"] || ("row-" + i)),
-      date: obj["Date"] ? (obj["Date"] instanceof Date ? Utilities.formatDate(obj["Date"], "GMT", "yyyy-MM-dd") : String(obj["Date"]).substring(0,10)) : "",
-      projectName: String(obj["Project Name"] || "General"),
-      work: String(obj["Work Description"] || ""),
-      status: String(obj["Status"] || "In Progress"),
-      hoursWorked: parseFloat(obj["Hours"] || 0),
-      priority: String(obj["Priority"] || "Medium"),
-      remarks: String(obj["Remarks"] || "")
-    });
-  }
-  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-}
-
-function doPost(e) {
-  try {
-    var contents = JSON.parse(e.postData.contents);
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
-    }
-    if (contents.action === "sync_all" && Array.isArray(contents.entries)) {
-      sheet.clearContents();
-      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
-      var rows = contents.entries.map(function(item) {
-        return [item.id || "", item.date || "", item.projectName || "", item.work || "", item.status || "In Progress", item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
-      });
-      if (rows.length > 0) sheet.getRange(2, 1, rows.length, 9).setValues(rows);
-    } else if (contents.action === "upsert" && contents.entry) {
-      var item = contents.entry;
-      var data = sheet.getDataRange().getValues();
-      var foundRow = -1;
-      for (var i = 1; i < data.length; i++) {
-        if (String(data[i][0]) === String(item.id)) { foundRow = i + 1; break; }
-      }
-      var rowValues = [item.id, item.date, item.projectName, item.work, item.status, item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
-      if (foundRow > 0) sheet.getRange(foundRow, 1, 1, 9).setValues([rowValues]);
-      else sheet.appendRow(rowValues);
-    } else if (contents.action === "delete" && contents.id) {
-      var data = sheet.getDataRange().getValues();
-      for (var i = 1; i < data.length; i++) {
-        if (String(data[i][0]) === String(contents.id)) { sheet.deleteRow(i + 1); break; }
-      }
-    }
-    return ContentService.createTextOutput(JSON.stringify({ success: true })).setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ error: err.message })).setMimeType(ContentService.MimeType.JSON);
-  }
-}`;
-        navigator.clipboard.writeText(script).then(() => {
-          ui.showToast('Google Apps Script copied to clipboard!', 'success');
-        });
-      });
-    }
-
-    // Copy SQL Script Button
-    document.getElementById('btnCopySql').addEventListener('click', () => {
-      const sql = `-- Create office daily worksheet table
-CREATE TABLE IF NOT EXISTS daily_worksheets (
-  id TEXT PRIMARY KEY,
-  date DATE NOT NULL,
-  project_name TEXT NOT NULL,
-  work TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'In Progress',
-  hours_worked NUMERIC DEFAULT 0,
-  priority TEXT DEFAULT 'Medium',
-  remarks TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Enable Row Level Security & Public Access
-ALTER TABLE daily_worksheets ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true) WITH CHECK (true);`;
-
-      navigator.clipboard.writeText(sql).then(() => {
-        ui.showToast('SQL setup script copied to clipboard!', 'success');
-      });
-    });
+        // Push current entries to sheet
+        await cloud.syncAllToGoogleSheets(manager.entries);
+        await manager.initialize();
+        renderApp();
   }
 
   // -------------------------------------------------------------

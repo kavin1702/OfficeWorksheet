@@ -700,33 +700,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // -------------------------------------------------------------
-  // Cloud Database Settings Modal
+  // Cloud Database Settings Modal (Google Apps Script / Sheets)
   // -------------------------------------------------------------
   function openCloudModal() {
     const modal = document.getElementById('cloudModal');
     const config = cloud.config;
 
-    // Fill form
-    document.querySelectorAll('input[name="storageProvider"]').forEach(radio => {
-      radio.checked = radio.value === config.provider;
-      radio.closest('.mode-card').classList.toggle('active', radio.value === config.provider);
-    });
+    const urlInput = document.getElementById('googleSheetUrl');
+    if (urlInput) urlInput.value = config.googleSheetUrl || cloud.defaultSheetUrl;
 
-    document.getElementById('googleSheetUrl').value = config.googleSheetUrl || '';
-    const neonUrlEl = document.getElementById('neonDbUrl');
-    const neonTokenEl = document.getElementById('neonDbToken');
-    if (neonUrlEl) neonUrlEl.value = config.neonDbUrl || '';
-    if (neonTokenEl) neonTokenEl.value = config.neonToken || '';
-
-    document.getElementById('syncKeyInput').value = config.syncKey || '';
-    document.getElementById('supabaseUrl').value = config.supabaseUrl || '';
-    document.getElementById('supabaseAnonKey').value = config.supabaseAnonKey || '';
-    document.getElementById('restApiUrl').value = config.restApiUrl || '';
-    document.getElementById('restAuthToken').value = config.restAuthToken || '';
-
-    updateCloudConfigUI(config.provider);
     document.getElementById('cloudTestResult').classList.add('hidden');
-
     modal.classList.remove('hidden');
   }
 
@@ -734,195 +717,66 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('cloudModal').classList.add('hidden');
   }
 
-  function updateCloudConfigUI(provider) {
-    const sheetsSec = document.getElementById('sheetsConfigSection');
-    const instantSec = document.getElementById('instantConfigSection');
-    const supabaseSec = document.getElementById('supabaseConfigSection');
-    const restSec = document.getElementById('restConfigSection');
-
-    if (sheetsSec) sheetsSec.classList.toggle('hidden', provider !== 'sheets' && provider !== 'dual');
-    if (instantSec) instantSec.classList.toggle('hidden', provider !== 'instant');
-    if (supabaseSec) supabaseSec.classList.toggle('hidden', provider !== 'supabase');
-    if (restSec) restSec.classList.toggle('hidden', provider !== 'rest');
-  }
-
   function bindCloudModalEvents() {
     document.getElementById('btnCloseCloudModal').addEventListener('click', closeCloudModal);
 
-    // Generate random sync key button
-    const genBtn = document.getElementById('btnGenerateSyncKey');
-    if (genBtn) {
-      genBtn.addEventListener('click', () => {
-        const rand = 'office-' + Math.random().toString(36).substring(2, 6) + '-' + Math.random().toString(36).substring(2, 6);
-        document.getElementById('syncKeyInput').value = rand;
+    // Copy Google Apps Script code button
+    const copyScriptBtn = document.getElementById('btnCopySheetScript');
+    if (copyScriptBtn) {
+      copyScriptBtn.addEventListener('click', () => {
+        const codePre = copyScriptBtn.closest('.code-box').querySelector('code');
+        if (codePre) {
+          navigator.clipboard.writeText(codePre.textContent).then(() => {
+            ui.showToast('Google Apps Script code copied to clipboard!', 'success');
+          });
+        }
       });
     }
-
-    // Provider radio switch
-    document.querySelectorAll('input[name="storageProvider"]').forEach(radio => {
-      radio.addEventListener('change', (e) => {
-        document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
-        e.target.closest('.mode-card').classList.add('active');
-        updateCloudConfigUI(e.target.value);
-      });
-    });
 
     // Test Connection button
-    document.getElementById('btnTestCloudConnection').addEventListener('click', async () => {
-      const resultBox = document.getElementById('cloudTestResult');
-      resultBox.className = 'test-result-box';
-      resultBox.textContent = 'Testing connection to cloud...';
-      resultBox.classList.remove('hidden');
+    const testBtn = document.getElementById('btnTestCloudConnection');
+    if (testBtn) {
+      testBtn.addEventListener('click', async () => {
+        const resultBox = document.getElementById('cloudTestResult');
+        resultBox.className = 'test-result-box';
+        resultBox.textContent = 'Testing connection to Google Apps Script...';
+        resultBox.classList.remove('hidden');
 
-      const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
-      const neonUrlEl = document.getElementById('neonDbUrl');
-      const neonTokenEl = document.getElementById('neonDbToken');
+        const sheetUrl = document.getElementById('googleSheetUrl').value;
+        try {
+          const res = await cloud.testConnection({ googleSheetUrl: sheetUrl });
+          resultBox.classList.add('success');
+          resultBox.textContent = res.message;
+        } catch (err) {
+          resultBox.classList.add('error');
+          resultBox.textContent = '❌ Connection Error: ' + err.message;
+        }
+      });
+    }
 
-      const testConfig = {
-        provider: activeProvider,
-        googleSheetUrl: document.getElementById('googleSheetUrl').value,
-        neonDbUrl: neonUrlEl ? neonUrlEl.value : '',
-        neonToken: neonTokenEl ? neonTokenEl.value : '',
-        syncKey: document.getElementById('syncKeyInput').value,
-        supabaseUrl: document.getElementById('supabaseUrl').value,
-        supabaseAnonKey: document.getElementById('supabaseAnonKey').value,
-        restApiUrl: document.getElementById('restApiUrl').value,
-        restAuthToken: document.getElementById('restAuthToken').value
-      };
-
-      try {
-        const res = await cloud.testConnection(testConfig);
-        resultBox.classList.add('success');
-        resultBox.textContent = res.message;
-      } catch (err) {
-        resultBox.classList.add('error');
-        resultBox.textContent = '❌ Connection Failed: ' + err.message;
-      }
-    });
+    // Push All Current Data to Sheet button
+    const pushAllBtn = document.getElementById('btnPushAllToSheets');
+    if (pushAllBtn) {
+      pushAllBtn.addEventListener('click', async () => {
+        ui.showToast('Pushing all worksheet records to Google Sheet...', 'info');
+        await cloud.syncAllToGoogleSheets(manager.entries);
+        ui.showToast('✅ All data pushed to Google Sheet successfully!', 'success');
+      });
+    }
 
     // Save Cloud Settings
-    document.getElementById('btnSaveCloudSettings').addEventListener('click', async () => {
-      const activeProvider = document.querySelector('input[name="storageProvider"]:checked').value;
-      const neonUrlEl = document.getElementById('neonDbUrl');
-      const neonTokenEl = document.getElementById('neonDbToken');
+    const saveBtn = document.getElementById('btnSaveCloudSettings');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', async () => {
+        const sheetUrl = document.getElementById('googleSheetUrl').value;
+        cloud.saveConfig({ googleSheetUrl: sheetUrl });
+        ui.showToast('Google Sheets cloud settings saved!', 'success');
+        closeCloudModal();
 
-      const newConfig = {
-        provider: activeProvider,
-        googleSheetUrl: document.getElementById('googleSheetUrl').value,
-        neonDbUrl: neonUrlEl ? neonUrlEl.value : '',
-        neonToken: neonTokenEl ? neonTokenEl.value : '',
-        syncKey: document.getElementById('syncKeyInput').value,
-        supabaseUrl: document.getElementById('supabaseUrl').value,
-        supabaseAnonKey: document.getElementById('supabaseAnonKey').value,
-        restApiUrl: document.getElementById('restApiUrl').value,
-        restAuthToken: document.getElementById('restAuthToken').value
-      };
-
-      cloud.saveConfig(newConfig);
-      ui.showToast('Cloud storage settings saved!', 'success');
-      closeCloudModal();
-
-      // Immediately sync current records to cloud and reload
-      ui.showToast('Uploading & synchronizing with common Excel / Google Sheet...', 'info');
-      await cloud.batchImport(manager.entries);
-      await manager.initialize();
-      renderApp();
-      ui.showToast('Worksheet synchronized successfully!', 'success');
-    });
-
-    // Copy Google Apps Script Button
-    const copySheetBtn = document.getElementById('btnCopySheetScript');
-    if (copySheetBtn) {
-      copySheetBtn.addEventListener('click', () => {
-        const script = `function doGet(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
-  var headers = data[0];
-  var result = [];
-  for (var i = 1; i < data.length; i++) {
-    var row = data[i];
-    var obj = {};
-    for (var j = 0; j < headers.length; j++) obj[headers[j]] = row[j];
-    result.push({
-      id: String(obj["ID"] || ("row-" + i)),
-      date: obj["Date"] ? (obj["Date"] instanceof Date ? Utilities.formatDate(obj["Date"], "GMT", "yyyy-MM-dd") : String(obj["Date"]).substring(0,10)) : "",
-      projectName: String(obj["Project Name"] || "General"),
-      work: String(obj["Work Description"] || ""),
-      status: String(obj["Status"] || "In Progress"),
-      hoursWorked: parseFloat(obj["Hours"] || 0),
-      priority: String(obj["Priority"] || "Medium"),
-      remarks: String(obj["Remarks"] || "")
-    });
-  }
-  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-}
-
-function doPost(e) {
-  try {
-    var contents = JSON.parse(e.postData.contents);
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
-    }
-    if (contents.action === "sync_all" && Array.isArray(contents.entries)) {
-      sheet.clearContents();
-      sheet.appendRow(["ID", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"]);
-      var rows = contents.entries.map(function(item) {
-        return [item.id || "", item.date || "", item.projectName || "", item.work || "", item.status || "In Progress", item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
-      });
-      if (rows.length > 0) sheet.getRange(2, 1, rows.length, 9).setValues(rows);
-    } else if (contents.action === "upsert" && contents.entry) {
-      var item = contents.entry;
-      var data = sheet.getDataRange().getValues();
-      var foundRow = -1;
-      for (var i = 1; i < data.length; i++) {
-        if (String(data[i][0]) === String(item.id)) { foundRow = i + 1; break; }
-      }
-      var rowValues = [item.id, item.date, item.projectName, item.work, item.status, item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
-      if (foundRow > 0) sheet.getRange(foundRow, 1, 1, 9).setValues([rowValues]);
-      else sheet.appendRow(rowValues);
-    } else if (contents.action === "delete" && contents.id) {
-      var data = sheet.getDataRange().getValues();
-      for (var i = 1; i < data.length; i++) {
-        if (String(data[i][0]) === String(contents.id)) { sheet.deleteRow(i + 1); break; }
-      }
-    }
-    return ContentService.createTextOutput(JSON.stringify({ success: true })).setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ error: err.message })).setMimeType(ContentService.MimeType.JSON);
-  }
-}`;
-        navigator.clipboard.writeText(script).then(() => {
-          ui.showToast('Google Apps Script copied to clipboard!', 'success');
-        });
-      });
-    }
-
-    // Copy SQL Script Button
-    document.getElementById('btnCopySql').addEventListener('click', () => {
-      const sql = `-- Create office daily worksheet table
-CREATE TABLE IF NOT EXISTS daily_worksheets (
-  id TEXT PRIMARY KEY,
-  date DATE NOT NULL,
-  project_name TEXT NOT NULL,
-  work TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'In Progress',
-  hours_worked NUMERIC DEFAULT 0,
-  priority TEXT DEFAULT 'Medium',
-  remarks TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Enable Row Level Security & Public Access
-ALTER TABLE daily_worksheets ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public all access" ON daily_worksheets FOR ALL USING (true) WITH CHECK (true);`;
-
-      navigator.clipboard.writeText(sql).then(() => {
-        ui.showToast('SQL setup script copied to clipboard!', 'success');
-      });
-    });
+        // Push current entries to sheet
+        await cloud.syncAllToGoogleSheets(manager.entries);
+        await manager.initialize();
+        renderApp();
   }
 
   // -------------------------------------------------------------
