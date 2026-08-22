@@ -55,7 +55,7 @@
 
   <!-- External Libraries -->
   <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
   <!-- Chart.js for analytics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- Supabase JS Client for Real-time Cloud Database -->
@@ -2445,6 +2445,7 @@ code {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  display: none !important;
 }
 
 .auth-portal-card {
@@ -3297,12 +3298,12 @@ code {
 
       <!-- Tab 1: Sign In (Email & Password) -->
       <div id="portalPaneSignIn" class="auth-tab-pane">
-        <form id="portalSignInForm" class="portal-form">
+        <form id="portalSignInForm" class="portal-form" onsubmit="event.preventDefault(); window.handlePortalSignIn(event);">
           <div class="form-group">
             <label for="portalSignInEmail" class="form-label required">Email Address</label>
             <div class="input-with-icon">
               <i data-lucide="mail" class="input-icon"></i>
-              <input type="email" id="portalSignInEmail" class="form-input" placeholder="e.g. kavin@office.com or your email" required autocomplete="email">
+              <input type="email" id="portalSignInEmail" class="form-input" placeholder="e.g. kavin@8chili.com or mnkavin2006@gmail.com" required autocomplete="email">
             </div>
           </div>
 
@@ -3327,13 +3328,13 @@ code {
 
           <!-- 1-Click Instant Sign In Options -->
           <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08);">
-            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; text-align: center;">âš¡ 1-Click Instant Sign In:</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; text-align: center;">&#9889; 1-Click Instant Sign In:</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-              <button type="button" class="btn btn-outline btn-xs btn-quick-login" data-email="kavin@8chili.com" style="border-color: rgba(59,130,246,0.4); color: #60a5fa; padding: 0.5rem 0.25rem; font-size: 0.75rem; justify-content: center;">
+              <button type="button" class="btn btn-outline btn-xs btn-quick-login" data-email="kavin@8chili.com" onclick="window.handleQuickLogin('kavin@8chili.com')" style="border-color: rgba(59,130,246,0.4); color: #60a5fa; padding: 0.5rem 0.25rem; font-size: 0.75rem; justify-content: center; cursor: pointer;">
                 <i data-lucide="user" class="icon-xs"></i>
                 <span>Kavin (8chili)</span>
               </button>
-              <button type="button" class="btn btn-outline btn-xs btn-quick-login" data-email="mnkavin2006@gmail.com" style="border-color: rgba(245,158,11,0.4); color: #f59e0b; padding: 0.5rem 0.25rem; font-size: 0.75rem; justify-content: center;">
+              <button type="button" class="btn btn-outline btn-xs btn-quick-login" data-email="mnkavin2006@gmail.com" onclick="window.handleQuickLogin('mnkavin2006@gmail.com')" style="border-color: rgba(245,158,11,0.4); color: #f59e0b; padding: 0.5rem 0.25rem; font-size: 0.75rem; justify-content: center; cursor: pointer;">
                 <i data-lucide="crown" class="icon-xs"></i>
                 <span>Admin</span>
               </button>
@@ -7457,6 +7458,37 @@ async function initWorkPulseApp() {
   // 3. User Authentication Gatekeeper & Session Listener
   const authPortal = document.getElementById('authPortal');
   const appContainer = document.getElementById('app');
+
+  // Expose global login handlers for immediate zero-lag execution
+  window.handleQuickLogin = function(email) {
+    try {
+      const logged = auth.login(email, 'password123');
+      ui.showToast(`Welcome back, ${logged.name}!`, 'success');
+      updateAuthGate();
+    } catch (err) {
+      ui.showToast(err.message, 'error');
+    }
+  };
+
+  window.handlePortalSignIn = function(e) {
+    if (e) e.preventDefault();
+    const emailInput = document.getElementById('portalSignInEmail');
+    const passInput = document.getElementById('portalSignInPassword');
+    const email = emailInput ? emailInput.value : '';
+    const password = passInput ? passInput.value : 'password123';
+    try {
+      const logged = auth.login(email, password);
+      ui.showToast(`Welcome back, ${logged.name}!`, 'success');
+      updateAuthGate();
+    } catch (err) {
+      const alertBox = document.getElementById('authPortalAlert');
+      const alertText = document.getElementById('authPortalAlertText');
+      if (alertText) alertText.textContent = err.message;
+      if (alertBox) alertBox.classList.remove('hidden');
+      ui.showToast(err.message, 'error');
+    }
+    return false;
+  };
 
   function updateAuthGate() {
     const loggedIn = auth ? auth.isLoggedIn() : true;

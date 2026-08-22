@@ -28,6 +28,37 @@ async function initWorkPulseApp() {
   const authPortal = document.getElementById('authPortal');
   const appContainer = document.getElementById('app');
 
+  // Expose global login handlers for immediate zero-lag execution
+  window.handleQuickLogin = function(email) {
+    try {
+      const logged = auth.login(email, 'password123');
+      ui.showToast(`Welcome back, ${logged.name}!`, 'success');
+      updateAuthGate();
+    } catch (err) {
+      ui.showToast(err.message, 'error');
+    }
+  };
+
+  window.handlePortalSignIn = function(e) {
+    if (e) e.preventDefault();
+    const emailInput = document.getElementById('portalSignInEmail');
+    const passInput = document.getElementById('portalSignInPassword');
+    const email = emailInput ? emailInput.value : '';
+    const password = passInput ? passInput.value : 'password123';
+    try {
+      const logged = auth.login(email, password);
+      ui.showToast(`Welcome back, ${logged.name}!`, 'success');
+      updateAuthGate();
+    } catch (err) {
+      const alertBox = document.getElementById('authPortalAlert');
+      const alertText = document.getElementById('authPortalAlertText');
+      if (alertText) alertText.textContent = err.message;
+      if (alertBox) alertBox.classList.remove('hidden');
+      ui.showToast(err.message, 'error');
+    }
+    return false;
+  };
+
   function updateAuthGate() {
     const loggedIn = auth ? auth.isLoggedIn() : true;
     if (loggedIn) {
