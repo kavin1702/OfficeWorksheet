@@ -4465,7 +4465,8 @@ class AuthManager {
       };
       users = [adminUser, memberUser];
       localStorage.setItem(this.usersKey, JSON.stringify(users));
-      localStorage.setItem(this.currentUserIdKey, adminUser.id);
+      localStorage.setItem(this.currentUserIdKey, memberUser.id);
+      localStorage.setItem(this.sessionKey, 'true');
     } else {
       // Enforce strict roles on existing stored accounts
       let changed = false;
@@ -4482,14 +4483,26 @@ class AuthManager {
       if (changed) {
         localStorage.setItem(this.usersKey, JSON.stringify(users));
       }
+      if (!localStorage.getItem(this.currentUserIdKey)) {
+        localStorage.setItem(this.currentUserIdKey, 'user_8chili_kavin');
+      }
     }
   }
 
-  // Check if session is logged in
+  // Check if session is logged in - Auto-login enabled by default
   isLoggedIn() {
     const session = localStorage.getItem(this.sessionKey);
+    if (session === 'false') return false;
+    
+    // Default to true and make sure kavin@8chili.com is active
+    if (!session) {
+      localStorage.setItem(this.sessionKey, 'true');
+      if (!localStorage.getItem(this.currentUserIdKey)) {
+        localStorage.setItem(this.currentUserIdKey, 'user_8chili_kavin');
+      }
+    }
     const activeUser = this.getCurrentUser();
-    return session === 'true' && !!activeUser;
+    return !!activeUser;
   }
 
   // Check if user is Admin - STRICT: ONLY mnkavin2006@gmail.com or role 'Admin' (NOT kavin@8chili.com)
