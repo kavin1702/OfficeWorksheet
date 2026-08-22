@@ -1,26 +1,20 @@
-import fs from 'fs';
-import path from 'path';
-
-export default function AdminPage({ htmlContent }) {
+export default function AdminPage() {
   return (
-    <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+    <iframe
+      src="/admin.html"
+      title="WorkPulse Admin Portal"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        border: 'none',
+        margin: 0,
+        padding: 0,
+        overflow: 'hidden',
+        zIndex: 999999
+      }}
+    />
   );
-}
-
-export async function getStaticProps() {
-  try {
-    const filePath = path.join(process.cwd(), 'public', 'admin.html');
-    const htmlContent = fs.readFileSync(filePath, 'utf8');
-    return {
-      props: {
-        htmlContent
-      }
-    };
-  } catch (e) {
-    return {
-      props: {
-        htmlContent: '<p>Loading Admin Portal...</p>'
-      }
-    };
-  }
 }

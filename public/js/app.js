@@ -3,7 +3,7 @@
  * Wires together state, UI renderer, cloud sync, modals, and user interactions.
  */
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function initWorkPulseApp() {
   // 1. Initialize Core Services
   const auth = window.authManager;
   const cloud = window.cloudStorage;
@@ -1289,4 +1289,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
-});
+}
+
+// Ensure execution even if DOMContentLoaded already fired
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWorkPulseApp);
+} else {
+  initWorkPulseApp();
+}
