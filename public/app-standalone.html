@@ -3258,6 +3258,53 @@ code {
 }
 
 </style>
+
+  <script>
+    window.handleQuickLogin = function(email) {
+      try {
+        const auth = window.authManager;
+        if (auth) {
+          auth.login(email, 'password123');
+        } else {
+          localStorage.setItem('workpulse_current_user_id', email === 'mnkavin2006@gmail.com' ? 'user_admin_mnkavin' : 'user_8chili_kavin');
+          localStorage.setItem('workpulse_session_logged_in', 'true');
+        }
+        var p = document.getElementById('authPortal');
+        var a = document.getElementById('app');
+        if (p) p.classList.add('hidden');
+        if (a) a.classList.remove('hidden');
+        if (window.workPulseUpdateAuthGate) window.workPulseUpdateAuthGate();
+      } catch (e) {
+        console.error('Quick login error:', e);
+      }
+    };
+
+    window.handlePortalSignIn = function(e) {
+      if (e) e.preventDefault();
+      try {
+        var email = document.getElementById('portalSignInEmail').value;
+        var pass = document.getElementById('portalSignInPassword').value || 'password123';
+        var auth = window.authManager;
+        if (auth) {
+          auth.login(email, pass);
+        } else {
+          localStorage.setItem('workpulse_current_user_id', email === 'mnkavin2006@gmail.com' ? 'user_admin_mnkavin' : 'user_8chili_kavin');
+          localStorage.setItem('workpulse_session_logged_in', 'true');
+        }
+        var p = document.getElementById('authPortal');
+        var a = document.getElementById('app');
+        if (p) p.classList.add('hidden');
+        if (a) a.classList.remove('hidden');
+        if (window.workPulseUpdateAuthGate) window.workPulseUpdateAuthGate();
+      } catch (err) {
+        var alertBox = document.getElementById('authPortalAlert');
+        var alertText = document.getElementById('authPortalAlertText');
+        if (alertText) alertText.textContent = err.message;
+        if (alertBox) alertBox.classList.remove('hidden');
+      }
+      return false;
+    };
+  </script>
 </head>
 <body class="theme-light">
   <!-- =========================================================================
@@ -7489,6 +7536,8 @@ async function initWorkPulseApp() {
     }
     return false;
   };
+
+  window.workPulseUpdateAuthGate = updateAuthGate;
 
   function updateAuthGate() {
     const loggedIn = auth ? auth.isLoggedIn() : true;

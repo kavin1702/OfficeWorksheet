@@ -59,6 +59,8 @@ async function initWorkPulseApp() {
     return false;
   };
 
+  window.workPulseUpdateAuthGate = updateAuthGate;
+
   function updateAuthGate() {
     const loggedIn = auth ? auth.isLoggedIn() : true;
     if (loggedIn) {
