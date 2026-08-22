@@ -268,12 +268,14 @@ class UIRenderer {
 
     const dropAdminLink = document.getElementById('btnDropdownAdmin');
     if (dropAdminLink) {
-      dropAdminLink.style.display = isAdminUser ? 'flex' : 'none';
+      dropAdminLink.style.setProperty('display', isAdminUser ? 'flex' : 'none', 'important');
+      dropAdminLink.classList.toggle('hidden', !isAdminUser);
     }
 
     const headerAdminBtn = document.getElementById('btnOpenAdminPanel');
     if (headerAdminBtn) {
-      headerAdminBtn.style.display = isAdminUser ? 'inline-flex' : 'none';
+      headerAdminBtn.style.setProperty('display', isAdminUser ? 'inline-flex' : 'none', 'important');
+      headerAdminBtn.classList.toggle('hidden', !isAdminUser);
     }
   }
 

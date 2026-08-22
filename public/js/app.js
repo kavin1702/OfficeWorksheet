@@ -148,14 +148,18 @@ async function initWorkPulseApp() {
       ui.renderUserProfileHeader(currentUser);
     }
 
-    // Toggle Admin Panel button visibility
+    // Toggle Admin Panel button visibility (STRICT: ONLY for mnkavin2006@gmail.com)
     const btnOpenAdminPanel = document.getElementById('btnOpenAdminPanel');
+    const btnDropdownAdmin = document.getElementById('btnDropdownAdmin');
+    const isAdmin = auth ? auth.isAdmin() : false;
+
     if (btnOpenAdminPanel) {
-      if (auth && auth.isAdmin()) {
-        btnOpenAdminPanel.classList.remove('hidden');
-      } else {
-        btnOpenAdminPanel.classList.add('hidden');
-      }
+      btnOpenAdminPanel.style.setProperty('display', isAdmin ? 'inline-flex' : 'none', 'important');
+      btnOpenAdminPanel.classList.toggle('hidden', !isAdmin);
+    }
+    if (btnDropdownAdmin) {
+      btnDropdownAdmin.style.setProperty('display', isAdmin ? 'flex' : 'none', 'important');
+      btnDropdownAdmin.classList.toggle('hidden', !isAdmin);
     }
 
     const entries = manager.getFilteredEntries();

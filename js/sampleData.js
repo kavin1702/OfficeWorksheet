@@ -3,7 +3,7 @@
  * Assigned directly to user: kavin@8chili.com (Kavin)
  */
 
-const SAMPLE_WORKSHEET_DATA = [
+window.SAMPLE_WORKSHEET_DATA = [
   {
     id: "task-aug-03",
     userId: "user_8chili_kavin",

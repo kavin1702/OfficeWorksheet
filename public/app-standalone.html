@@ -3558,7 +3558,7 @@ code {
                 </div>
               </div>
               <div class="dropdown-divider"></div>
-              <a href="admin.html" class="dropdown-item" id="btnDropdownAdmin" style="color: #fbbf24; text-decoration: none;">
+              <a href="admin.html" class="dropdown-item hidden" id="btnDropdownAdmin" style="color: #fbbf24; text-decoration: none; display: none !important;">
                 <i data-lucide="shield-check" class="icon-sm text-amber"></i>
                 <span>ðŸ‘‘ Admin Portal</span>
               </a>
@@ -3578,7 +3578,7 @@ code {
             </div>
           </div>
 
-          <a href="admin.html" id="btnOpenAdminPanel" class="btn btn-outline btn-sm admin-header-btn" title="Team Admin & User Management" style="text-decoration: none;">
+          <a href="admin.html" id="btnOpenAdminPanel" class="btn btn-outline btn-sm admin-header-btn hidden" title="Team Admin & User Management" style="text-decoration: none; display: none !important;">
             <i data-lucide="shield-check" class="text-amber"></i>
             <span class="btn-text">Admin Panel</span>
           </a>
@@ -4770,7 +4770,7 @@ window.authManager = new AuthManager();
  * Assigned directly to user: kavin@8chili.com (Kavin)
  */
 
-const SAMPLE_WORKSHEET_DATA = [
+window.SAMPLE_WORKSHEET_DATA = [
   {
     id: "task-aug-03",
     userId: "user_8chili_kavin",
@@ -6191,12 +6191,14 @@ class UIRenderer {
 
     const dropAdminLink = document.getElementById('btnDropdownAdmin');
     if (dropAdminLink) {
-      dropAdminLink.style.display = isAdminUser ? 'flex' : 'none';
+      dropAdminLink.style.setProperty('display', isAdminUser ? 'flex' : 'none', 'important');
+      dropAdminLink.classList.toggle('hidden', !isAdminUser);
     }
 
     const headerAdminBtn = document.getElementById('btnOpenAdminPanel');
     if (headerAdminBtn) {
-      headerAdminBtn.style.display = isAdminUser ? 'inline-flex' : 'none';
+      headerAdminBtn.style.setProperty('display', isAdminUser ? 'inline-flex' : 'none', 'important');
+      headerAdminBtn.classList.toggle('hidden', !isAdminUser);
     }
   }
 
@@ -7626,14 +7628,18 @@ async function initWorkPulseApp() {
       ui.renderUserProfileHeader(currentUser);
     }
 
-    // Toggle Admin Panel button visibility
+    // Toggle Admin Panel button visibility (STRICT: ONLY for mnkavin2006@gmail.com)
     const btnOpenAdminPanel = document.getElementById('btnOpenAdminPanel');
+    const btnDropdownAdmin = document.getElementById('btnDropdownAdmin');
+    const isAdmin = auth ? auth.isAdmin() : false;
+
     if (btnOpenAdminPanel) {
-      if (auth && auth.isAdmin()) {
-        btnOpenAdminPanel.classList.remove('hidden');
-      } else {
-        btnOpenAdminPanel.classList.add('hidden');
-      }
+      btnOpenAdminPanel.style.setProperty('display', isAdmin ? 'inline-flex' : 'none', 'important');
+      btnOpenAdminPanel.classList.toggle('hidden', !isAdmin);
+    }
+    if (btnDropdownAdmin) {
+      btnDropdownAdmin.style.setProperty('display', isAdmin ? 'flex' : 'none', 'important');
+      btnDropdownAdmin.classList.toggle('hidden', !isAdmin);
     }
 
     const entries = manager.getFilteredEntries();
