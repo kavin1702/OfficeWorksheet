@@ -1667,6 +1667,27 @@ code {
   border: 1px solid rgba(244, 63, 94, 0.35);
   color: #fb7185;
 }
+/* Password Eye Toggle Button - Strict Dark Transparent */
+.btn-toggle-pwd {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-muted) !important;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  z-index: 5;
+}
+
+.btn-toggle-pwd:hover {
+  color: #ffffff !important;
+}
 /* =========================================================
    WorkPulse - Responsive Styles (Classic Layout)
    ========================================================= */
@@ -1931,7 +1952,7 @@ code {
   <!-- =========================================================================
        Main Application UI (Classic Top-Nav Layout)
        ========================================================================= -->
-  <div id="app" class="app-container">
+  <div id="app" class="app-container hidden">
     
     <!-- Top Navigation Header -->
     <header class="app-header">
@@ -2112,11 +2133,11 @@ code {
           
           <!-- User Scope Selector -->
           <div class="date-pills-group" style="margin: 0;">
-            <button id="btnUserScopeSelf" class="filter-pill active" title="View my own entries" onclick="window.workPulseApp && window.workPulseApp.setUserScope('self')">
+            <button id="btnUserScopeSelf" class="filter-pill active" data-user-scope="me" title="View my own entries">
               <i data-lucide="user" class="icon-xs"></i>
-              <span id="labelUserScopeSelf">Kavin's Worksheet</span>
+              <span id="labelUserScopeSelf">My Worksheet</span>
             </button>
-            <button id="btnUserScopeAll" class="filter-pill" title="View entries across all team members" onclick="window.workPulseApp && window.workPulseApp.setUserScope('all')">
+            <button id="btnUserScopeAll" class="filter-pill" data-user-scope="all" title="View entries across all team members">
               <i data-lucide="users" class="icon-xs"></i>
               <span>All Friends / Team</span>
             </button>
@@ -2124,12 +2145,12 @@ code {
 
           <!-- Date Quick Filter Pills -->
           <div class="date-pills-group" id="dateFilterGroup" style="margin: 0;">
-            <button class="filter-pill active" data-range="today" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('today')">Today</button>
-            <button class="filter-pill" data-range="yesterday" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('yesterday')">Yesterday</button>
-            <button class="filter-pill" data-range="thisWeek" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisWeek')">This Week</button>
-            <button class="filter-pill" data-range="thisMonth" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">This Month</button>
-            <button class="filter-pill" data-range="all" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('all')">All Dates</button>
-            <button class="filter-pill" id="btnCustomDateRange">Custom Range</button>
+            <button class="filter-pill active" data-date-filter="today" data-range="today">Today</button>
+            <button class="filter-pill" data-date-filter="yesterday" data-range="yesterday">Yesterday</button>
+            <button class="filter-pill" data-date-filter="this-week" data-range="this-week">This Week</button>
+            <button class="filter-pill" data-date-filter="this-month" data-range="this-month">This Month</button>
+            <button class="filter-pill" data-date-filter="all" data-range="all">All Dates</button>
+            <button class="filter-pill" data-date-filter="custom" id="btnCustomDateRange">Custom Range</button>
           </div>
 
           <!-- Quick Actions & Carry Forward -->
@@ -6825,8 +6846,11 @@ async function initWorkPulseApp() {
     // 6. Logout Button
     if (btnDropdownLogout) {
       btnDropdownLogout.addEventListener('click', () => {
-        userDropdownMenu.classList.add('hidden');
+        if (userDropdownMenu) userDropdownMenu.classList.add('hidden');
         auth.logout();
+        updateAuthGate();
+        const pwdInput = document.getElementById('portalSignInPassword');
+        if (pwdInput) pwdInput.value = '';
         ui.showToast('You have been logged out safely.', 'info');
       });
     }

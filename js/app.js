@@ -1295,8 +1295,11 @@ async function initWorkPulseApp() {
     // 6. Logout Button
     if (btnDropdownLogout) {
       btnDropdownLogout.addEventListener('click', () => {
-        userDropdownMenu.classList.add('hidden');
+        if (userDropdownMenu) userDropdownMenu.classList.add('hidden');
         auth.logout();
+        updateAuthGate();
+        const pwdInput = document.getElementById('portalSignInPassword');
+        if (pwdInput) pwdInput.value = '';
         ui.showToast('You have been logged out safely.', 'info');
       });
     }

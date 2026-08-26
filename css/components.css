@@ -1396,3 +1396,24 @@
   border: 1px solid rgba(244, 63, 94, 0.35);
   color: #fb7185;
 }
+/* Password Eye Toggle Button - Strict Dark Transparent */
+.btn-toggle-pwd {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-muted) !important;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  z-index: 5;
+}
+
+.btn-toggle-pwd:hover {
+  color: #ffffff !important;
+}
