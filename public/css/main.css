@@ -1,23 +1,23 @@
 ﻿/* =========================================================
-   WorkPulse - Midnight Purple OS Workspace Design System
+   WorkPulse - Midnight Purple & Deep Indigo Design System
    ========================================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
 :root {
-  /* Midnight Purple & Deep Indigo Palette */
+  /* Midnight Purple & Indigo Color Palette */
   --bg-primary: #080a14;
-  --bg-secondary: #0c0f1f;
-  --bg-surface: rgba(18, 22, 42, 0.75);
-  --bg-surface-elevated: rgba(26, 32, 60, 0.88);
-  --bg-subtle: rgba(139, 92, 246, 0.06);
-  --bg-hover: rgba(139, 92, 246, 0.14);
-  
+  --bg-secondary: #0c0f20;
+  --bg-surface: rgba(18, 22, 44, 0.8);
+  --bg-surface-elevated: rgba(26, 32, 64, 0.92);
+  --bg-subtle: rgba(139, 92, 246, 0.08);
+  --bg-hover: rgba(139, 92, 246, 0.16);
+
   /* Borders */
-  --border-color: rgba(139, 92, 246, 0.16);
-  --border-hover: rgba(168, 85, 247, 0.38);
+  --border-color: rgba(139, 92, 246, 0.18);
+  --border-hover: rgba(168, 85, 247, 0.4);
   --border-focus: #8b5cf6;
-  --border-glow: 0 0 16px rgba(139, 92, 246, 0.25);
+  --border-glow: 0 0 16px rgba(139, 92, 246, 0.3);
 
   /* Typography Colors */
   --text-primary: #ffffff;
@@ -32,32 +32,32 @@
   --brand-gradient-hover: linear-gradient(135deg, #9f75ff 0%, #7c3aed 100%);
   --brand-gradient-glow: 0 4px 18px rgba(139, 92, 246, 0.35);
   --brand-primary-light: rgba(139, 92, 246, 0.12);
-  --brand-primary-subtle: rgba(139, 92, 246, 0.2);
+  --brand-primary-subtle: rgba(139, 92, 246, 0.22);
 
   /* Status Colors */
   --status-completed-bg: rgba(16, 185, 129, 0.14);
   --status-completed-text: #34d399;
-  --status-completed-border: rgba(16, 185, 129, 0.3);
+  --status-completed-border: rgba(16, 185, 129, 0.32);
 
-  --status-progress-bg: rgba(139, 92, 246, 0.15);
+  --status-progress-bg: rgba(139, 92, 246, 0.16);
   --status-progress-text: #c4b5fd;
-  --status-progress-border: rgba(139, 92, 246, 0.35);
+  --status-progress-border: rgba(139, 92, 246, 0.38);
 
   --status-pending-bg: rgba(245, 158, 11, 0.14);
   --status-pending-text: #fbbf24;
-  --status-pending-border: rgba(245, 158, 11, 0.3);
+  --status-pending-border: rgba(245, 158, 11, 0.32);
 
   --status-blocked-bg: rgba(244, 63, 94, 0.14);
   --status-blocked-text: #fb7185;
-  --status-blocked-border: rgba(244, 63, 94, 0.3);
+  --status-blocked-border: rgba(244, 63, 94, 0.32);
 
   --status-review-bg: rgba(56, 189, 248, 0.14);
   --status-review-text: #38bdf8;
-  --status-review-border: rgba(56, 189, 248, 0.3);
+  --status-review-border: rgba(56, 189, 248, 0.32);
 
   --status-leave-bg: rgba(217, 70, 239, 0.14);
   --status-leave-text: #e879f9;
-  --status-leave-border: rgba(217, 70, 239, 0.3);
+  --status-leave-border: rgba(217, 70, 239, 0.32);
 
   /* Accent Tones */
   --accent-purple: #8b5cf6;
@@ -134,9 +134,12 @@ body::before {
   z-index: 0;
 }
 
-.app-layout-wrapper {
-  display: flex;
-  min-height: 100vh;
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
   position: relative;
   z-index: 1;
 }

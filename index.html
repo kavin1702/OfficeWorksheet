@@ -19,11 +19,6 @@
   <meta property="og:description" content="Manage and sync your daily work logs across phone and PC with Google Sheets integration and multi-user login.">
   <meta property="og:site_name" content="WorkPulse">
 
-  <!-- Twitter Card SEO -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="WorkPulse - Office Daily Worksheet & Task Tracker">
-  <meta name="twitter:description" content="Office daily worksheet, real-time task manager, and daily status report generator with Google Sheets cloud sync.">
-
   <!-- Schema.org JSON-LD Structured Data for Google Indexing -->
   <script type="application/ld+json">
   {
@@ -48,7 +43,7 @@
   <meta name="apple-mobile-web-app-title" content="WorkPulse">
   <link rel="manifest" href="manifest.json">
 
-  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
@@ -58,13 +53,13 @@
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
   <!-- Chart.js for analytics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <!-- Supabase JS Client for Real-time Cloud Database -->
+  <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.min.js"></script>
   <!-- PapaParse for CSV parsing -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <!-- SheetJS for Excel (.xlsx) export -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <!-- Canvas Confetti for completion celebrations -->
+  <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <!-- Application Stylesheets -->
@@ -102,7 +97,7 @@
 </head>
 <body>
   <!-- =========================================================================
-       Full-Screen Authentication Gatekeeper (Sign In / Create Account)
+       Full-Screen Landing & Authentication Gatekeeper (Clean & Motivational)
        ========================================================================= -->
   <div id="authPortal" class="auth-portal-screen">
     <div class="auth-portal-card">
@@ -113,6 +108,12 @@
         </div>
         <h1 class="auth-portal-title">WorkPulse</h1>
         <p class="auth-portal-subtitle">Office Daily Worksheet & Multi-User Tracker</p>
+      </div>
+
+      <!-- Motivational Quote Box on Landing Page -->
+      <div class="auth-quote-box">
+        <div class="auth-quote-text">"Plan with clarity. Execute with focus. Succeed every day."</div>
+        <div class="auth-quote-time" id="authPortalLiveTime">Wednesday, Aug 26, 2026 &bull; 10:30 PM</div>
       </div>
 
       <!-- Auth Navigation Tabs -->
@@ -140,7 +141,7 @@
             <label for="portalSignInEmail" class="form-label required">Email Address</label>
             <div class="input-with-icon">
               <i data-lucide="mail" class="input-icon"></i>
-              <input type="email" id="portalSignInEmail" class="form-input" placeholder="e.g. kavin@8chili.com or mnkavin2006@gmail.com" required autocomplete="email">
+              <input type="email" id="portalSignInEmail" class="form-input" placeholder="name@company.com" required autocomplete="email">
             </div>
           </div>
 
@@ -177,7 +178,7 @@
             <label for="portalSignUpName" class="form-label required">Full Name</label>
             <div class="input-with-icon">
               <i data-lucide="user" class="input-icon"></i>
-              <input type="text" id="portalSignUpName" class="form-input" placeholder="e.g. Kavin" required autocomplete="name">
+              <input type="text" id="portalSignUpName" class="form-input" placeholder="Enter your name" required autocomplete="name">
             </div>
           </div>
 
@@ -204,7 +205,7 @@
             <label for="portalSignUpRole" class="form-label">Role / Designation</label>
             <div class="input-with-icon">
               <i data-lucide="briefcase" class="input-icon"></i>
-              <input type="text" id="portalSignUpRole" class="form-input" placeholder="e.g. Frontend Developer, QA Engineer">
+              <input type="text" id="portalSignUpRole" class="form-input" placeholder="e.g. Developer, QA Engineer">
             </div>
           </div>
 
@@ -231,7 +232,7 @@
             <label for="portalForgotEmail" class="form-label required">Account Email</label>
             <div class="input-with-icon">
               <i data-lucide="mail" class="input-icon"></i>
-              <input type="email" id="portalForgotEmail" class="form-input" placeholder="e.g. kavin@8chili.com" required autocomplete="email">
+              <input type="email" id="portalForgotEmail" class="form-input" placeholder="name@company.com" required autocomplete="email">
             </div>
           </div>
 
@@ -257,81 +258,188 @@
   </div>
 
   <!-- =========================================================================
-       Main Application UI (Midnight Purple OS Workspace)
+       Main Application UI (Classic Top-Nav Layout)
        ========================================================================= -->
-  <div id="app" class="app-layout-wrapper">
+  <div id="app" class="app-container">
     
-    <!-- Left Sidebar Dock -->
-    <aside class="sidebar-dock">
-      <div class="dock-top-brand">
-        <div class="dock-logo" title="WorkPulse Workspace">
-          <i data-lucide="sparkles" class="icon-md"></i>
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="header-inner container">
+        <!-- Logo & Branding -->
+        <div class="brand-section">
+          <div class="brand-logo">
+            <i data-lucide="briefcase" class="brand-icon"></i>
+          </div>
+          <div class="brand-text">
+            <div class="brand-title-row">
+              <h1 class="brand-title">WorkPulse</h1>
+              <span class="badge-tag">Office Daily</span>
+            </div>
+            <p class="brand-subtitle">Daily Worksheet & Cloud Status Manager</p>
+          </div>
         </div>
-        
-        <nav class="dock-menu">
-          <button class="dock-item active" data-view="dashboard" title="Dashboard / Hub" onclick="window.workPulseApp && window.workPulseApp.switchView('dashboard')">
-            <i data-lucide="layout-grid" class="icon-md"></i>
-          </button>
-          <button class="dock-item" data-view="table" title="Worksheet Table" onclick="window.workPulseApp && window.workPulseApp.switchView('table')">
-            <i data-lucide="table" class="icon-md"></i>
-          </button>
-          <button class="dock-item" data-view="calendar" title="Monthly Calendar" onclick="window.workPulseApp && window.workPulseApp.switchView('calendar')">
-            <i data-lucide="calendar" class="icon-md"></i>
-          </button>
-          <button class="dock-item" data-view="analytics" title="Analytics & Trends" onclick="window.workPulseApp && window.workPulseApp.switchView('analytics')">
-            <i data-lucide="bar-chart-2" class="icon-md"></i>
-          </button>
-          <button class="dock-item" data-view="cards" title="Task Cards Grid" onclick="window.workPulseApp && window.workPulseApp.switchView('cards')">
-            <i data-lucide="check-square" class="icon-md"></i>
-          </button>
-        </nav>
-      </div>
 
-      <div class="dock-bottom">
-        <button class="dock-item" id="btnDockReport" title="Daily Status Report" onclick="window.workPulseApp && window.workPulseApp.openReport()">
-          <i data-lucide="file-text" class="icon-md"></i>
-        </button>
-        <button class="dock-item" id="btnDockCloud" title="Cloud Database Sync" onclick="window.workPulseApp && window.workPulseApp.openCloud()">
-          <i data-lucide="database" class="icon-md"></i>
-        </button>
-        <a href="admin.html" class="dock-item hidden" id="btnDockAdmin" title="Admin Portal" style="display: none !important; color: #fbbf24;">
-          <i data-lucide="shield-check" class="icon-md"></i>
-        </a>
-        <button class="dock-item" id="btnDockToggleTheme" title="Toggle Night Mode">
-          <i data-lucide="moon" id="themeIcon" class="icon-md"></i>
-        </button>
-        <button class="dock-item" id="btnDockLogout" title="Sign Out" onclick="window.authManager && window.authManager.logout(); location.reload();" style="color: #f87171;">
-          <i data-lucide="log-out" class="icon-md"></i>
-        </button>
-      </div>
-    </aside>
+        <!-- Cloud Sync & Status Bar -->
+        <div class="header-center-info">
+          <button id="btnCloudStatus" class="cloud-status-pill connected" title="Google Sheets Cloud Connected" onclick="window.workPulseApp && window.workPulseApp.openCloud()">
+            <span class="status-dot"></span>
+            <span id="cloudStatusText" class="status-label">Google Sheets Connected</span>
+            <i data-lucide="cloud" class="icon-sm"></i>
+          </button>
+          <button id="btnSyncNow" class="btn-icon btn-icon-sm" title="Sync with Cloud Online Now" aria-label="Sync Now">
+            <i data-lucide="refresh-cw" id="syncIcon" class="icon-xs"></i>
+          </button>
+          <div class="current-date-pill" id="currentDateDisplay">
+            <i data-lucide="calendar" class="icon-sm"></i>
+            <span id="headerTodayText">Today</span>
+          </div>
+        </div>
 
-    <!-- Main Workspace Area -->
-    <main class="workspace-main">
+        <!-- Action Tools -->
+        <div class="header-actions">
+          <!-- User Profile Chip & Switcher -->
+          <div class="user-profile-wrapper">
+            <button id="btnUserProfile" class="user-profile-btn" title="Click to switch account or profile">
+              <span class="user-avatar-badge" id="headerUserAvatar" style="background-color: #8b5cf6;">K</span>
+              <span class="user-name-label" id="headerUserName">Kavin</span>
+              <i data-lucide="chevron-down" class="icon-xs"></i>
+            </button>
+            <div class="user-dropdown-menu hidden" id="userDropdownMenu">
+              <div class="user-dropdown-header">
+                <div class="user-avatar-large" id="dropdownUserAvatar" style="background-color: #8b5cf6;">K</div>
+                <div>
+                  <div class="dropdown-user-name" id="dropdownUserName">Kavin</div>
+                  <div class="dropdown-user-role" id="dropdownUserRole">Lead Developer</div>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="admin.html" class="dropdown-item hidden" id="btnDropdownAdmin" style="color: #fbbf24; text-decoration: none; display: none !important;">
+                <i data-lucide="shield-check" class="icon-sm text-amber"></i>
+                <span>ðŸ‘‘ Admin Portal</span>
+              </a>
+              <button class="dropdown-item" id="btnDropdownSwitchUser">
+                <i data-lucide="users" class="icon-sm"></i>
+                <span>Switch User Account</span>
+              </button>
+              <button class="dropdown-item" id="btnDropdownAddUser">
+                <i data-lucide="user-plus" class="icon-sm"></i>
+                <span>Add Friend / New Profile</span>
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item" id="btnDropdownLogout" style="color: #ef4444;">
+                <i data-lucide="log-out" class="icon-sm"></i>
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+
+          <a href="admin.html" id="btnOpenAdminPanel" class="btn btn-outline btn-sm admin-header-btn hidden" title="Team Admin & User Management" style="text-decoration: none; display: none !important;">
+            <i data-lucide="shield-check" class="text-amber"></i>
+            <span class="btn-text">Admin Panel</span>
+          </a>
+
+          <button id="btnOpenReport" class="btn btn-outline btn-sm" title="Generate formatted daily report for WhatsApp/Slack" onclick="window.workPulseApp && window.workPulseApp.openReport()">
+            <i data-lucide="file-text"></i>
+            <span class="btn-text">Daily Report</span>
+          </button>
+          
+          <button id="btnOpenImportExport" class="btn btn-outline btn-sm" title="Import / Export Excel and CSV data" onclick="window.workPulseApp && window.workPulseApp.openImportExport()">
+            <i data-lucide="arrow-up-down"></i>
+            <span class="btn-text">Import / Export</span>
+          </button>
+
+          <button id="btnOpenCloudModal" class="btn btn-outline btn-sm cloud-btn" title="Cloud Database Settings" onclick="window.workPulseApp && window.workPulseApp.openCloud()">
+            <i data-lucide="database"></i>
+            <span class="btn-text">Cloud Sync</span>
+          </button>
+
+          <button id="btnToggleTheme" class="btn-icon" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+            <i data-lucide="moon" id="themeIcon"></i>
+          </button>
+
+          <button id="btnNewWorksheetEntry" class="btn btn-primary btn-sm btn-glow" onclick="window.workPulseApp && window.workPulseApp.openWorkModal()">
+            <i data-lucide="plus-circle"></i>
+            <span>Log Work</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content container">
       
-      <!-- Top Greeting Header & Digital Clock -->
-      <header class="greeting-header">
-        <div class="greeting-left">
-          <h1 class="greeting-title">
-            <span id="greetingTimeText">Good Morning</span>, <span class="user-highlight" id="greetingUserName">Kavin</span> ðŸ‘‹
-          </h1>
-          <p class="greeting-subtitle">Focus &bull; Plan &bull; Execute &bull; Succeed</p>
+      <!-- Hero Motivational Quote & Digital Clock Strip -->
+      <section class="hero-quote-bar">
+        <div class="hero-quote-left">
+          <div class="hero-quote-greeting" id="heroGreetingText">Good Evening, Kavin ðŸ‘‹</div>
+          <div class="hero-quote-text"><i data-lucide="sparkles" class="icon-xs text-purple"></i> Focus &bull; Plan &bull; Execute &bull; Succeed</div>
+        </div>
+        <div class="hero-clock-wrap">
+          <div class="live-digital-clock" id="liveDigitalClock">10:30 <span class="ampm">PM</span></div>
+          <div class="live-date-str" id="liveDateDisplay">Wednesday, Aug 26, 2026</div>
+        </div>
+      </section>
+
+      <!-- Summary Metrics Bar (4 Cards) -->
+      <section class="metrics-grid">
+        <div class="metric-card metric-total">
+          <div class="metric-icon-wrap bg-purple-light">
+            <i data-lucide="list-todo" class="text-purple"></i>
+          </div>
+          <div class="metric-details">
+            <span class="metric-label">Total Tasks</span>
+            <div class="metric-value-row">
+              <span class="metric-value" id="metricTotalTasks">0</span>
+              <span class="metric-sub" id="metricFilterContext">Filtered</span>
+            </div>
+          </div>
         </div>
 
-        <div class="header-clock-wrap">
-          <div class="live-digital-clock" id="liveDigitalClock">
-            07:45 <span class="ampm">PM</span>
+        <div class="metric-card metric-completed">
+          <div class="metric-icon-wrap bg-emerald-light">
+            <i data-lucide="check-circle-2" class="text-emerald"></i>
           </div>
-          <div class="live-date-str" id="liveDateDisplay">
-            Wednesday, Aug 26, 2026
+          <div class="metric-details">
+            <span class="metric-label">Completed</span>
+            <div class="metric-value-row">
+              <span class="metric-value" id="metricCompletedTasks">0</span>
+              <span class="metric-badge bg-emerald-badge" id="metricCompletionRate">0%</span>
+            </div>
           </div>
         </div>
-      </header>
 
-      <!-- Workspace Quick Filter & Control Bar -->
-      <section class="workspace-quick-bar">
-        <div class="quick-bar-left">
-          <!-- User Scope Toggle -->
+        <div class="metric-card metric-progress">
+          <div class="metric-icon-wrap bg-amber-light">
+            <i data-lucide="clock" class="text-amber"></i>
+          </div>
+          <div class="metric-details">
+            <span class="metric-label">In Progress / Pending</span>
+            <div class="metric-value-row">
+              <span class="metric-value" id="metricInProgressTasks">0</span>
+              <span class="metric-sub" id="metricPendingSub">0 pending</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-hours">
+          <div class="metric-icon-wrap bg-blue-light">
+            <i data-lucide="hourglass" class="text-blue"></i>
+          </div>
+          <div class="metric-details">
+            <span class="metric-label">Hours Logged</span>
+            <div class="metric-value-row">
+              <span class="metric-value" id="metricTotalHours">0.0</span>
+              <span class="metric-sub">hrs total</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filter & Controls Panel (ZERO WHITE BOXES) -->
+      <section class="filter-panel">
+        <div class="filter-row-primary">
+          
+          <!-- User Scope Selector -->
           <div class="date-pills-group" style="margin: 0;">
             <button id="btnUserScopeSelf" class="filter-pill active" title="View my own entries" onclick="window.workPulseApp && window.workPulseApp.setUserScope('self')">
               <i data-lucide="user" class="icon-xs"></i>
@@ -350,340 +458,175 @@
             <button class="filter-pill" data-range="thisWeek" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisWeek')">This Week</button>
             <button class="filter-pill" data-range="thisMonth" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">This Month</button>
             <button class="filter-pill" data-range="all" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('all')">All Dates</button>
+            <button class="filter-pill" id="btnCustomDateRange">Custom Range</button>
+          </div>
+
+          <!-- Quick Actions & Carry Forward -->
+          <div class="panel-secondary-actions">
+            <button id="btnCarryForward" class="btn btn-outline btn-sm" title="Bring unfinished tasks from yesterday into today's worksheet" onclick="window.workPulseApp && window.workPulseApp.carryForward()">
+              <i data-lucide="corner-down-right"></i>
+              <span>Carry Forward Pending</span>
+            </button>
           </div>
         </div>
 
-        <div class="quick-bar-right">
+        <div class="search-and-view-row">
           <!-- Search input -->
-          <div class="search-input-wrap" style="min-width: 200px;">
+          <div class="search-input-wrap">
             <i data-lucide="search" class="search-icon"></i>
-            <input type="search" id="searchInput" class="search-input" placeholder="Search tasks, projects..." autocomplete="off">
+            <input type="search" id="searchInput" class="search-input" placeholder="Search tasks, projects, or remarks..." autocomplete="off">
           </div>
 
-          <!-- + Log Work / Add Task Button -->
-          <button id="btnNewWorksheetEntry" class="btn btn-primary btn-glow" onclick="window.workPulseApp && window.workPulseApp.openWorkModal()">
-            <i data-lucide="plus"></i>
-            <span>Add Task</span>
-          </button>
+          <!-- Project Filter Dropdown -->
+          <div class="select-wrap">
+            <select id="filterProject" class="form-select-sm">
+              <option value="all">All Projects</option>
+            </select>
+          </div>
+
+          <!-- Status Filter Dropdown -->
+          <div class="select-wrap">
+            <select id="filterStatus" class="form-select-sm">
+              <option value="all">All Statuses</option>
+              <option value="Completed">&#x2705; Completed</option>
+              <option value="In Progress">&#x1F504; In Progress</option>
+              <option value="Pending">&#x23F3; Pending</option>
+              <option value="Blocked">&#x1F6D1; Blocked</option>
+              <option value="Under Review">&#x1F50D; Under Review</option>
+              <option value="Leave">&#x1F3D6;&#xFE0F; Leave / Off</option>
+            </select>
+          </div>
+
+          <!-- View Mode Switcher -->
+          <div class="view-switcher" role="tablist">
+            <button class="view-btn active" data-view="table" title="Table View" onclick="window.workPulseApp && window.workPulseApp.switchView('table')">
+              <i data-lucide="table"></i>
+            </button>
+            <button class="view-btn" data-view="cards" title="Mobile / Card View" onclick="window.workPulseApp && window.workPulseApp.switchView('cards')">
+              <i data-lucide="layout-grid"></i>
+            </button>
+            <button class="view-btn" data-view="calendar" title="Calendar View" onclick="window.workPulseApp && window.workPulseApp.switchView('calendar')">
+              <i data-lucide="calendar"></i>
+            </button>
+            <button class="view-btn" data-view="analytics" title="Analytics & Charts" onclick="window.workPulseApp && window.workPulseApp.switchView('analytics')">
+              <i data-lucide="bar-chart-2"></i>
+            </button>
+          </div>
         </div>
       </section>
 
-      <!-- OS Dashboard View (Default Hub matching Image 2) -->
-      <div id="dashboardHubView" class="view-panel active">
-        <div class="os-dashboard-grid">
-          
-          <!-- Row 1, Col 1: Mini Calendar Widget -->
-          <div class="os-card col-calendar">
-            <div class="os-card-header">
-              <span class="os-card-title"><i data-lucide="calendar" class="icon-sm text-purple"></i> Calendar</span>
-              <span style="font-size: 0.8rem; font-weight: 700; color: #c4b5fd;" id="miniCalMonthTitle">August 2026</span>
-            </div>
-            <div class="mini-cal-days">
-              <div class="mini-cal-weekday">S</div>
-              <div class="mini-cal-weekday">M</div>
-              <div class="mini-cal-weekday">T</div>
-              <div class="mini-cal-weekday">W</div>
-              <div class="mini-cal-weekday">T</div>
-              <div class="mini-cal-weekday">F</div>
-              <div class="mini-cal-weekday">S</div>
-              
-              <!-- Sample August days populated -->
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">2</div>
-              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">3</div>
-              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">4</div>
-              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">5</div>
-              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">6</div>
-              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">7</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">8</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">9</div>
-              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">10</div>
-              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">11</div>
-              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">12</div>
-              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">13</div>
-              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">14</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">15</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">16</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">17</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">18</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">19</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">20</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">21</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">22</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">23</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">24</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">25</div>
-              <div class="mini-cal-cell today" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('today')">26</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">27</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">28</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">29</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">30</div>
-              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">31</div>
-            </div>
+      <!-- Content Views Container -->
+      <section class="content-view-area">
+        
+        <!-- 1. Table View -->
+        <div id="tableViewContainer" class="view-panel active">
+          <div class="table-responsive-card">
+            <table class="worksheet-table" id="worksheetTable">
+              <thead>
+                <tr>
+                  <th class="col-date" data-sort="date">
+                    <div class="th-content">Date <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                  </th>
+                  <th class="col-project" data-sort="projectName">
+                    <div class="th-content">Project Name <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                  </th>
+                  <th class="col-work">Work Description & Notes</th>
+                  <th class="col-status" data-sort="status">
+                    <div class="th-content">Status <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                  </th>
+                  <th class="col-hours" data-sort="hours">
+                    <div class="th-content">Hours <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                  </th>
+                  <th class="col-priority">Priority</th>
+                  <th class="col-actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="worksheetTableBody">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
           </div>
+        </div>
 
-          <!-- Row 1, Col 2: Today's Schedule Timeline -->
-          <div class="os-card col-schedule">
-            <div class="os-card-header">
-              <span class="os-card-title"><i data-lucide="clock" class="icon-sm text-blue"></i> Today's Schedule</span>
-              <button class="btn btn-ghost btn-xs" onclick="window.workPulseApp && window.workPulseApp.openWorkModal()">+ Add</button>
-            </div>
-            <div class="schedule-list" id="dashboardScheduleList">
-              <div class="schedule-item">
-                <div class="schedule-time">09:30<br>13:30</div>
-                <div class="schedule-dot dot-purple"></div>
-                <div class="schedule-details">
-                  <div class="schedule-title">MDI_Manu_CleaningEthanol</div>
-                  <div class="schedule-sub">Grab Pose & Audio changes</div>
-                </div>
-              </div>
-              <div class="schedule-item">
-                <div class="schedule-time">14:00<br>16:00</div>
-                <div class="schedule-dot dot-blue"></div>
-                <div class="schedule-details">
-                  <div class="schedule-title">MDI_LineClearance</div>
-                  <div class="schedule-sub">Step Wizard UI integration testing</div>
-                </div>
-              </div>
-              <div class="schedule-item">
-                <div class="schedule-time">16:30<br>18:00</div>
-                <div class="schedule-dot dot-emerald"></div>
-                <div class="schedule-details">
-                  <div class="schedule-title">Daily Sync & Google Sheets Sync</div>
-                  <div class="schedule-sub">Review tasks & export status</div>
-                </div>
-              </div>
-            </div>
+        <!-- 2. Mobile Cards View -->
+        <div id="cardsViewContainer" class="view-panel hidden">
+          <div class="cards-grid" id="worksheetCardsGrid">
+            <!-- Populated via JS -->
           </div>
+        </div>
 
-          <!-- Row 1, Col 3: Hours & Metrics Card -->
-          <div class="os-card col-metrics">
-            <div class="metrics-weather-card">
-              <div class="metrics-weather-top">
-                <div>
-                  <div class="metrics-big-val" id="metricTotalHoursDisplay">52.0 hrs</div>
-                  <div class="metrics-sub-label" id="metricStatusSummary">17 Tasks &bull; 94% Rate</div>
-                </div>
-                <div class="weather-sun-icon">
-                  <i data-lucide="sun" class="icon-lg"></i>
-                </div>
+        <!-- 3. Monthly Calendar View -->
+        <div id="calendarViewContainer" class="view-panel hidden">
+          <div class="calendar-card">
+            <div class="calendar-header-bar">
+              <div class="calendar-nav-left">
+                <button id="btnCalPrev" class="btn btn-outline btn-sm"><i data-lucide="chevron-left"></i></button>
+                <h2 id="calendarMonthTitle" class="calendar-month-title">August 2026</h2>
+                <button id="btnCalNext" class="btn btn-outline btn-sm"><i data-lucide="chevron-right"></i></button>
+                <button id="btnCalToday" class="btn btn-ghost btn-sm">Today</button>
               </div>
               
-              <div class="metrics-progress-bar-wrap">
-                <div class="progress-track">
-                  <div class="progress-fill" id="metricProgressBarFill" style="width: 94%;"></div>
-                </div>
-                <div class="progress-labels-row">
-                  <span>Completed: <strong id="metricCompletedCountDisplay" style="color: #34d399;">16</strong></span>
-                  <span>Pending: <strong id="metricPendingCountDisplay" style="color: #fbbf24;">1</strong></span>
-                  <span>Target: <strong>52h / 52h</strong></span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 2, Col 1: My Tasks Hub (Wide) -->
-          <div class="os-card col-tasks">
-            <div class="os-card-header">
-              <span class="os-card-title"><i data-lucide="check-circle-2" class="icon-sm text-emerald"></i> My Tasks</span>
-              
-              <!-- Task Filter Pills -->
-              <div class="task-pills-bar">
-                <button class="task-tab-pill active" data-task-filter="all" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">All</button>
-                <button class="task-tab-pill" data-task-filter="today" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('today')">Today</button>
-                <button class="task-tab-pill" data-task-filter="upcoming" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisWeek')">This Week</button>
-                <button class="task-tab-pill" data-task-filter="completed" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('all')">Completed</button>
-                <button class="btn btn-primary btn-xs" onclick="window.workPulseApp && window.workPulseApp.openWorkModal()">+ Add Task</button>
+              <div class="calendar-month-stats">
+                <div class="cstat-item"><span class="cstat-val text-emerald" id="calStatCompleted">0</span> <span class="cstat-lbl">Done</span></div>
+                <div class="cstat-item"><span class="cstat-val text-amber" id="calStatPending">0</span> <span class="cstat-lbl">Pending</span></div>
+                <div class="cstat-item"><span class="cstat-val text-purple" id="calStatHours">0h</span> <span class="cstat-lbl">Hours</span></div>
               </div>
             </div>
 
-            <!-- Task List Rows -->
-            <div class="tasks-items-list" id="dashboardTaskList">
-              <!-- Dynamically populated via UIRenderer -->
-            </div>
-          </div>
-
-          <!-- Row 2, Col 2: Focus Timer (Pomodoro Widget) -->
-          <div class="os-card col-timer">
-            <div class="os-card-header">
-              <span class="os-card-title"><i data-lucide="timer" class="icon-sm text-purple"></i> Focus Timer</span>
-              <span class="badge-tag" style="background: rgba(139,92,246,0.15); color: #c4b5fd;">Pomodoro</span>
+            <div class="calendar-weekdays-grid">
+              <div class="weekday-cell">Sun</div>
+              <div class="weekday-cell">Mon</div>
+              <div class="weekday-cell">Tue</div>
+              <div class="weekday-cell">Wed</div>
+              <div class="weekday-cell">Thu</div>
+              <div class="weekday-cell">Fri</div>
+              <div class="weekday-cell">Sat</div>
             </div>
 
-            <div class="focus-timer-center">
-              <div class="timer-ring-container">
-                <svg class="timer-ring-svg" viewBox="0 0 160 160">
-                  <defs>
-                    <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#c084fc"/>
-                      <stop offset="100%" stop-color="#8b5cf6"/>
-                    </linearGradient>
-                  </defs>
-                  <circle class="timer-ring-bg" cx="80" cy="80" r="70"></circle>
-                  <circle class="timer-ring-progress" id="timerRingProgress" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="0"></circle>
-                </svg>
-
-                <div class="timer-digits-wrap">
-                  <div class="timer-digits" id="timerDigitsDisplay">25:00</div>
-                  <div class="timer-status-text" id="timerStatusText">Deep Focus</div>
-                </div>
-              </div>
-
-              <div class="timer-controls-row">
-                <button class="btn-timer-play" id="btnTimerToggle" title="Start / Pause Focus Timer" onclick="window.toggleFocusTimer && window.toggleFocusTimer()">
-                  <i data-lucide="play" id="timerPlayIcon"></i>
-                </button>
-                <button class="btn-timer-reset" id="btnTimerReset" title="Reset to 25 mins" onclick="window.resetFocusTimer && window.resetFocusTimer()">
-                  <i data-lucide="rotate-ccw" class="icon-xs"></i>
-                </button>
-              </div>
+            <div class="calendar-days-grid" id="calendarDaysGrid">
+              <!-- Populated via UIRenderer -->
             </div>
-          </div>
-
-          <!-- Row 3, Col 1: Upcoming Deadlines -->
-          <div class="os-card col-deadlines">
-            <div class="os-card-header">
-              <span class="os-card-title"><i data-lucide="calendar-check" class="icon-sm text-indigo"></i> Upcoming Deadlines</span>
-              <button class="btn btn-ghost btn-xs" onclick="window.workPulseApp && window.workPulseApp.switchView('table')">View All</button>
-            </div>
-            <div class="deadlines-list" id="dashboardDeadlinesList">
-              <div class="deadline-item">
-                <div class="deadline-left">
-                  <div class="deadline-icon-badge badge-purple"><i data-lucide="file-code" class="icon-xs"></i></div>
-                  <div>
-                    <div class="deadline-title">MDI LineClearance End-to-End Simulation</div>
-                    <div class="deadline-due">Due Tomorrow &bull; Aug 27, 2026</div>
-                  </div>
-                </div>
-                <span class="priority-pill priority-high">High</span>
-              </div>
-              <div class="deadline-item">
-                <div class="deadline-left">
-                  <div class="deadline-icon-badge badge-blue"><i data-lucide="cpu" class="icon-xs"></i></div>
-                  <div>
-                    <div class="deadline-title">VR Grab Pose Physics & Controller Testing</div>
-                    <div class="deadline-due">Due in 3 days &bull; Aug 29, 2026</div>
-                  </div>
-                </div>
-                <span class="priority-pill priority-medium">Medium</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 3, Col 2: Quick Notes Scratchpad -->
-          <div class="os-card col-notes">
-            <div class="os-card-header">
-              <span class="os-card-title"><i data-lucide="edit-3" class="icon-sm text-purple"></i> Quick Notes & Scratchpad</span>
-              <button class="btn btn-outline btn-xs" onclick="window.workPulseApp && window.workPulseApp.openReport()"><i data-lucide="share" class="icon-xs"></i> Export Report</button>
-            </div>
-            <div class="quick-notes-body">
-              <textarea class="scratchpad-textarea" id="dashboardQuickNotes" placeholder="Write quick ideas, blockers, or notes here... (auto-saved)">â€¢ Grab pose refinement in progress
-â€¢ Line clearance step wizard integration 100% verified
-â€¢ Sync daily report before 6 PM</textarea>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- 1. Full Worksheet Table View -->
-      <div id="tableViewContainer" class="view-panel hidden">
-        <div class="table-responsive-card">
-          <table class="worksheet-table" id="worksheetTable">
-            <thead>
-              <tr>
-                <th class="col-date" data-sort="date">
-                  <div class="th-content">Date <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
-                </th>
-                <th class="col-project" data-sort="projectName">
-                  <div class="th-content">Project Name <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
-                </th>
-                <th class="col-work">Work Description & Notes</th>
-                <th class="col-status" data-sort="status">
-                  <div class="th-content">Status <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
-                </th>
-                <th class="col-hours" data-sort="hours">
-                  <div class="th-content">Hours <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
-                </th>
-                <th class="col-priority">Priority</th>
-                <th class="col-actions">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="worksheetTableBody">
-              <!-- Dynamically populated via JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- 2. Mobile Cards Grid View -->
-      <div id="cardsViewContainer" class="view-panel hidden">
-        <div class="cards-grid" id="worksheetCardsGrid">
-          <!-- Dynamically populated via JS -->
-        </div>
-      </div>
-
-      <!-- 3. Interactive Monthly Calendar View -->
-      <div id="calendarViewContainer" class="view-panel hidden">
-        <div class="calendar-card">
-          <div class="calendar-header-bar">
-            <div class="calendar-nav-left">
-              <button id="btnCalPrev" class="btn btn-outline btn-sm"><i data-lucide="chevron-left"></i></button>
-              <h2 id="calendarMonthTitle" class="calendar-month-title">August 2026</h2>
-              <button id="btnCalNext" class="btn btn-outline btn-sm"><i data-lucide="chevron-right"></i></button>
-              <button id="btnCalToday" class="btn btn-ghost btn-sm">Today</button>
-            </div>
-            
-            <div class="calendar-month-stats">
-              <div class="cstat-item"><span class="cstat-val text-emerald" id="calStatCompleted">0</span> <span class="cstat-lbl">Done</span></div>
-              <div class="cstat-item"><span class="cstat-val text-amber" id="calStatPending">0</span> <span class="cstat-lbl">Pending</span></div>
-              <div class="cstat-item"><span class="cstat-val text-purple" id="calStatHours">0h</span> <span class="cstat-lbl">Hours</span></div>
-            </div>
-          </div>
-
-          <div class="calendar-weekdays-grid">
-            <div class="weekday-cell">Sun</div>
-            <div class="weekday-cell">Mon</div>
-            <div class="weekday-cell">Tue</div>
-            <div class="weekday-cell">Wed</div>
-            <div class="weekday-cell">Thu</div>
-            <div class="weekday-cell">Fri</div>
-            <div class="weekday-cell">Sat</div>
-          </div>
-
-          <div class="calendar-days-grid" id="calendarDaysGrid">
-            <!-- Dynamically populated via UIRenderer -->
           </div>
         </div>
-      </div>
 
-      <!-- 4. Analytics & Charts View -->
-      <div id="analyticsViewContainer" class="view-panel hidden">
-        <div class="os-dashboard-grid">
-          <div class="os-card col-deadlines">
-            <div class="os-card-header"><span class="os-card-title">Daily Hours Distribution</span></div>
-            <canvas id="hoursChart" height="220"></canvas>
-          </div>
-          <div class="os-card col-notes">
-            <div class="os-card-header"><span class="os-card-title">Task Status Breakdown</span></div>
-            <canvas id="statusChart" height="220"></canvas>
+        <!-- 4. Analytics & Charts View (FIXED: Working Donut & Bar Charts) -->
+        <div id="analyticsViewContainer" class="view-panel hidden">
+          <div class="analytics-grid">
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <h3 class="chart-title">Task Status Breakdown</h3>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="statusDonutChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <h3 class="chart-title">Project Hours Distribution</h3>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="projectHoursBarChart"></canvas>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
+      </section>
     </main>
   </div>
 
   <!-- =========================================================================
-       Modal 1: Add / Edit Work Log (FIXED: Constrained 600px width, Dark Chips)
+       Modal 1: Add / Edit Work Log (FIXED: Working Close Buttons & Constraints)
        ========================================================================= -->
   <div id="workModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div class="modal-header">
         <h2 id="workModalTitle" class="modal-title">Log Daily Work</h2>
-        <button id="btnCloseWorkModal" class="btn-icon btn-sm" aria-label="Close modal"><i data-lucide="x"></i></button>
+        <button id="btnCloseWorkModal" class="btn-icon btn-sm btn-close-modal" aria-label="Close modal"><i data-lucide="x"></i></button>
       </div>
 
-      <form id="workForm">
+      <form id="workEntryForm">
         <input type="hidden" id="workEntryId">
         <div class="modal-body">
           
@@ -691,28 +634,28 @@
           <div class="form-group">
             <label for="workDate" class="form-label required">Work Date</label>
             <div class="date-quick-chips">
-              <button type="button" class="chip-btn" data-date="today">Today</button>
-              <button type="button" class="chip-btn" data-date="yesterday">Yesterday</button>
-              <button type="button" class="chip-btn" data-date="2026-08-21">Aug 21</button>
-              <button type="button" class="chip-btn" data-date="2026-08-20">Aug 20</button>
-              <button type="button" class="chip-btn" data-date="2026-08-19">Aug 19</button>
-              <button type="button" class="chip-btn" data-date="2026-08-18">Aug 18</button>
-              <button type="button" class="chip-btn" data-date="2026-08-15">Aug 15</button>
+              <button type="button" class="chip-btn" id="chipToday">Today</button>
+              <button type="button" class="chip-btn" id="chipYesterday">Yesterday</button>
+              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-21">Aug 21</button>
+              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-20">Aug 20</button>
+              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-19">Aug 19</button>
+              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-18">Aug 18</button>
+              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-15">Aug 15</button>
             </div>
             <input type="date" id="workDate" class="form-input" required style="margin-top: 0.5rem;">
           </div>
 
           <!-- Project Name Autocomplete -->
           <div class="form-group autocomplete-wrapper">
-            <label for="workProject" class="form-label required">Project Name / Client</label>
-            <input type="text" id="workProject" class="form-input" placeholder="e.g. MDI_LineClearance or Parisson Area" required autocomplete="off">
-            <div id="projectAutocompleteList" class="autocomplete-suggestions hidden"></div>
+            <label for="projectNameInput" class="form-label required">Project Name / Client</label>
+            <input type="text" id="projectNameInput" class="form-input" placeholder="e.g. MDI_LineClearance or Parisson Area" required autocomplete="off">
+            <div id="projectSuggestions" class="autocomplete-suggestions hidden"></div>
           </div>
 
           <!-- Work Description -->
           <div class="form-group">
-            <label for="workDesc" class="form-label required">Work Description & Tasks Completed</label>
-            <textarea id="workDesc" class="form-textarea" placeholder="Describe the work done, tasks completed, or issues resolved..." required></textarea>
+            <label for="workDescription" class="form-label required">Work Description & Tasks Completed</label>
+            <textarea id="workDescription" class="form-textarea" placeholder="Describe the work done, tasks completed, or issues resolved..." required></textarea>
           </div>
 
           <!-- Status & Hours Row -->
@@ -757,7 +700,7 @@
 
         <div class="modal-footer">
           <button type="button" id="btnCancelWorkModal" class="btn btn-ghost">Cancel</button>
-          <button type="submit" id="btnSaveWorkModal" class="btn btn-primary btn-glow">Save Work Log</button>
+          <button type="submit" id="btnSaveWorkModal" class="btn btn-primary btn-glow"><span id="saveBtnText">Save Work Log</span></button>
         </div>
       </form>
     </div>
@@ -768,23 +711,24 @@
     <div class="modal-card">
       <div class="modal-header">
         <h2 class="modal-title">Daily Status Report</h2>
-        <button id="btnCloseReportModal" class="btn-icon btn-sm"><i data-lucide="x"></i></button>
+        <button id="btnCloseReportModal" class="btn-icon btn-sm btn-close-modal"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body">
         <textarea id="dailyReportPreview" class="form-textarea" style="min-height: 180px; font-family: monospace; font-size: 0.8rem;" readonly></textarea>
       </div>
       <div class="modal-footer">
+        <button type="button" id="btnCloseReportFooter" class="btn btn-ghost">Close</button>
         <button id="btnCopyReportText" class="btn btn-primary"><i data-lucide="copy"></i> Copy to WhatsApp / Slack</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal 3: Cloud Database Sync Modal -->
+  <!-- Modal 3: Google Sheets Cloud Sync Modal (FIXED: Close Button & Backdrop working) -->
   <div id="cloudModal" class="modal-backdrop hidden" role="dialog">
     <div class="modal-card">
       <div class="modal-header">
         <h2 class="modal-title">Google Sheets Cloud Sync</h2>
-        <button id="btnCloseCloudModal" class="btn-icon btn-sm"><i data-lucide="x"></i></button>
+        <button id="btnCloseCloudModal" class="btn-icon btn-sm btn-close-modal" aria-label="Close modal"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body">
         <div class="form-group">
@@ -794,8 +738,33 @@
         <div id="cloudTestResult" class="test-result-box hidden"></div>
       </div>
       <div class="modal-footer">
-        <button id="btnTestCloudConnection" class="btn btn-outline">Test Connection</button>
-        <button id="btnPushAllToSheets" class="btn btn-primary">Sync All Data Now</button>
+        <button type="button" id="btnTestCloudConnection" class="btn btn-outline">Test Connection</button>
+        <button type="button" id="btnPushAllToSheets" class="btn btn-primary">Sync All Data Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Import / Export Modal -->
+  <div id="importExportModal" class="modal-backdrop hidden" role="dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">Import & Export Worksheet</h2>
+        <button id="btnCloseIEModal" class="btn-icon btn-sm btn-close-modal"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="export-options-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <button id="btnExportExcel" class="btn btn-outline" style="padding: 1rem; flex-direction: column; gap: 0.5rem;">
+            <i data-lucide="file-spreadsheet" class="icon-lg text-emerald"></i>
+            <span>Export to Excel (.xlsx)</span>
+          </button>
+          <button id="btnExportCSV" class="btn btn-outline" style="padding: 1rem; flex-direction: column; gap: 0.5rem;">
+            <i data-lucide="file-text" class="icon-lg text-blue"></i>
+            <span>Export to CSV</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btnCloseIEFooter" class="btn btn-ghost">Close</button>
       </div>
     </div>
   </div>
@@ -813,13 +782,14 @@
   <script src="js/adminManager.js"></script>
   <script src="js/app.js"></script>
 
-  <!-- Live Clock & Focus Timer Logic -->
+  <!-- Live Clock & Modal Helpers -->
   <script>
-    // 1. Live Digital Clock Ticker
+    // Universal Live Digital Clock Ticker
     function updateLiveClock() {
       const clockEl = document.getElementById('liveDigitalClock');
       const dateEl = document.getElementById('liveDateDisplay');
-      const greetingTimeEl = document.getElementById('greetingTimeText');
+      const landingTimeEl = document.getElementById('authPortalLiveTime');
+      const heroGreeting = document.getElementById('heroGreetingText');
       
       const now = new Date();
       let hours = now.getHours();
@@ -829,86 +799,47 @@
       let greeting = 'Good Morning';
       if (hours >= 12 && hours < 17) greeting = 'Good Afternoon';
       else if (hours >= 17) greeting = 'Good Evening';
-      if (greetingTimeEl) greetingTimeEl.textContent = greeting;
+
+      const userName = (window.authManager && window.authManager.getCurrentUser()) ? window.authManager.getCurrentUser().name : 'Kavin';
+      if (heroGreeting) heroGreeting.innerHTML = `${greeting}, ${userName} &#x1F44B;`;
 
       hours = hours % 12;
       hours = hours ? hours : 12;
       const formattedHours = String(hours).padStart(2, '0');
 
-      if (clockEl) {
-        clockEl.innerHTML = `${formattedHours}:${minutes} <span class="ampm">${ampm}</span>`;
-      }
-      if (dateEl) {
-        const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
-        dateEl.textContent = now.toLocaleDateString('en-US', options);
-      }
+      if (clockEl) clockEl.innerHTML = `${formattedHours}:${minutes} <span class="ampm">${ampm}</span>`;
+      
+      const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
+      const dateStr = now.toLocaleDateString('en-US', options);
+      if (dateEl) dateEl.textContent = dateStr;
+      if (landingTimeEl) landingTimeEl.innerHTML = `${dateStr} &bull; ${formattedHours}:${minutes} ${ampm}`;
     }
     setInterval(updateLiveClock, 1000);
     updateLiveClock();
 
-    // 2. Focus Timer (Pomodoro) Controller
-    let timerDuration = 25 * 60;
-    let timerRemaining = timerDuration;
-    let timerInterval = null;
-    let isTimerRunning = false;
+    // Universal Modal Backdrop & Escape Key Handlers
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) {
+          backdrop.classList.add('hidden');
+        }
+      });
+    });
 
-    window.toggleFocusTimer = function() {
-      const playIcon = document.getElementById('timerPlayIcon');
-      const statusText = document.getElementById('timerStatusText');
+    document.querySelectorAll('.btn-close-modal').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const modal = btn.closest('.modal-backdrop');
+        if (modal) modal.classList.add('hidden');
+      });
+    });
 
-      if (isTimerRunning) {
-        clearInterval(timerInterval);
-        isTimerRunning = false;
-        if (playIcon) playIcon.setAttribute('data-lucide', 'play');
-        if (statusText) statusText.textContent = 'Paused';
-      } else {
-        isTimerRunning = true;
-        if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
-        if (statusText) statusText.textContent = 'Deep Focus';
-        
-        timerInterval = setInterval(() => {
-          if (timerRemaining > 0) {
-            timerRemaining--;
-            updateTimerUI();
-          } else {
-            clearInterval(timerInterval);
-            isTimerRunning = false;
-            if (playIcon) playIcon.setAttribute('data-lucide', 'play');
-            if (statusText) statusText.textContent = 'Completed! ðŸŽ¯';
-            if (window.confetti) window.confetti();
-          }
-        }, 1000);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-backdrop:not(.hidden)').forEach(modal => {
+          modal.classList.add('hidden');
+        });
       }
-      if (window.lucide) window.lucide.createIcons();
-    };
-
-    window.resetFocusTimer = function() {
-      clearInterval(timerInterval);
-      isTimerRunning = false;
-      timerRemaining = timerDuration;
-      const playIcon = document.getElementById('timerPlayIcon');
-      const statusText = document.getElementById('timerStatusText');
-      if (playIcon) playIcon.setAttribute('data-lucide', 'play');
-      if (statusText) statusText.textContent = 'Deep Focus';
-      updateTimerUI();
-      if (window.lucide) window.lucide.createIcons();
-    };
-
-    function updateTimerUI() {
-      const digitsEl = document.getElementById('timerDigitsDisplay');
-      const ringEl = document.getElementById('timerRingProgress');
-      
-      const m = Math.floor(timerRemaining / 60);
-      const s = timerRemaining % 60;
-      if (digitsEl) digitsEl.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-
-      if (ringEl) {
-        const totalOffset = 440;
-        const progress = (timerDuration - timerRemaining) / timerDuration;
-        const offset = totalOffset - (progress * totalOffset);
-        ringEl.style.strokeDashoffset = offset;
-      }
-    }
+    });
   </script>
 </body>
 </html>

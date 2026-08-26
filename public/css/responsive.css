@@ -1,100 +1,62 @@
 ﻿/* =========================================================
-   WorkPulse - Midnight Purple OS Workspace Responsive Styles
+   WorkPulse - Responsive Styles (Classic Layout)
    ========================================================= */
 
-/* Tablet Breakpoint (< 1100px) */
-@media (max-width: 1100px) {
-  .col-calendar { grid-column: span 6; }
-  .col-schedule { grid-column: span 6; }
-  .col-metrics { grid-column: span 12; }
-  .col-tasks { grid-column: span 12; }
-  .col-timer { grid-column: span 12; }
-  .col-deadlines { grid-column: span 12; }
-  .col-notes { grid-column: span 12; }
+@media (max-width: 991px) {
+  .header-actions .btn-text {
+    display: none;
+  }
+
+  .header-actions .btn {
+    padding: 0.45rem 0.75rem;
+  }
 }
 
-/* Mobile Phone Breakpoint (< 768px) */
 @media (max-width: 767px) {
-  .app-layout-wrapper {
-    flex-direction: column;
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
-  .sidebar-dock {
+  .app-header {
+    padding: 0.5rem 0;
+  }
+
+  .header-inner {
+    flex-wrap: wrap;
+  }
+
+  .header-center-info {
+    order: 3;
     width: 100%;
-    height: auto;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: auto;
-    flex-direction: row;
-    padding: 0.5rem 1rem;
-    border-right: none;
-    border-top: 1px solid rgba(139, 92, 246, 0.2);
-    z-index: 100;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
+    justify-content: space-between;
+    padding-top: 0.4rem;
+    border-top: 1px dashed rgba(139, 92, 246, 0.2);
   }
 
-  .dock-top-brand {
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-around;
-  }
-
-  .dock-logo {
-    display: none;
-  }
-
-  .dock-menu {
-    flex-direction: row;
-    justify-content: space-around;
-    width: 100%;
-  }
-
-  .dock-bottom {
-    display: none;
-  }
-
-  .workspace-main {
-    width: 100%;
-    padding: 1rem 1rem 5rem 1rem;
-  }
-
-  .greeting-header {
+  .hero-quote-bar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
   }
 
-  .header-clock-wrap {
+  .hero-clock-wrap {
     align-items: flex-start;
     text-align: left;
   }
 
-  .live-digital-clock {
-    font-size: 1.75rem;
+  .filter-panel {
+    padding: 1rem;
   }
 
-  .workspace-quick-bar {
+  .filter-row-primary, .search-and-view-row {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .quick-bar-left, .quick-bar-right {
-    flex-wrap: wrap;
-    width: 100%;
-  }
-
   .search-input-wrap {
-    width: 100%;
+    max-width: 100%;
   }
 
-  /* Grid Columns */
-  .col-calendar, .col-schedule, .col-metrics, .col-tasks, .col-timer, .col-deadlines, .col-notes {
-    grid-column: span 12;
-  }
-
-  /* Modal responsiveness */
   .modal-card {
     padding: 1.25rem;
     margin: 1rem;

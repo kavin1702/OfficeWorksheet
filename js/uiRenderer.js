@@ -438,36 +438,34 @@ class UIRenderer {
   renderCharts(metrics) {
     if (!window.Chart) return;
 
-    const isDark = document.body.classList.contains('theme-dark');
-    const textColor = isDark ? '#cbd5e1' : '#475569';
+    const textColor = '#cbd5e1';
 
     // 1. Status Donut Chart
     const donutCtx = document.getElementById('statusDonutChart');
     if (donutCtx) {
       if (this.statusChart) this.statusChart.destroy();
 
-      const counts = metrics.statusCounts;
+      const completed = metrics.completed || 0;
+      const inProgress = metrics.inProgress || 0;
+      const pending = metrics.pending || 0;
+      const blocked = metrics.blocked || 0;
+      const leave = metrics.leave || 0;
+
       this.statusChart = new Chart(donutCtx, {
         type: 'doughnut',
         data: {
-          labels: ['Completed', 'In Progress', 'Pending', 'Blocked', 'Under Review'],
+          labels: ['Completed', 'In Progress', 'Pending', 'Blocked', 'Leave / Off'],
           datasets: [{
-            data: [
-              counts['Completed'] || 0,
-              counts['In Progress'] || 0,
-              counts['Pending'] || 0,
-              counts['Blocked'] || 0,
-              counts['Under Review'] || 0
-            ],
+            data: [completed, inProgress, pending, blocked, leave],
             backgroundColor: [
               '#10b981', // Emerald
-              '#3b82f6', // Blue
+              '#8b5cf6', // Purple
               '#f59e0b', // Amber
               '#ef4444', // Rose
-              '#8b5cf6'  // Purple
+              '#06b6d4'  // Cyan
             ],
             borderWidth: 2,
-            borderColor: isDark ? '#131b2e' : '#ffffff'
+            borderColor: '#12162c'
           }]
         },
         options: {
@@ -476,10 +474,10 @@ class UIRenderer {
           plugins: {
             legend: {
               position: 'bottom',
-              labels: { color: textColor, font: { family: 'Inter', size: 12 } }
+              labels: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 12 } }
             }
           },
-          cutout: '68%'
+          cutout: '65%'
         }
       });
     }
@@ -489,8 +487,9 @@ class UIRenderer {
     if (barCtx) {
       if (this.projectChart) this.projectChart.destroy();
 
-      const projects = Object.keys(metrics.projectHoursMap);
-      const hours = projects.map(p => metrics.projectHoursMap[p]);
+      const projectHoursObj = metrics.projectHours || {};
+      const projects = Object.keys(projectHoursObj);
+      const hours = projects.map(p => projectHoursObj[p]);
 
       this.projectChart = new Chart(barCtx, {
         type: 'bar',
@@ -499,7 +498,9 @@ class UIRenderer {
           datasets: [{
             label: 'Hours Spent',
             data: hours.length > 0 ? hours : [0],
-            backgroundColor: '#3b82f6',
+            backgroundColor: 'rgba(139, 92, 246, 0.75)',
+            borderColor: '#8b5cf6',
+            borderWidth: 1,
             borderRadius: 6
           }]
         },
@@ -511,12 +512,12 @@ class UIRenderer {
           },
           scales: {
             x: {
-              ticks: { color: textColor, font: { family: 'Inter' } },
+              ticks: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 10 } },
               grid: { display: false }
             },
             y: {
-              ticks: { color: textColor, font: { family: 'Inter' } },
-              grid: { color: isDark ? '#243048' : '#e2e8f0' },
+              ticks: { color: textColor, font: { family: 'Plus Jakarta Sans' } },
+              grid: { color: 'rgba(139, 92, 246, 0.12)' },
               beginAtZero: true
             }
           }
