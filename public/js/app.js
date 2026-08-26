@@ -383,8 +383,10 @@ async function initWorkPulseApp() {
   }
 
   function initTheme() {
-    const savedTheme = localStorage.getItem('workpulse_theme') || 'theme-light';
-    document.body.className = savedTheme;
+    const savedTheme = localStorage.getItem('workpulse_theme') || '';
+    if (savedTheme) {
+      document.body.className = savedTheme;
+    }
     updateThemeIcon(savedTheme);
   }
 

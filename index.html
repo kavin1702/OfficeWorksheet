@@ -42,16 +42,16 @@
   </script>
   
   <!-- PWA & Mobile Meta Tags -->
-  <meta name="theme-color" content="#1e293b">
+  <meta name="theme-color" content="#080604">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="WorkPulse">
   <link rel="manifest" href="manifest.json">
 
-  <!-- Google Fonts: Inter & Outfit -->
+  <!-- Google Fonts: Plus Jakarta Sans, Outfit & Syne -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 
   <!-- External Libraries -->
   <!-- Lucide Icons -->
@@ -119,7 +119,7 @@
     };
   </script>
 </head>
-<body class="theme-light">
+<body>
   <!-- =========================================================================
        Full-Screen Landing & Authentication Gatekeeper (Sign In / Create Account)
        ========================================================================= -->
@@ -554,12 +554,12 @@
           <div class="select-wrap">
             <select id="filterStatus" class="form-select-sm">
               <option value="all">All Statuses</option>
-              <option value="Completed">Completed</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Pending">Pending</option>
-              <option value="Blocked">Blocked</option>
-              <option value="Under Review">Under Review</option>
-              <option value="Leave">🏖️ Leave / Off</option>
+              <option value="Completed">&#x2705; Completed</option>
+              <option value="In Progress">&#x1F504; In Progress</option>
+              <option value="Pending">&#x23F3; Pending</option>
+              <option value="Blocked">&#x1F6D1; Blocked</option>
+              <option value="Under Review">&#x1F50D; Under Review</option>
+              <option value="Leave">&#x1F3D6;&#xFE0F; Leave / Off</option>
             </select>
           </div>
 
@@ -838,12 +838,12 @@
             <div class="form-group">
               <label for="workStatus" class="form-label required">Work Status</label>
               <select id="workStatus" class="form-select" required>
-                <option value="Completed">✅ Completed</option>
-                <option value="In Progress" selected>🔄 In Progress</option>
-                <option value="Pending">⏳ Pending</option>
-                <option value="Blocked">🛑 Blocked</option>
-                <option value="Under Review">🔍 Under Review</option>
-                <option value="Leave">🏖️ Leave / Off</option>
+                <option value="Completed">&#x2705; Completed</option>
+                <option value="In Progress" selected>&#x1F504; In Progress</option>
+                <option value="Pending">&#x23F3; Pending</option>
+                <option value="Blocked">&#x1F6D1; Blocked</option>
+                <option value="Under Review">&#x1F50D; Under Review</option>
+                <option value="Leave">&#x1F3D6;&#xFE0F; Leave / Off</option>
               </select>
             </div>
 

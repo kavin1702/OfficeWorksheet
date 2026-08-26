@@ -46,6 +46,18 @@ class UIRenderer {
     }
   }
 
+  static getStatusOptionsHtml(currentStatus) {
+    const statuses = [
+      { val: 'Completed', label: '\u2705 Completed' },
+      { val: 'In Progress', label: '\uD83D\uDD04 In Progress' },
+      { val: 'Pending', label: '\u23F3 Pending' },
+      { val: 'Blocked', label: '\uD83D\uDED1 Blocked' },
+      { val: 'Under Review', label: '\uD83D\uDD0D Under Review' },
+      { val: 'Leave', label: '\uD83C\uDFD6 Leave / Off' }
+    ];
+    return statuses.map(s => `<option value="${s.val}" ${currentStatus === s.val ? 'selected' : ''}>${s.label}</option>`).join('');
+  }
+
   // Get priority badge class
   static getPriorityClass(priority) {
     switch ((priority || '').toLowerCase()) {
@@ -117,12 +129,7 @@ class UIRenderer {
         </td>
         <td class="col-status">
           <select class="inline-status-select ${statusMeta.cls}" data-id="${entry.id}">
-            <option value="Completed" ${entry.status === 'Completed' ? 'selected' : ''}>✅ Completed</option>
-            <option value="In Progress" ${entry.status === 'In Progress' ? 'selected' : ''}>🔄 In Progress</option>
-            <option value="Pending" ${entry.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
-            <option value="Blocked" ${entry.status === 'Blocked' ? 'selected' : ''}>🛑 Blocked</option>
-            <option value="Under Review" ${entry.status === 'Under Review' ? 'selected' : ''}>🔍 Under Review</option>
-            <option value="Leave" ${entry.status === 'Leave' ? 'selected' : ''}>🏖️ Leave / Off</option>
+            ${UIRenderer.getStatusOptionsHtml(entry.status)}
           </select>
         </td>
         <td class="col-hours">
@@ -198,12 +205,7 @@ class UIRenderer {
         <div class="card-bottom-row">
           <div class="card-meta-chips">
             <select class="inline-status-select ${statusMeta.cls}" data-id="${entry.id}">
-              <option value="Completed" ${entry.status === 'Completed' ? 'selected' : ''}>✅ Completed</option>
-              <option value="In Progress" ${entry.status === 'In Progress' ? 'selected' : ''}>🔄 In Progress</option>
-              <option value="Pending" ${entry.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
-              <option value="Blocked" ${entry.status === 'Blocked' ? 'selected' : ''}>🛑 Blocked</option>
-              <option value="Under Review" ${entry.status === 'Under Review' ? 'selected' : ''}>🔍 Under Review</option>
-              <option value="Leave" ${entry.status === 'Leave' ? 'selected' : ''}>🏖️ Leave / Off</option>
+              ${UIRenderer.getStatusOptionsHtml(entry.status)}
             </select>
             ${entry.hoursWorked ? `<span class="card-hours-chip"><i data-lucide="clock" class="icon-xs"></i> ${entry.hoursWorked}h</span>` : ''}
           </div>
@@ -662,12 +664,7 @@ class UIRenderer {
         </div>
         <div class="inspector-task-side">
           <select class="inline-status-select ${statusMeta.cls}" data-id="${entry.id}">
-            <option value="Completed" ${entry.status === 'Completed' ? 'selected' : ''}>✅ Completed</option>
-            <option value="In Progress" ${entry.status === 'In Progress' ? 'selected' : ''}>🔄 In Progress</option>
-            <option value="Pending" ${entry.status === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
-            <option value="Blocked" ${entry.status === 'Blocked' ? 'selected' : ''}>🛑 Blocked</option>
-            <option value="Under Review" ${entry.status === 'Under Review' ? 'selected' : ''}>🔍 Under Review</option>
-            <option value="Leave" ${entry.status === 'Leave' ? 'selected' : ''}>🏖️ Leave / Off</option>
+            ${UIRenderer.getStatusOptionsHtml(entry.status)}
           </select>
           <button class="btn-action edit" title="Edit"><i data-lucide="edit-2" class="icon-xs"></i></button>
           <button class="btn-action duplicate" title="Duplicate"><i data-lucide="copy" class="icon-xs"></i></button>
