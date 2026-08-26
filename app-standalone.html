@@ -42,16 +42,16 @@
   </script>
   
   <!-- PWA & Mobile Meta Tags -->
-  <meta name="theme-color" content="#080604">
+  <meta name="theme-color" content="#080a14">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="WorkPulse">
   <link rel="manifest" href="manifest.json">
 
-  <!-- Google Fonts: Plus Jakarta Sans, Outfit & Syne -->
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 
   <!-- External Libraries -->
   <!-- Lucide Icons -->
@@ -70,107 +70,97 @@
   <!-- Application Stylesheets -->
   <style>
 /* =========================================================
-   WorkPulse - Luxury Dark Ember & Sunset Glow Design System
+   WorkPulse - Midnight Purple OS Workspace Design System
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
 :root {
-  /* Core Luxury Dark Obsidian Palette */
-  --bg-primary: #080604;
-  --bg-surface: rgba(18, 13, 9, 0.75);
-  --bg-surface-elevated: rgba(28, 20, 14, 0.85);
-  --bg-subtle: rgba(255, 120, 20, 0.05);
-  --bg-hover: rgba(255, 130, 25, 0.12);
+  /* Midnight Purple & Deep Indigo Palette */
+  --bg-primary: #080a14;
+  --bg-secondary: #0c0f1f;
+  --bg-surface: rgba(18, 22, 42, 0.75);
+  --bg-surface-elevated: rgba(26, 32, 60, 0.88);
+  --bg-subtle: rgba(139, 92, 246, 0.06);
+  --bg-hover: rgba(139, 92, 246, 0.14);
   
-  /* Glowing Borders */
-  --border-color: rgba(255, 130, 25, 0.16);
-  --border-hover: rgba(255, 150, 40, 0.4);
-  --border-focus: #ff7a18;
-  --border-glow: 0 0 20px rgba(255, 110, 0, 0.25);
+  /* Borders */
+  --border-color: rgba(139, 92, 246, 0.16);
+  --border-hover: rgba(168, 85, 247, 0.38);
+  --border-focus: #8b5cf6;
+  --border-glow: 0 0 16px rgba(139, 92, 246, 0.25);
 
   /* Typography Colors */
-  --text-primary: #fbfaf8;
-  --text-secondary: #d1c3b7;
-  --text-muted: #8e7d70;
-  --text-inverse: #080604;
+  --text-primary: #ffffff;
+  --text-secondary: #cbd5e1;
+  --text-muted: #8b9bb4;
+  --text-inverse: #080a14;
 
-  /* Primary Brand - Sunset Ember & Flame */
-  --brand-primary: #ff6a00;
-  --brand-primary-hover: #ff851b;
-  --brand-gradient: linear-gradient(135deg, #ff7a18 0%, #d44e00 100%);
-  --brand-gradient-hover: linear-gradient(135deg, #ff8c2e 0%, #eb5b00 100%);
-  --brand-gradient-glow: 0 2px 12px rgba(255, 106, 0, 0.25);
-  --brand-primary-light: rgba(255, 106, 0, 0.08);
-  --brand-primary-subtle: rgba(255, 106, 0, 0.15);
+  /* Primary Brand - Vibrant Violet / Purple */
+  --brand-primary: #8b5cf6;
+  --brand-primary-hover: #a855f7;
+  --brand-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  --brand-gradient-hover: linear-gradient(135deg, #9f75ff 0%, #7c3aed 100%);
+  --brand-gradient-glow: 0 4px 18px rgba(139, 92, 246, 0.35);
+  --brand-primary-light: rgba(139, 92, 246, 0.12);
+  --brand-primary-subtle: rgba(139, 92, 246, 0.2);
 
-  /* Status Colors with Luxury Dark Glow */
-  --status-completed-bg: rgba(16, 185, 129, 0.12);
+  /* Status Colors */
+  --status-completed-bg: rgba(16, 185, 129, 0.14);
   --status-completed-text: #34d399;
-  --status-completed-border: rgba(16, 185, 129, 0.28);
+  --status-completed-border: rgba(16, 185, 129, 0.3);
 
-  --status-progress-bg: rgba(255, 122, 24, 0.12);
-  --status-progress-text: #ff9e42;
-  --status-progress-border: rgba(255, 122, 24, 0.3);
+  --status-progress-bg: rgba(139, 92, 246, 0.15);
+  --status-progress-text: #c4b5fd;
+  --status-progress-border: rgba(139, 92, 246, 0.35);
 
-  --status-pending-bg: rgba(245, 158, 11, 0.12);
+  --status-pending-bg: rgba(245, 158, 11, 0.14);
   --status-pending-text: #fbbf24;
-  --status-pending-border: rgba(245, 158, 11, 0.28);
+  --status-pending-border: rgba(245, 158, 11, 0.3);
 
-  --status-blocked-bg: rgba(244, 63, 94, 0.12);
+  --status-blocked-bg: rgba(244, 63, 94, 0.14);
   --status-blocked-text: #fb7185;
-  --status-blocked-border: rgba(244, 63, 94, 0.28);
+  --status-blocked-border: rgba(244, 63, 94, 0.3);
 
-  --status-review-bg: rgba(168, 85, 247, 0.12);
-  --status-review-text: #c084fc;
-  --status-review-border: rgba(168, 85, 247, 0.28);
+  --status-review-bg: rgba(56, 189, 248, 0.14);
+  --status-review-text: #38bdf8;
+  --status-review-border: rgba(56, 189, 248, 0.3);
 
-  --status-leave-bg: rgba(56, 189, 248, 0.12);
-  --status-leave-text: #38bdf8;
-  --status-leave-border: rgba(56, 189, 248, 0.28);
+  --status-leave-bg: rgba(217, 70, 239, 0.14);
+  --status-leave-text: #e879f9;
+  --status-leave-border: rgba(217, 70, 239, 0.3);
 
   /* Accent Tones */
+  --accent-purple: #8b5cf6;
+  --accent-indigo: #6366f1;
+  --accent-cyan: #06b6d4;
   --accent-amber: #f59e0b;
-  --accent-orange: #ff7a18;
-  --accent-flame: #ff4500;
   --accent-emerald: #10b981;
-  --accent-sky: #38bdf8;
+  --accent-rose: #f43f5e;
 
-  /* Shadows & Subtle Refined Glows */
+  /* Shadows & Glassmorphic Glows */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 200, 150, 0.04);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.75);
-  --shadow-glow: 0 0 16px rgba(255, 106, 0, 0.2);
-  --shadow-glow-card: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 220, 150, 0.08);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.65), 0 0 20px rgba(139, 92, 246, 0.06);
+  --shadow-lg: 0 18px 45px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.12);
+  --shadow-glow: 0 0 22px rgba(139, 92, 246, 0.3);
 
   /* Radius */
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 22px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 26px;
   --radius-full: 9999px;
 
-  /* Typography - Crisp, Proportional & Geometric (No distortion) */
+  /* Typography */
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-brand: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', Consolas, Monaco, monospace;
 
   /* Transitions */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Light Mode Overrides (if toggled) */
-body.theme-light {
-  --bg-primary: #080604;
-  --bg-surface: rgba(18, 13, 9, 0.82);
-  --bg-surface-elevated: rgba(28, 20, 14, 0.92);
-  --text-primary: #fbfaf8;
-  --text-secondary: #d1c3b7;
-  --text-muted: #8e7d70;
-  --border-color: rgba(255, 130, 25, 0.18);
 }
 
 /* Global Reset & Base Styles */
@@ -201,44 +191,25 @@ body {
   font-feature-settings: "tnum", "cv02", "cv03", "cv04", "cv11";
 }
 
-/* Atmospheric Subtle Sunset Glow & Mesh Texture */
+/* Atmospheric Nebula Gradient Backdrop */
 body::before {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 420px;
-  background: radial-gradient(ellipse 60% 280px at 50% -60px, rgba(255, 106, 0, 0.12) 0%, rgba(255, 60, 0, 0.03) 60%, transparent 80%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-body::after {
-  content: '';
-  position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 120, 20, 0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(139, 92, 246, 0.14) 0%, transparent 50%),
+    radial-gradient(circle at 50% 85%, rgba(124, 58, 237, 0.08) 0%, transparent 60%),
+    #080a14;
   pointer-events: none;
   z-index: 0;
 }
 
-.app-container {
+.app-layout-wrapper {
   display: flex;
-  flex-direction: column;
   min-height: 100vh;
   position: relative;
   z-index: 1;
-}
-
-.container {
-  width: 100%;
-  max-width: 1360px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
 }
 
 /* Typography Utility */
@@ -247,7 +218,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.2;
   color: var(--text-primary);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 
 p {
@@ -257,22 +228,21 @@ p {
 a {
   color: var(--brand-primary);
   text-decoration: none;
-  transition: color var(--transition-fast), text-shadow var(--transition-fast);
+  transition: color var(--transition-fast);
 }
 
 a:hover {
   color: var(--brand-primary-hover);
-  text-shadow: 0 0 12px rgba(255, 106, 0, 0.5);
 }
 
 code {
-  font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+  font-family: var(--font-mono);
   font-size: 0.85em;
-  background: rgba(255, 120, 20, 0.08);
-  border: 1px solid rgba(255, 120, 20, 0.2);
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.25);
   padding: 0.15rem 0.4rem;
   border-radius: var(--radius-sm);
-  color: #ff9e42;
+  color: #c4b5fd;
 }
 
 /* Visibility Utilities */
@@ -286,189 +256,215 @@ code {
 .icon-md { width: 20px; height: 20px; }
 .icon-lg { width: 24px; height: 24px; }
 
-/* Custom Luxury Amber Scrollbars */
+/* Custom Purple Scrollbars */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #080604;
+  background: #080a14;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 120, 20, 0.22);
+  background: rgba(139, 92, 246, 0.25);
   border-radius: var(--radius-full);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 140, 30, 0.45);
+  background: rgba(168, 85, 247, 0.5);
 }
-
 /* =========================================================
-   WorkPulse - Luxury Dark Ember & Sunset Glow Components
+   WorkPulse - Midnight Purple OS Workspace Components
    ========================================================= */
 
-/* --- Floating Glass Header --- */
-.app-header {
-  background: rgba(12, 9, 6, 0.88);
-  border-bottom: 1px solid rgba(255, 130, 25, 0.18);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 180, 80, 0.08);
-  transition: all var(--transition-base);
-}
-
-.header-inner {
+/* --- Left Sidebar Dock (OS Style Navigation) --- */
+.sidebar-dock {
+  width: 72px;
+  background: rgba(16, 20, 38, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-right: 1px solid rgba(139, 92, 246, 0.16);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  height: 76px;
+  padding: 1.25rem 0.5rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 50;
+  flex-shrink: 0;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+}
+
+.dock-top-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 1.25rem;
 }
 
-.brand-section {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-}
-
-.brand-logo {
+.dock-logo {
   width: 44px;
   height: 44px;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, #ff7a18 0%, #d44e00 100%);
+  border-radius: 14px;
+  background: var(--brand-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(255, 110, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(255, 200, 120, 0.3);
-  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.45);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.dock-logo:hover {
+  transform: scale(1.05);
+}
+
+.dock-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.dock-item {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
   position: relative;
 }
 
-.brand-icon {
-  width: 24px;
-  height: 24px;
+.dock-item:hover {
+  background: rgba(139, 92, 246, 0.15);
+  color: #ffffff;
 }
 
-.brand-title-row {
+.dock-item.active {
+  background: var(--brand-gradient);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+}
+
+.dock-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* --- Main Workspace Layout --- */
+.workspace-main {
+  flex: 1;
+  padding: 1.5rem 2rem 3rem 2rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: calc(100% - 72px);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* --- Top Greeting & Digital Clock Header --- */
+.greeting-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.greeting-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.greeting-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.brand-title {
-  font-size: 1.35rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #fbfaf8;
+.greeting-title span.user-highlight {
+  color: #a855f7;
+  background: linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.greeting-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.header-clock-wrap {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.live-digital-clock {
   font-family: var(--font-brand);
-  text-shadow: 0 0 20px rgba(255, 120, 20, 0.25);
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
-.badge-tag {
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  background: rgba(255, 120, 20, 0.15);
-  color: #ff9e42;
-  border: 1px solid rgba(255, 140, 30, 0.35);
-  padding: 0.15rem 0.5rem;
-  border-radius: var(--radius-full);
-  box-shadow: 0 0 12px rgba(255, 110, 0, 0.2);
+.live-digital-clock span.ampm {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-left: 0.25rem;
 }
 
-.brand-subtitle {
-  font-size: 0.78rem;
-  color: #9e8b7e;
-  font-weight: 400;
+.live-date-str {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 0.25rem;
 }
 
-/* Header Center Info & Cloud Status */
-.header-center-info {
+/* Header Quick Actions Bar */
+.workspace-quick-bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  background: rgba(18, 22, 42, 0.65);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(139, 92, 246, 0.16);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem 1.25rem;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.cloud-status-pill {
-  display: inline-flex;
+.quick-bar-left {
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.95rem;
-  border-radius: var(--radius-full);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid rgba(255, 130, 25, 0.22);
-  background: rgba(22, 16, 11, 0.7);
-  color: #d1c3b7;
-  backdrop-filter: blur(12px);
-  transition: all var(--transition-fast);
+  gap: 0.65rem;
 }
 
-.cloud-status-pill:hover {
-  background: rgba(35, 24, 16, 0.85);
-  border-color: rgba(255, 150, 40, 0.45);
-  box-shadow: 0 0 16px rgba(255, 110, 0, 0.2);
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--text-muted);
-  position: relative;
-}
-
-.cloud-status-pill.connected .status-dot {
-  background-color: var(--accent-emerald);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.8), 0 0 0 3px rgba(16, 185, 129, 0.25);
-}
-
-.cloud-status-pill.connected {
-  border-color: rgba(16, 185, 129, 0.35);
-  background: rgba(16, 185, 129, 0.1);
-  color: #34d399;
-}
-
-.cloud-status-pill.local .status-dot {
-  background-color: var(--accent-amber);
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
-}
-
-.cloud-status-pill.syncing .status-dot {
-  background-color: #ff7a18;
-  animation: pulse 1s infinite alternate;
-}
-
-@keyframes pulse {
-  0% { transform: scale(0.9); opacity: 0.6; }
-  100% { transform: scale(1.2); opacity: 1; }
-}
-
-.current-date-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.4rem 0.85rem;
-  background: rgba(22, 16, 11, 0.65);
-  border: 1px solid rgba(255, 130, 25, 0.16);
-  border-radius: var(--radius-md);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: #d1c3b7;
-}
-
-.current-date-pill i {
-  color: #ff9e42;
-}
-
-/* Header Actions */
-.header-actions {
+.quick-bar-right {
   display: flex;
   align-items: center;
   gap: 0.65rem;
@@ -479,10 +475,10 @@ code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.15rem;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
   border-radius: var(--radius-full);
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -499,54 +495,52 @@ code {
 .btn-primary {
   background: var(--brand-gradient);
   color: #ffffff;
-  border: 1px solid rgba(255, 200, 120, 0.28);
-  box-shadow: 0 2px 10px rgba(255, 106, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
 }
 
 .btn-primary:hover {
   background: var(--brand-gradient-hover);
-  box-shadow: 0 4px 16px rgba(255, 120, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45);
   transform: translateY(-1px);
 }
 
 .btn-glow {
-  box-shadow: 0 2px 12px rgba(255, 106, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
 }
 
 .btn-outline {
-  background: rgba(22, 16, 11, 0.7);
-  border: 1px solid rgba(255, 130, 25, 0.24);
+  background: rgba(22, 28, 54, 0.7);
+  border: 1px solid rgba(139, 92, 246, 0.22);
   color: #fbfaf8;
   backdrop-filter: blur(12px);
 }
 
 .btn-outline:hover {
-  background: rgba(38, 26, 17, 0.85);
-  border-color: rgba(255, 160, 40, 0.5);
+  background: rgba(36, 44, 82, 0.85);
+  border-color: rgba(168, 85, 247, 0.45);
   color: #ffffff;
-  box-shadow: 0 0 18px rgba(255, 110, 0, 0.22);
 }
 
 .btn-ghost {
   background: transparent;
-  color: #d1c3b7;
+  color: var(--text-secondary);
   border-color: transparent;
 }
 
 .btn-ghost:hover {
-  background: rgba(255, 120, 20, 0.1);
+  background: rgba(139, 92, 246, 0.12);
   color: #ffffff;
 }
 
 .btn-sm {
-  padding: 0.45rem 0.95rem;
-  font-size: 0.8125rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
 }
 
 .btn-xs {
-  padding: 0.3rem 0.65rem;
-  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.72rem;
   border-radius: var(--radius-sm);
 }
 
@@ -554,500 +548,614 @@ code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  background: rgba(22, 16, 11, 0.7);
-  color: #d1c3b7;
-  border: 1px solid rgba(255, 130, 25, 0.2);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(22, 28, 54, 0.7);
+  color: var(--text-secondary);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .btn-icon:hover {
-  background: rgba(38, 26, 17, 0.9);
-  border-color: rgba(255, 150, 40, 0.45);
+  background: rgba(36, 44, 82, 0.9);
+  border-color: rgba(168, 85, 247, 0.45);
   color: #ffffff;
-  box-shadow: 0 0 16px rgba(255, 110, 0, 0.2);
 }
 
-.btn-icon-sm {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-}
-
-/* User Profile Chip & Dropdown */
-.user-profile-wrapper {
-  position: relative;
-}
-
+/* User Profile Chip */
 .user-profile-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.35rem 0.85rem 0.35rem 0.45rem;
-  background: rgba(22, 16, 11, 0.75);
-  border: 1px solid rgba(255, 130, 25, 0.22);
+  gap: 0.5rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.35rem;
+  background: rgba(22, 28, 54, 0.75);
+  border: 1px solid rgba(139, 92, 246, 0.22);
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all var(--transition-fast);
-  color: #fbfaf8;
-}
-
-.user-profile-btn:hover {
-  background: rgba(35, 24, 16, 0.9);
-  border-color: rgba(255, 150, 40, 0.45);
-  box-shadow: 0 0 16px rgba(255, 110, 0, 0.2);
+  color: #ffffff;
 }
 
 .user-avatar-badge {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
+  background: var(--brand-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
   font-weight: 700;
-  font-size: 0.8rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-}
-
-.user-name-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #fbfaf8;
-}
-
-.user-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  width: 240px;
-  background: rgba(18, 13, 9, 0.95);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 140, 30, 0.28);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 100, 0, 0.15);
-  padding: 0.75rem;
-  z-index: 100;
-  animation: dropdownPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes dropdownPop {
-  from { opacity: 0; transform: translateY(-8px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.user-dropdown-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.5rem 0.75rem;
-}
-
-.user-avatar-large {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.dropdown-user-name {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #fbfaf8;
-}
-
-.dropdown-user-role {
   font-size: 0.75rem;
-  color: #9e8b7e;
 }
 
-.dropdown-divider {
-  height: 1px;
-  background: rgba(255, 130, 25, 0.15);
-  margin: 0.4rem 0;
+/* ==========================================================================
+   OS Dashboard Widgets Grid (Matching Reference Image 2)
+   ========================================================================== */
+.os-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.25rem;
 }
 
-.dropdown-item {
+/* Base Widget Card */
+.os-card {
+  background: rgba(18, 22, 42, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.16);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+}
+
+.os-card:hover {
+  border-color: rgba(168, 85, 247, 0.35);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 0 18px rgba(139, 92, 246, 0.1);
+}
+
+.os-card-header {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  width: 100%;
-  padding: 0.55rem 0.75rem;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  border: none;
-  color: #d1c3b7;
-  font-size: 0.8125rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.os-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+/* --- Row 1: Calendar, Schedule, Weather/Hours --- */
+.col-calendar {
+  grid-column: span 4;
+}
+
+.col-schedule {
+  grid-column: span 4;
+}
+
+.col-metrics {
+  grid-column: span 4;
+}
+
+/* Mini Calendar Widget */
+.mini-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.mini-cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.mini-cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
   font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: 50%;
   cursor: pointer;
-  text-align: left;
   transition: all var(--transition-fast);
 }
 
-.dropdown-item:hover {
-  background: rgba(255, 120, 20, 0.12);
+.mini-cal-cell:hover {
+  background: rgba(139, 92, 246, 0.2);
   color: #ffffff;
 }
 
-/* --- Metrics Grid (Frosted Glass KPI Cards) --- */
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+.mini-cal-cell.today {
+  background: var(--brand-gradient);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
 }
 
-.metric-card {
-  background: rgba(18, 13, 9, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 130, 25, 0.15);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem 1.35rem;
+.mini-cal-cell.has-work {
+  border-bottom: 2px solid #8b5cf6;
+}
+
+.mini-cal-weekday {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Today's Schedule Timeline */
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.schedule-item {
   display: flex;
   align-items: center;
-  gap: 1.1rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 200, 120, 0.05);
-  transition: all var(--transition-base);
-  position: relative;
-  overflow: hidden;
-}
-
-.metric-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 120, 20, 0.3), transparent);
-  opacity: 0;
-  transition: opacity var(--transition-fast);
-}
-
-.metric-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 150, 40, 0.35);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.75), 0 0 16px rgba(255, 100, 0, 0.1);
-}
-
-.metric-card:hover::before {
-  opacity: 1;
-}
-
-.metric-icon-wrap {
-  width: 48px;
-  height: 48px;
+  gap: 0.75rem;
+  padding: 0.5rem 0.65rem;
+  background: rgba(26, 32, 60, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.12);
   border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+}
+
+.schedule-time {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 65px;
+  line-height: 1.2;
+}
+
+.schedule-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-.bg-blue-light {
-  background: rgba(255, 106, 0, 0.12);
-  border-color: rgba(255, 120, 20, 0.25);
-}
-.text-blue { color: #ff8c2e; }
+.dot-purple { background: #8b5cf6; box-shadow: 0 0 6px #8b5cf6; }
+.dot-blue { background: #3b82f6; box-shadow: 0 0 6px #3b82f6; }
+.dot-amber { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+.dot-emerald { background: #10b981; box-shadow: 0 0 6px #10b981; }
 
-.bg-emerald-light {
-  background: rgba(16, 185, 129, 0.12);
-  border-color: rgba(16, 185, 129, 0.28);
-}
-.text-emerald { color: #34d399; }
-
-.bg-sky-light {
-  background: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.28);
-}
-.text-sky { color: #fbbf24; }
-
-.bg-amber-light {
-  background: rgba(255, 140, 20, 0.12);
-  border-color: rgba(255, 140, 20, 0.28);
-}
-.text-amber { color: #ffaa44; }
-
-.metric-details {
+.schedule-details {
   flex: 1;
   min-width: 0;
 }
 
-.metric-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #9e8b7e;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  display: block;
-  margin-bottom: 0.25rem;
+.schedule-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.metric-value-row {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+.schedule-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
 }
 
-.metric-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  font-family: var(--font-sans);
-  color: #fbfaf8;
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
-}
-
-.metric-sub {
-  font-size: 0.8rem;
-  color: #9e8b7e;
-}
-
-.metric-badge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.15rem 0.5rem;
-  border-radius: var(--radius-full);
-}
-
-.bg-emerald-badge {
-  background: rgba(16, 185, 129, 0.18);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  color: #34d399;
-}
-
-/* --- Control Panel & Smart Filter Bar --- */
-.control-panel {
-  background: rgba(18, 13, 9, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 130, 25, 0.18);
-  border-radius: var(--radius-lg);
-  padding: 1.15rem 1.35rem;
-  margin-bottom: 1.75rem;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 200, 120, 0.06);
+/* Weather & Hours Logged Card */
+.metrics-weather-card {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  justify-content: space-between;
+  height: 100%;
 }
 
-.filters-row {
+.metrics-weather-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.85rem;
 }
 
-.date-pills-group {
+.weather-sun-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
   display: flex;
   align-items: center;
-  background: rgba(10, 7, 5, 0.65);
-  padding: 0.3rem;
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 130, 25, 0.14);
-  gap: 0.3rem;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+}
+
+.metrics-big-val {
+  font-size: 2.25rem;
+  font-weight: 800;
+  font-family: var(--font-brand);
+  color: #ffffff;
+  line-height: 1;
+}
+
+.metrics-sub-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.metrics-progress-bar-wrap {
+  margin-top: 1rem;
+}
+
+.progress-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--brand-gradient);
+  border-radius: 999px;
+}
+
+.progress-labels-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+}
+
+/* --- Row 2: My Tasks Hub (7 cols) & Focus Timer (5 cols) --- */
+.col-tasks {
+  grid-column: span 7;
+}
+
+.col-timer {
+  grid-column: span 5;
+}
+
+/* Tasks Filter Pills */
+.task-pills-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   overflow-x: auto;
-  max-width: 100%;
 }
 
-.filter-pill {
-  padding: 0.4rem 0.95rem;
+.task-tab-pill {
+  padding: 0.3rem 0.85rem;
   border-radius: var(--radius-full);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  border: 1px solid transparent;
-  background: transparent;
-  color: #d1c3b7;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all var(--transition-fast);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.filter-pill:hover {
-  color: #ffffff;
-  background: rgba(255, 120, 20, 0.08);
-}
-
-.filter-pill.active {
-  background: linear-gradient(135deg, rgba(255, 122, 24, 0.28) 0%, rgba(212, 78, 0, 0.4) 100%);
-  border-color: #ff7a18;
-  color: #ffffff;
-  font-weight: 700;
-  box-shadow: 0 0 18px rgba(255, 110, 0, 0.35);
-}
-
-.custom-date-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(12, 9, 6, 0.85);
-  padding: 0.4rem 0.75rem;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 130, 25, 0.25);
-}
-
-.date-input-wrap {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
   font-size: 0.78rem;
-  color: #9e8b7e;
-}
-
-.panel-secondary-actions {
-  margin-left: auto;
-}
-
-.btn-subtle {
-  border-color: rgba(255, 130, 25, 0.2);
-  color: #ffaa44;
-}
-
-.btn-subtle:hover {
-  background: rgba(255, 120, 20, 0.12);
-  border-color: rgba(255, 150, 40, 0.4);
-}
-
-.search-and-view-row {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  flex-wrap: wrap;
-}
-
-.search-input-wrap {
-  flex: 1;
-  min-width: 240px;
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.85rem;
-  width: 16px;
-  height: 16px;
-  color: #9e8b7e;
-  pointer-events: none;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.55rem 2rem 0.55rem 2.4rem;
-  border: 1px solid rgba(255, 130, 25, 0.2);
-  border-radius: var(--radius-md);
-  background: rgba(10, 7, 5, 0.7);
-  color: #fbfaf8;
-  font-size: 0.875rem;
-  font-family: inherit;
-  transition: all var(--transition-fast);
-  outline: none;
-}
-
-.search-input:focus {
-  background: rgba(15, 11, 8, 0.95);
-  border-color: #ff7a18;
-  box-shadow: 0 0 0 3px rgba(255, 122, 24, 0.2), 0 0 16px rgba(255, 110, 0, 0.2);
-}
-
-.btn-clear {
-  position: absolute;
-  right: 0.75rem;
-  background: transparent;
-  border: none;
-  color: #9e8b7e;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.select-wrap {
-  min-width: 160px;
-}
-
-.form-select-sm, .form-input-sm {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid rgba(255, 130, 25, 0.2);
-  border-radius: var(--radius-md);
-  background: rgba(14, 10, 7, 0.85);
-  color: #fbfaf8;
-  font-size: 0.8125rem;
-  font-family: inherit;
-  outline: none;
+  font-weight: 600;
+  background: rgba(26, 32, 60, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  color: var(--text-muted);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
-.form-select-sm:focus, .form-input-sm:focus {
-  border-color: #ff7a18;
-  box-shadow: 0 0 0 3px rgba(255, 122, 24, 0.2);
-}
-
-.view-switcher {
-  display: flex;
-  align-items: center;
-  background: rgba(10, 7, 5, 0.65);
-  padding: 0.25rem;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 130, 25, 0.16);
-  gap: 0.2rem;
-}
-
-.view-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-sm);
-  border: none;
-  background: transparent;
-  color: #9e8b7e;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.view-btn:hover {
+.task-tab-pill:hover {
   color: #ffffff;
-  background: rgba(255, 120, 20, 0.1);
+  background: rgba(139, 92, 246, 0.2);
 }
 
-.view-btn.active {
+.task-tab-pill.active {
   background: var(--brand-gradient);
   color: #ffffff;
-  box-shadow: 0 0 16px rgba(255, 110, 0, 0.4);
+  border-color: transparent;
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.35);
 }
 
-/* --- Worksheet Table View --- */
+/* Task List Items */
+.tasks-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.task-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  background: rgba(26, 32, 60, 0.5);
+  border: 1px solid rgba(139, 92, 246, 0.12);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.task-item-row:hover {
+  background: rgba(36, 44, 82, 0.75);
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+.task-item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.task-check-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(139, 92, 246, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.task-check-circle.completed {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: #ffffff;
+}
+
+.task-item-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-item-title.completed {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.task-item-right {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.task-item-date {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.task-star-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.task-star-btn.starred {
+  color: #f59e0b;
+}
+
+/* Focus Timer Widget (Pomodoro) */
+.focus-timer-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.timer-ring-container {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-ring-svg {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.timer-ring-bg {
+  fill: none;
+  stroke: rgba(139, 92, 246, 0.15);
+  stroke-width: 8;
+}
+
+.timer-ring-progress {
+  fill: none;
+  stroke: url(#timerGradient);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.timer-digits-wrap {
+  position: absolute;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timer-digits {
+  font-family: var(--font-brand);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.timer-status-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.timer-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.btn-timer-play {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+  transition: transform var(--transition-fast);
+}
+
+.btn-timer-play:hover {
+  transform: scale(1.08);
+}
+
+.btn-timer-reset {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(26, 32, 60, 0.7);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-timer-reset:hover {
+  color: #ffffff;
+  background: rgba(36, 44, 82, 0.9);
+}
+
+/* --- Row 3: Deadlines (6 cols) & Quick Notes (6 cols) --- */
+.col-deadlines {
+  grid-column: span 6;
+}
+
+.col-notes {
+  grid-column: span 6;
+}
+
+/* Deadlines List */
+.deadlines-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.deadline-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  background: rgba(26, 32, 60, 0.5);
+  border: 1px solid rgba(139, 92, 246, 0.12);
+  border-radius: var(--radius-md);
+}
+
+.deadline-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.deadline-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.badge-purple { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.35); }
+.badge-blue { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.35); }
+.badge-amber { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.35); }
+
+.deadline-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.deadline-due {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Quick Notes Scratchpad */
+.quick-notes-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scratchpad-textarea {
+  width: 100%;
+  min-height: 100px;
+  background: rgba(12, 15, 30, 0.7);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.85rem;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  resize: vertical;
+  outline: none;
+}
+
+.scratchpad-textarea:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+/* ==========================================================================
+   Full Worksheet Table, Cards & Calendar Views
+   ========================================================================== */
 .table-responsive-card {
-  background: rgba(18, 13, 9, 0.78);
+  background: rgba(18, 22, 42, 0.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 130, 25, 0.18);
+  border: 1px solid rgba(139, 92, 246, 0.16);
   border-radius: var(--radius-lg);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 200, 120, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
   overflow: hidden;
 }
 
@@ -1055,86 +1163,55 @@ code {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
 }
 
 .worksheet-table thead {
-  background: rgba(26, 18, 13, 0.9);
-  border-bottom: 1px solid rgba(255, 130, 25, 0.2);
+  background: rgba(26, 32, 60, 0.85);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.18);
 }
 
 .worksheet-table th {
-  padding: 0.95rem 1.15rem;
-  font-size: 0.78rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #9e8b7e;
-  font-family: var(--font-brand);
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
   user-select: none;
 }
 
-.worksheet-table th[data-sort] {
-  cursor: pointer;
-}
-
-.worksheet-table th[data-sort]:hover {
-  color: #ff9e42;
-}
-
-.th-content {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.sort-icon {
-  width: 12px;
-  height: 12px;
-  opacity: 0.6;
-}
-
 .worksheet-table tbody tr {
-  border-bottom: 1px solid rgba(255, 130, 25, 0.08);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.08);
   transition: all var(--transition-fast);
 }
 
-.worksheet-table tbody tr:last-child {
-  border-bottom: none;
-}
-
 .worksheet-table tbody tr:hover {
-  background: rgba(255, 120, 20, 0.05);
+  background: rgba(139, 92, 246, 0.06);
 }
 
 .worksheet-table td {
-  padding: 1.05rem 1.15rem;
+  padding: 0.95rem 1rem;
   vertical-align: middle;
-  color: #fbfaf8;
-}
-
-.col-date strong {
-  font-size: 0.85rem;
-  color: #fbfaf8;
-  display: block;
+  color: #ffffff;
 }
 
 .project-pill {
   display: inline-flex;
   align-items: center;
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 600;
   padding: 0.2rem 0.55rem;
-  background: rgba(255, 120, 20, 0.1);
-  color: #ffaa44;
-  border: 1px solid rgba(255, 140, 30, 0.25);
+  background: rgba(139, 92, 246, 0.12);
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.25);
   border-radius: var(--radius-sm);
 }
 
 .work-text {
-  font-size: 0.875rem;
-  color: #fbfaf8;
-  line-height: 1.5;
+  font-size: 0.85rem;
+  color: #ffffff;
+  line-height: 1.45;
   max-width: 480px;
 }
 
@@ -1142,15 +1219,15 @@ code {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.75rem;
-  color: #9e8b7e;
-  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
 }
 
 .inline-status-select {
-  padding: 0.35rem 0.75rem;
+  padding: 0.3rem 0.7rem;
   border-radius: var(--radius-full);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
   border: 1px solid transparent;
   cursor: pointer;
@@ -1166,9 +1243,9 @@ code {
 }
 
 .inline-status-select.status-in-progress {
-  background: rgba(255, 122, 24, 0.18);
-  border-color: rgba(255, 122, 24, 0.45);
-  color: #ff9e42;
+  background: rgba(139, 92, 246, 0.16);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #c4b5fd;
 }
 
 .inline-status-select.status-pending {
@@ -1184,65 +1261,45 @@ code {
 }
 
 .inline-status-select.status-under-review {
-  background: rgba(168, 85, 247, 0.16);
-  border-color: rgba(168, 85, 247, 0.4);
-  color: #c084fc;
-}
-
-.inline-status-select.status-leave {
   background: rgba(56, 189, 248, 0.16);
   border-color: rgba(56, 189, 248, 0.4);
   color: #38bdf8;
 }
 
+.inline-status-select.status-leave {
+  background: rgba(217, 70, 239, 0.16);
+  border-color: rgba(217, 70, 239, 0.4);
+  color: #e879f9;
+}
+
 .priority-pill {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.55rem;
+  padding: 0.15rem 0.5rem;
   border-radius: var(--radius-sm);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
-.priority-urgent {
-  background: rgba(244, 63, 94, 0.18);
-  border: 1px solid rgba(244, 63, 94, 0.4);
-  color: #fb7185;
-}
-
-.priority-high {
-  background: rgba(255, 106, 0, 0.18);
-  border: 1px solid rgba(255, 120, 20, 0.4);
-  color: #ff9e42;
-}
-
-.priority-medium {
-  background: rgba(245, 158, 11, 0.16);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #fbbf24;
-}
-
-.priority-low {
-  background: rgba(16, 185, 129, 0.14);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #34d399;
-}
+.priority-urgent { background: rgba(244, 63, 94, 0.18); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.35); }
+.priority-high { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+.priority-medium { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.3); }
+.priority-low { background: rgba(16, 185, 129, 0.14); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
 
 .row-actions {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 
 .btn-action {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  background: rgba(22, 16, 11, 0.6);
-  border: 1px solid rgba(255, 130, 25, 0.18);
-  color: #d1c3b7;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(26, 32, 60, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1251,273 +1308,47 @@ code {
 }
 
 .btn-action:hover {
-  background: rgba(38, 26, 17, 0.9);
+  background: rgba(36, 44, 82, 0.9);
   color: #ffffff;
-  border-color: rgba(255, 150, 40, 0.45);
-  box-shadow: 0 0 12px rgba(255, 110, 0, 0.25);
+  border-color: rgba(168, 85, 247, 0.45);
 }
 
 .btn-action.delete:hover {
   background: rgba(244, 63, 94, 0.2);
-  border-color: rgba(244, 63, 94, 0.5);
+  border-color: rgba(244, 63, 94, 0.45);
   color: #fb7185;
 }
 
-/* Empty State Styling */
-.empty-state {
-  text-align: center;
-  padding: 3.5rem 1.5rem;
-}
-
-.empty-state-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 1.25rem;
-  border-radius: 50%;
-  background: rgba(255, 120, 20, 0.1);
-  border: 1px solid rgba(255, 140, 30, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ff9e42;
-  box-shadow: 0 0 24px rgba(255, 110, 0, 0.2);
-}
-
-.empty-state-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #fbfaf8;
-  margin-bottom: 0.4rem;
-}
-
-.empty-state-desc {
-  font-size: 0.875rem;
-  color: #9e8b7e;
-  max-width: 420px;
-  margin: 0 auto 1.5rem;
-}
-
-/* --- Mobile Cards View --- */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.25rem;
-}
-
-.work-card {
-  background: rgba(18, 13, 9, 0.78);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 130, 25, 0.18);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-  transition: all var(--transition-fast);
-}
-
-.work-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 150, 40, 0.4);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75), 0 0 25px rgba(255, 100, 0, 0.15);
-}
-
-.card-top-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.card-date {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #d1c3b7;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.card-date i { color: #ff9e42; }
-
-.card-work-desc {
-  font-size: 0.875rem;
-  color: #fbfaf8;
-  line-height: 1.5;
-}
-
-.card-footer-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 130, 25, 0.12);
-}
-
-.card-hours-chip {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #ffaa44;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-/* --- Interactive Calendar View --- */
-.calendar-card {
-  background: rgba(18, 13, 9, 0.78);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 130, 25, 0.18);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
-}
-
-.calendar-header-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.25rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.calendar-nav-left {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-
-.calendar-month-title {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #fbfaf8;
-  min-width: 170px;
-}
-
-.calendar-month-stats {
-  display: flex;
-  align-items: center;
-  background: rgba(10, 7, 5, 0.65);
-  padding: 0.4rem 0.85rem;
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 130, 25, 0.16);
-  gap: 1.15rem;
-}
-
-.cstat-item {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.8125rem;
-}
-
-.cstat-val { font-weight: 700; }
-.cstat-lbl { color: #9e8b7e; }
-
-.calendar-weekdays-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.weekday-cell {
-  text-align: center;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #9e8b7e;
-  padding: 0.5rem 0;
-}
-
-.calendar-days-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
-}
-
-.cal-day-cell {
-  min-height: 90px;
-  background: rgba(14, 10, 7, 0.65);
-  border: 1px solid rgba(255, 130, 25, 0.12);
-  border-radius: var(--radius-md);
-  padding: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.cal-day-cell:hover {
-  background: rgba(255, 120, 20, 0.08);
-  border-color: rgba(255, 150, 40, 0.35);
-}
-
-.cal-day-cell.today {
-  border-color: #ff7a18;
-  box-shadow: 0 0 16px rgba(255, 110, 0, 0.3);
-}
-
-.cal-day-cell.today .cal-day-num {
-  color: #ff9e42;
-  font-weight: 800;
-}
-
-.cal-day-num {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #d1c3b7;
-}
-
-.cal-task-pill {
-  font-size: 0.68rem;
-  font-weight: 600;
-  padding: 0.15rem 0.4rem;
-  border-radius: 4px;
-  background: rgba(255, 120, 20, 0.15);
-  color: #ffaa44;
-  border: 1px solid rgba(255, 140, 30, 0.3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* --- Modals & Popups --- */
+/* ==========================================================================
+   Centered Modals (FIXED: Constrained card, No 100vw stretch)
+   ========================================================================== */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(5, 3, 2, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(4, 6, 12, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 1rem;
+  padding: 1.5rem;
   overflow-y: auto;
   animation: fadeIn 0.2s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 .modal-card {
   width: 100%;
-  max-width: 580px;
-  background: rgba(18, 13, 9, 0.94);
+  max-width: 600px;
+  margin: auto;
+  background: rgba(18, 22, 44, 0.96);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 140, 30, 0.28);
+  border: 1px solid rgba(139, 92, 246, 0.28);
   border-radius: var(--radius-xl);
-  padding: 1.75rem;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 45px rgba(255, 100, 0, 0.2);
-  color: #fbfaf8;
+  padding: 2rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(139, 92, 246, 0.18);
+  color: #ffffff;
   animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
@@ -1534,7 +1365,7 @@ code {
 }
 
 @keyframes modalPop {
-  from { opacity: 0; transform: scale(0.94) translateY(12px); }
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
@@ -1542,15 +1373,15 @@ code {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.35rem;
+  margin-bottom: 1.25rem;
   padding-bottom: 0.85rem;
-  border-bottom: 1px solid rgba(255, 130, 25, 0.15);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .modal-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #fbfaf8;
+  color: #ffffff;
 }
 
 .modal-body {
@@ -1563,34 +1394,40 @@ code {
   justify-content: flex-end;
   gap: 0.75rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 130, 25, 0.15);
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 /* Forms inside Modals */
 .form-group {
-  margin-bottom: 1.15rem;
+  margin-bottom: 1.1rem;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 .form-label {
   display: block;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #d1c3b7;
+  color: var(--text-secondary);
   margin-bottom: 0.4rem;
 }
 
 .form-label.required::after {
   content: ' *';
-  color: #ff6a00;
+  color: #8b5cf6;
 }
 
 .form-input, .form-textarea, .form-select {
   width: 100%;
   padding: 0.65rem 0.95rem;
-  background: rgba(10, 7, 5, 0.75);
-  border: 1px solid rgba(255, 130, 25, 0.22);
+  background: rgba(12, 15, 30, 0.8);
+  border: 1px solid rgba(139, 92, 246, 0.22);
   border-radius: var(--radius-md);
-  color: #fbfaf8;
+  color: #ffffff;
   font-size: 0.875rem;
   font-family: inherit;
   outline: none;
@@ -1598,9 +1435,9 @@ code {
 }
 
 .form-input:focus, .form-textarea:focus, .form-select:focus {
-  background: rgba(16, 11, 8, 0.95);
-  border-color: #ff7a18;
-  box-shadow: 0 0 0 3px rgba(255, 122, 24, 0.2), 0 0 16px rgba(255, 110, 0, 0.2);
+  background: rgba(16, 20, 40, 0.95);
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
 .form-textarea {
@@ -1608,6 +1445,45 @@ code {
   resize: vertical;
 }
 
+/* Autocomplete Suggestion Chips (FIXED: Dark Glass Pills, NO White Backgrounds) */
+.autocomplete-wrapper {
+  position: relative;
+}
+
+.autocomplete-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: rgba(16, 20, 42, 0.98);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 1050;
+  backdrop-filter: blur(20px);
+}
+
+.autocomplete-item {
+  padding: 0.55rem 0.85rem;
+  color: #cbd5e1;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.08);
+  transition: all var(--transition-fast);
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover, .autocomplete-item.active {
+  background: rgba(139, 92, 246, 0.25);
+  color: #ffffff;
+}
+
+/* Quick Date Chips */
 .date-quick-chips {
   display: flex;
   flex-wrap: wrap;
@@ -1620,55 +1496,44 @@ code {
   font-size: 0.72rem;
   font-weight: 600;
   border-radius: var(--radius-full);
-  background: rgba(255, 120, 20, 0.08);
-  border: 1px solid rgba(255, 140, 30, 0.25);
-  color: #ffaa44;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  color: #c4b5fd;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .chip-btn:hover {
-  background: rgba(255, 120, 20, 0.2);
-  border-color: #ff7a18;
+  background: rgba(139, 92, 246, 0.25);
+  border-color: #8b5cf6;
   color: #ffffff;
-  box-shadow: 0 0 10px rgba(255, 110, 0, 0.3);
 }
 
 /* ==========================================================================
-   Full-Screen Authentication Gatekeeper & Landing Screen
+   Full-Screen Authentication Gatekeeper
    ========================================================================== */
 .auth-portal-screen {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at 50% 15%, rgba(255, 106, 0, 0.28) 0%, rgba(20, 14, 10, 0.96) 60%, #080604 100%);
+  background: radial-gradient(circle at 50% 20%, rgba(139, 92, 246, 0.2) 0%, rgba(12, 15, 30, 0.96) 60%, #080a14 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
   padding: 1.5rem;
   overflow-y: auto;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.auth-portal-screen.hidden {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  display: none !important;
 }
 
 .auth-portal-card {
   width: 100%;
   max-width: 440px;
-  background: rgba(18, 13, 9, 0.88);
+  background: rgba(18, 22, 44, 0.92);
   backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 140, 30, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.28);
   border-radius: var(--radius-xl);
-  padding: 2.25rem 2.25rem 1.75rem;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 50px rgba(255, 100, 0, 0.25);
-  color: #fbfaf8;
-  animation: authCardPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 2.25rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+  color: #ffffff;
   position: relative;
   overflow: hidden;
 }
@@ -1683,72 +1548,44 @@ code {
   background: var(--brand-gradient);
 }
 
-@keyframes authCardPop {
-  from { opacity: 0; transform: scale(0.95) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
 .auth-portal-header {
   text-align: center;
   margin-bottom: 1.5rem;
 }
 
 .auth-brand-badge {
-  width: 58px;
-  height: 58px;
+  width: 54px;
+  height: 54px;
   margin: 0 auto 0.85rem;
-  border-radius: 1.15rem;
+  border-radius: 14px;
   background: var(--brand-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  box-shadow: 0 0 28px rgba(255, 110, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  border: 1px solid rgba(255, 200, 120, 0.4);
-}
-
-.brand-icon-lg {
-  width: 28px;
-  height: 28px;
+  box-shadow: 0 4px 18px rgba(139, 92, 246, 0.45);
 }
 
 .auth-portal-title {
-  font-family: var(--font-brand);
-  font-size: 1.85rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: #ffffff;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   margin-bottom: 0.25rem;
-  text-shadow: 0 0 20px rgba(255, 120, 20, 0.3);
 }
 
 .auth-portal-subtitle {
-  font-size: 0.875rem;
-  color: #9e8b7e;
-  margin-bottom: 0.85rem;
-}
-
-.auth-sync-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.3rem 0.85rem;
-  background: rgba(16, 185, 129, 0.14);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #34d399;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
 .auth-portal-tabs {
   display: flex;
-  background: rgba(10, 7, 5, 0.65);
+  background: rgba(12, 15, 30, 0.65);
   border-radius: var(--radius-md);
   padding: 0.3rem;
-  margin-bottom: 1.35rem;
-  border: 1px solid rgba(255, 130, 25, 0.16);
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(139, 92, 246, 0.16);
 }
 
 .auth-tab-btn {
@@ -1757,12 +1594,12 @@ code {
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  padding: 0.65rem 0.75rem;
+  padding: 0.6rem 0.75rem;
   font-size: 0.85rem;
   font-weight: 700;
   border: none;
   background: transparent;
-  color: #9e8b7e;
+  color: var(--text-muted);
   border-radius: calc(var(--radius-md) - 2px);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -1771,7 +1608,19 @@ code {
 .auth-tab-btn.active {
   background: var(--brand-gradient);
   color: #ffffff;
-  box-shadow: 0 0 18px rgba(255, 110, 0, 0.4);
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.35);
+}
+
+.auth-portal-card .form-input {
+  background: rgba(12, 15, 30, 0.75);
+  border: 1px solid rgba(139, 92, 246, 0.24);
+  color: #ffffff;
+  padding-left: 2.4rem;
+}
+
+.auth-portal-card .form-input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
 .input-with-icon {
@@ -1785,75 +1634,23 @@ code {
   left: 0.85rem;
   width: 16px;
   height: 16px;
-  color: #9e8b7e;
+  color: var(--text-muted);
   pointer-events: none;
-}
-
-.auth-portal-card .form-input {
-  background: rgba(10, 7, 5, 0.75);
-  border: 1px solid rgba(255, 130, 25, 0.24);
-  color: #ffffff;
-  padding-left: 2.4rem;
-}
-
-.auth-portal-card .form-input:focus {
-  border-color: #ff7a18;
-  box-shadow: 0 0 0 3px rgba(255, 122, 24, 0.25), 0 0 16px rgba(255, 110, 0, 0.25);
-  background: rgba(16, 11, 8, 0.95);
-}
-
-.auth-portal-card .form-label {
-  color: #d1c3b7;
 }
 
 .btn-block {
   width: 100%;
   justify-content: center;
-  padding: 0.8rem 1rem;
-  font-size: 0.925rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
   margin-top: 0.65rem;
-}
-
-.auth-features-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 130, 25, 0.12);
-  font-size: 0.72rem;
-  color: #9e8b7e;
-}
-
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.btn-toggle-pwd {
-  position: absolute;
-  right: 0.75rem;
-  background: none;
-  border: none;
-  color: #9e8b7e;
-  cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color var(--transition-fast);
-}
-
-.btn-toggle-pwd:hover {
-  color: #ffffff;
 }
 
 .auth-switch-link {
   text-align: center;
   margin-top: 1.25rem;
   font-size: 0.8125rem;
-  color: #9e8b7e;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1863,17 +1660,16 @@ code {
 .link-btn {
   background: none;
   border: none;
-  color: #ff9e42;
+  color: #a855f7;
   font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
   padding: 0;
-  transition: color var(--transition-fast);
 }
 
 .link-btn:hover {
-  color: #ffba70;
+  color: #c084fc;
 }
 
 .auth-alert-box {
@@ -1887,425 +1683,117 @@ code {
   background: rgba(244, 63, 94, 0.16);
   border: 1px solid rgba(244, 63, 94, 0.35);
   color: #fb7185;
-  animation: shakeAlert 0.3s ease;
-}
-
-.auth-alert-box.success {
-  background: rgba(16, 185, 129, 0.16);
-  border-color: rgba(16, 185, 129, 0.35);
-  color: #6ee7b7;
-}
-
-@keyframes shakeAlert {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
-}
-
-/* ==========================================================================
-   Admin Portal & Team Governance Styles
-   ========================================================================== */
-.modal-xl {
-  max-width: 1080px;
-  width: 95vw;
-}
-
-.admin-crown-badge {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
-  border: 1px solid rgba(254, 240, 138, 0.4);
-}
-
-.admin-header-btn {
-  background: rgba(245, 158, 11, 0.14);
-  border-color: rgba(245, 158, 11, 0.4);
-  color: #fbbf24;
-  font-weight: 600;
-  transition: all var(--transition-fast);
-}
-
-.admin-header-btn:hover {
-  background: rgba(245, 158, 11, 0.28);
-  border-color: #f59e0b;
-  color: #fef3c7;
-  box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
-}
-
-.admin-kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 1.15rem;
-  margin-bottom: 1.75rem;
-}
-
-.admin-kpi-card {
-  background: rgba(18, 13, 9, 0.78);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 130, 25, 0.18);
-  border-radius: var(--radius-lg);
-  padding: 1.15rem 1.35rem;
-  display: flex;
-  align-items: center;
-  gap: 1.15rem;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
-}
-
-.admin-kpi-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-.admin-kpi-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.admin-kpi-val {
-  font-size: 1.45rem;
-  font-weight: 800;
-  font-family: var(--font-brand);
-  color: #fbfaf8;
-  line-height: 1.2;
-}
-
-.admin-kpi-label {
-  font-size: 0.75rem;
-  color: #9e8b7e;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-}
-
-.admin-header-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 0.85rem;
-  border-bottom: 1px solid rgba(255, 130, 25, 0.15);
-  flex-wrap: wrap;
-  gap: 0.85rem;
-}
-
-.admin-users-table td,
-.admin-users-table th {
-  padding: 0.85rem 1rem;
-}
-
-.admin-inspector-card {
-  background: rgba(14, 10, 7, 0.65);
-  border: 1px solid rgba(255, 130, 25, 0.22);
-  border-radius: var(--radius-lg);
-  padding: 1.35rem;
-  animation: fadeIn 0.25s ease;
-}
-
-.admin-inspector-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 0.85rem;
-  border-bottom: 1px solid rgba(255, 130, 25, 0.15);
 }
 /* =========================================================
-   WorkPulse - Luxury Dark Ember Responsive & Mobile Styling
+   WorkPulse - Midnight Purple OS Workspace Responsive Styles
    ========================================================= */
 
-/* Default Mobile FAB and Bottom Nav (Desktop Hidden) */
-.mobile-fab {
-  display: none;
-}
-
-.mobile-bottom-nav {
-  display: none;
-}
-
-/* Tablet & Desktop Adjustments (>= 768px) */
-@media (min-width: 768px) {
-  .main-content {
-    padding-top: 1.75rem;
-    padding-bottom: 3.5rem;
-  }
-}
-
-/* Tablet Breakpoint (< 992px) */
-@media (max-width: 991px) {
-  .header-actions .btn-text {
-    display: none;
-  }
-  
-  .header-actions .btn {
-    padding: 0.5rem 0.75rem;
-  }
-
-  .export-options-grid {
-    grid-template-columns: 1fr;
-  }
+/* Tablet Breakpoint (< 1100px) */
+@media (max-width: 1100px) {
+  .col-calendar { grid-column: span 6; }
+  .col-schedule { grid-column: span 6; }
+  .col-metrics { grid-column: span 12; }
+  .col-tasks { grid-column: span 12; }
+  .col-timer { grid-column: span 12; }
+  .col-deadlines { grid-column: span 12; }
+  .col-notes { grid-column: span 12; }
 }
 
 /* Mobile Phone Breakpoint (< 768px) */
 @media (max-width: 767px) {
-  /* Container Padding */
-  .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  /* Header on Mobile */
-  .app-header {
-    height: auto;
-    padding: 0.85rem 0;
-  }
-
-  .header-inner {
-    height: auto;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .brand-logo {
-    width: 38px;
-    height: 38px;
-  }
-
-  .brand-title {
-    font-size: 1.15rem;
-  }
-
-  .brand-subtitle {
-    display: none;
-  }
-
-  .header-center-info {
-    order: 3;
-    width: 100%;
-    justify-content: space-between;
-    padding-top: 0.45rem;
-    border-top: 1px dashed rgba(255, 130, 25, 0.18);
-  }
-
-  .header-actions {
-    margin-left: auto;
-  }
-
-  .header-actions #btnNewWorksheetEntry,
-  .header-actions #btnOpenReport,
-  .header-actions #btnOpenImportExport,
-  .header-actions #btnOpenCloudModal {
-    display: none; /* Accessible via mobile bottom nav & FAB */
-  }
-
-  /* Metrics Grid on Mobile */
-  .metrics-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    margin-top: 1.25rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .metric-card {
-    padding: 0.95rem;
-    gap: 0.75rem;
-  }
-
-  .metric-icon-wrap {
-    width: 42px;
-    height: 42px;
-  }
-
-  .metric-value {
-    font-size: 1.45rem;
-  }
-
-  .metric-label {
-    font-size: 0.75rem;
-  }
-
-  /* Control Panel on Mobile */
-  .control-panel {
-    padding: 1rem;
-    gap: 0.75rem;
-  }
-
-  .filters-row {
+  .app-layout-wrapper {
     flex-direction: column;
-    align-items: stretch;
   }
 
-  .date-pills-group {
+  .sidebar-dock {
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
-  }
-
-  .panel-secondary-actions {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .panel-secondary-actions .btn {
-    width: 100%;
-  }
-
-  .search-and-view-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-input-wrap {
-    min-width: 100%;
-  }
-
-  .select-wrap {
-    width: 100%;
-  }
-
-  .view-switcher {
-    width: 100%;
-    justify-content: space-around;
-  }
-
-  .view-btn {
-    flex: 1;
-  }
-
-  .table-responsive-card {
-    border-radius: var(--radius-md);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .worksheet-table th, .worksheet-table td {
-    padding: 0.75rem 0.6rem;
-    font-size: 0.8125rem;
-  }
-
-  .col-work {
-    min-width: 200px;
-  }
-
-  /* Analytics Charts Grid on Mobile */
-  .analytics-charts-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .chart-card {
-    padding: 1.15rem;
-  }
-
-  /* Floating Action Button (FAB) */
-  .mobile-fab {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    bottom: calc(75px + env(safe-area-inset-bottom, 0px));
-    right: 1.25rem;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--brand-gradient);
-    color: #ffffff;
-    border: 1px solid rgba(255, 200, 120, 0.4);
-    box-shadow: 0 0 24px rgba(255, 110, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.6);
-    z-index: 90;
-    cursor: pointer;
-    transition: transform var(--transition-fast);
-  }
-
-  .mobile-fab:active {
-    transform: scale(0.92);
-  }
-
-  /* Mobile Bottom Navigation Bar */
-  .mobile-bottom-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+    height: auto;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 64px;
-    background: rgba(12, 9, 6, 0.94);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255, 130, 25, 0.18);
+    top: auto;
+    flex-direction: row;
+    padding: 0.5rem 1rem;
+    border-right: none;
+    border-top: 1px solid rgba(139, 92, 246, 0.2);
+    z-index: 100;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
-    z-index: 95;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  .mob-nav-item {
-    display: flex;
+  .dock-top-brand {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .dock-logo {
+    display: none;
+  }
+
+  .dock-menu {
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+  }
+
+  .dock-bottom {
+    display: none;
+  }
+
+  .workspace-main {
+    width: 100%;
+    padding: 1rem 1rem 5rem 1rem;
+  }
+
+  .greeting-header {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.2rem;
-    background: transparent;
-    border: none;
-    color: #9e8b7e;
-    font-size: 0.72rem;
-    font-weight: 600;
-    cursor: pointer;
-    flex: 1;
-    height: 100%;
-    transition: color var(--transition-fast);
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 
-  .mob-nav-item i {
-    width: 20px;
-    height: 20px;
+  .header-clock-wrap {
+    align-items: flex-start;
+    text-align: left;
   }
 
-  .mob-nav-item:hover, .mob-nav-item.active {
-    color: #ff9e42;
+  .live-digital-clock {
+    font-size: 1.75rem;
   }
 
-  /* Modal Full-Screen / Bottom Sheet on Mobile */
+  .workspace-quick-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .quick-bar-left, .quick-bar-right {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .search-input-wrap {
+    width: 100%;
+  }
+
+  /* Grid Columns */
+  .col-calendar, .col-schedule, .col-metrics, .col-tasks, .col-timer, .col-deadlines, .col-notes {
+    grid-column: span 12;
+  }
+
+  /* Modal responsiveness */
   .modal-card {
-    padding: 1.35rem;
-    border-radius: var(--radius-lg);
-    max-height: 90vh;
-    overflow-y: auto;
+    padding: 1.25rem;
+    margin: 1rem;
+  }
+
+  .form-row-2 {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 }
 </style>
 
   <script>
-    window.handleQuickLogin = function(email) {
-      try {
-        const auth = window.authManager;
-        if (auth) {
-          auth.login(email, 'password123');
-        } else {
-          localStorage.setItem('workpulse_current_user_id', email === 'mnkavin2006@gmail.com' ? 'user_admin_mnkavin' : 'user_8chili_kavin');
-          localStorage.setItem('workpulse_session_logged_in', 'true');
-        }
-        var p = document.getElementById('authPortal');
-        var a = document.getElementById('app');
-        if (p) p.classList.add('hidden');
-        if (a) a.classList.remove('hidden');
-        if (window.workPulseUpdateAuthGate) window.workPulseUpdateAuthGate();
-      } catch (e) {
-        console.error('Quick login error:', e);
-      }
-    };
-
     window.handlePortalSignIn = function(e) {
       if (e) e.preventDefault();
       try {
@@ -2335,7 +1823,7 @@ code {
 </head>
 <body>
   <!-- =========================================================================
-       Full-Screen Landing & Authentication Gatekeeper (Sign In / Create Account)
+       Full-Screen Authentication Gatekeeper (Sign In / Create Account)
        ========================================================================= -->
   <div id="authPortal" class="auth-portal-screen">
     <div class="auth-portal-card">
@@ -2346,10 +1834,6 @@ code {
         </div>
         <h1 class="auth-portal-title">WorkPulse</h1>
         <p class="auth-portal-subtitle">Office Daily Worksheet & Multi-User Tracker</p>
-        <div class="auth-sync-status">
-          <span class="status-dot online"></span>
-          <span>Google Sheets & Cloud Connected</span>
-        </div>
       </div>
 
       <!-- Auth Navigation Tabs -->
@@ -2364,13 +1848,13 @@ code {
         </button>
       </div>
 
-      <!-- Auth Alert Message Box (Hidden by default) -->
+      <!-- Auth Alert Message Box -->
       <div id="authPortalAlert" class="auth-alert-box hidden">
         <i data-lucide="alert-circle" class="icon-xs"></i>
         <span id="authPortalAlertText"></span>
       </div>
 
-      <!-- Tab 1: Sign In (Email & Password) -->
+      <!-- Tab 1: Sign In -->
       <div id="portalPaneSignIn" class="auth-tab-pane">
         <form id="portalSignInForm" class="portal-form" onsubmit="event.preventDefault(); window.handlePortalSignIn(event);">
           <div class="form-group">
@@ -2384,7 +1868,7 @@ code {
           <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <label for="portalSignInPassword" class="form-label required" style="margin-bottom: 0;">Password</label>
-              <button type="button" class="link-btn" id="btnOpenForgotPassword" style="font-size: 0.75rem; color: #60a5fa; cursor: pointer; text-decoration: none;">Forgot Password?</button>
+              <button type="button" class="link-btn" id="btnOpenForgotPassword" style="font-size: 0.75rem; cursor: pointer; text-decoration: none;">Forgot Password?</button>
             </div>
             <div class="input-with-icon" style="margin-top: 0.35rem;">
               <i data-lucide="lock" class="input-icon"></i>
@@ -2407,53 +1891,14 @@ code {
         </form>
       </div>
 
-      <!-- Tab 3: Forgot Password (Instant Password Reset) -->
-      <div id="portalPaneForgotPassword" class="auth-tab-pane hidden">
-        <form id="portalForgotForm" class="portal-form">
-          <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 1rem;">
-            Enter your account email and your new password to reset and sign in immediately.
-          </p>
-
-          <div class="form-group">
-            <label for="portalForgotEmail" class="form-label required">Account Email</label>
-            <div class="input-with-icon">
-              <i data-lucide="mail" class="input-icon"></i>
-              <input type="email" id="portalForgotEmail" class="form-input" placeholder="e.g. kavin@8chili.com or mnkavin2006@gmail.com" required autocomplete="email">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="portalForgotNewPassword" class="form-label required">New Password</label>
-            <div class="input-with-icon">
-              <i data-lucide="lock" class="input-icon"></i>
-              <input type="password" id="portalForgotNewPassword" class="form-input" placeholder="Enter new password" required autocomplete="new-password">
-              <button type="button" class="btn-toggle-pwd" data-target="portalForgotNewPassword" title="Toggle password visibility">
-                <i data-lucide="eye" class="icon-xs"></i>
-              </button>
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-primary btn-block btn-glow">
-            <i data-lucide="key-round"></i>
-            <span>Reset Password & Sign In</span>
-          </button>
-
-          <div class="auth-switch-link">
-            <button type="button" id="btnForgotBackToSignIn" class="link-btn" style="text-decoration: none;">
-              <i data-lucide="arrow-left" class="icon-xs"></i> Back to Sign In
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Tab 2: Create Account (Email & Password) -->
+      <!-- Tab 2: Sign Up -->
       <div id="portalPaneSignUp" class="auth-tab-pane hidden">
         <form id="portalSignUpForm" class="portal-form">
           <div class="form-group">
             <label for="portalSignUpName" class="form-label required">Full Name</label>
             <div class="input-with-icon">
               <i data-lucide="user" class="input-icon"></i>
-              <input type="text" id="portalSignUpName" class="form-input" placeholder="e.g. Kavin M, Rahul" required>
+              <input type="text" id="portalSignUpName" class="form-input" placeholder="e.g. Kavin" required autocomplete="name">
             </div>
           </div>
 
@@ -2484,18 +1929,6 @@ code {
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Avatar Color</label>
-            <div class="color-picker-row">
-              <label class="color-circle" style="background-color: #3b82f6;"><input type="radio" name="portalUserColor" value="#3b82f6" checked></label>
-              <label class="color-circle" style="background-color: #10b981;"><input type="radio" name="portalUserColor" value="#10b981"></label>
-              <label class="color-circle" style="background-color: #8b5cf6;"><input type="radio" name="portalUserColor" value="#8b5cf6"></label>
-              <label class="color-circle" style="background-color: #f59e0b;"><input type="radio" name="portalUserColor" value="#f59e0b"></label>
-              <label class="color-circle" style="background-color: #ec4899;"><input type="radio" name="portalUserColor" value="#ec4899"></label>
-              <label class="color-circle" style="background-color: #06b6d4;"><input type="radio" name="portalUserColor" value="#06b6d4"></label>
-            </div>
-          </div>
-
           <button type="submit" class="btn btn-primary btn-block btn-glow">
             <i data-lucide="user-plus"></i>
             <span>Create Account & Sign In</span>
@@ -2508,528 +1941,499 @@ code {
         </form>
       </div>
 
-      <!-- Features Footer -->
-      <div class="auth-features-footer">
-        <div class="feature-item"><i data-lucide="shield-check" class="icon-xs text-emerald"></i> Separate Workspaces</div>
-        <div class="feature-item"><i data-lucide="calendar" class="icon-xs text-blue"></i> Interactive Calendar</div>
-        <div class="feature-item"><i data-lucide="smartphone" class="icon-xs text-purple"></i> Phone & PC Sync</div>
+      <!-- Tab 3: Forgot Password -->
+      <div id="portalPaneForgotPassword" class="auth-tab-pane hidden">
+        <form id="portalForgotForm" class="portal-form">
+          <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Enter your account email and your new password to reset and sign in immediately.
+          </p>
+
+          <div class="form-group">
+            <label for="portalForgotEmail" class="form-label required">Account Email</label>
+            <div class="input-with-icon">
+              <i data-lucide="mail" class="input-icon"></i>
+              <input type="email" id="portalForgotEmail" class="form-input" placeholder="e.g. kavin@8chili.com" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="portalForgotNewPassword" class="form-label required">New Password</label>
+            <div class="input-with-icon">
+              <i data-lucide="lock" class="input-icon"></i>
+              <input type="password" id="portalForgotNewPassword" class="form-input" placeholder="Enter new password" required autocomplete="new-password">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-glow">
+            <i data-lucide="key"></i>
+            <span>Reset Password & Sign In</span>
+          </button>
+
+          <div class="auth-switch-link">
+            <button type="button" id="btnForgotBackToSignIn" class="link-btn">&#8592; Back to Sign In</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 
-  <div id="app" class="app-container">
+  <!-- =========================================================================
+       Main Application UI (Midnight Purple OS Workspace)
+       ========================================================================= -->
+  <div id="app" class="app-layout-wrapper">
     
-    <!-- Top Navigation Header -->
-    <header class="app-header">
-      <div class="header-inner container">
-        <!-- Logo & Branding -->
-        <div class="brand-section">
-          <div class="brand-logo">
-            <i data-lucide="briefcase" class="brand-icon"></i>
-          </div>
-          <div class="brand-text">
-            <div class="brand-title-row">
-              <h1 class="brand-title">WorkPulse</h1>
-              <span class="badge-tag">Office Daily</span>
-            </div>
-            <p class="brand-subtitle">Daily Worksheet & Cloud Status Manager</p>
-          </div>
+    <!-- Left Sidebar Dock -->
+    <aside class="sidebar-dock">
+      <div class="dock-top-brand">
+        <div class="dock-logo" title="WorkPulse Workspace">
+          <i data-lucide="sparkles" class="icon-md"></i>
         </div>
-
-        <!-- Cloud Sync & Status Bar -->
-        <div class="header-center-info">
-          <button id="btnCloudStatus" class="cloud-status-pill connected" title="Google Sheets Cloud Connected">
-            <span class="status-dot"></span>
-            <span id="cloudStatusText" class="status-label">Google Sheets Connected</span>
-            <i data-lucide="cloud" class="icon-sm"></i>
+        
+        <nav class="dock-menu">
+          <button class="dock-item active" data-view="dashboard" title="Dashboard / Hub" onclick="window.workPulseApp && window.workPulseApp.switchView('dashboard')">
+            <i data-lucide="layout-grid" class="icon-md"></i>
           </button>
-          <button id="btnSyncNow" class="btn-icon btn-icon-sm" title="Sync with Cloud Online Now" aria-label="Sync Now">
-            <i data-lucide="refresh-cw" id="syncIcon" class="icon-xs"></i>
+          <button class="dock-item" data-view="table" title="Worksheet Table" onclick="window.workPulseApp && window.workPulseApp.switchView('table')">
+            <i data-lucide="table" class="icon-md"></i>
           </button>
-          <div class="current-date-pill" id="currentDateDisplay">
-            <i data-lucide="calendar" class="icon-sm"></i>
-            <span id="headerTodayText">Today, Aug 15</span>
-          </div>
-        </div>
-
-        <!-- Action Tools -->
-        <div class="header-actions">
-          <!-- User Profile Chip & Switcher -->
-          <div class="user-profile-wrapper">
-            <button id="btnUserProfile" class="user-profile-btn" title="Click to switch account or add friend profile">
-              <span class="user-avatar-badge" id="headerUserAvatar" style="background-color: #3b82f6;">K</span>
-              <span class="user-name-label" id="headerUserName">Kavin</span>
-              <i data-lucide="chevron-down" class="icon-xs"></i>
-            </button>
-            <div class="user-dropdown-menu hidden" id="userDropdownMenu">
-              <div class="user-dropdown-header">
-                <div class="user-avatar-large" id="dropdownUserAvatar" style="background-color: #3b82f6;">K</div>
-                <div>
-                  <div class="dropdown-user-name" id="dropdownUserName">Kavin</div>
-                  <div class="dropdown-user-role" id="dropdownUserRole">Lead Developer</div>
-                </div>
-              </div>
-              <div class="dropdown-divider"></div>
-              <a href="admin.html" class="dropdown-item hidden" id="btnDropdownAdmin" style="color: #fbbf24; text-decoration: none; display: none !important;">
-                <i data-lucide="shield-check" class="icon-sm text-amber"></i>
-                <span>👑 Admin Portal</span>
-              </a>
-              <button class="dropdown-item" id="btnDropdownSwitchUser">
-                <i data-lucide="users" class="icon-sm"></i>
-                <span>Switch User Account</span>
-              </button>
-              <button class="dropdown-item" id="btnDropdownAddUser">
-                <i data-lucide="user-plus" class="icon-sm"></i>
-                <span>Add Friend / New Profile</span>
-              </button>
-              <div class="dropdown-divider"></div>
-              <button class="dropdown-item" id="btnDropdownLogout" style="color: #ef4444;">
-                <i data-lucide="log-out" class="icon-sm"></i>
-                <span>Log Out</span>
-              </button>
-            </div>
-          </div>
-
-          <a href="admin.html" id="btnOpenAdminPanel" class="btn btn-outline btn-sm admin-header-btn hidden" title="Team Admin & User Management" style="text-decoration: none; display: none !important;">
-            <i data-lucide="shield-check" class="text-amber"></i>
-            <span class="btn-text">Admin Panel</span>
-          </a>
-
-          <button id="btnOpenReport" class="btn btn-outline btn-sm" title="Generate formatted daily report for WhatsApp/Slack" onclick="window.workPulseApp && window.workPulseApp.openReport()">
-            <i data-lucide="file-text"></i>
-            <span class="btn-text">Daily Report</span>
+          <button class="dock-item" data-view="calendar" title="Monthly Calendar" onclick="window.workPulseApp && window.workPulseApp.switchView('calendar')">
+            <i data-lucide="calendar" class="icon-md"></i>
           </button>
-          
-          <button id="btnOpenImportExport" class="btn btn-outline btn-sm" title="Import / Export Excel and CSV data" onclick="window.workPulseApp && window.workPulseApp.openImportExport()">
-            <i data-lucide="arrow-up-down"></i>
-            <span class="btn-text">Import / Export</span>
+          <button class="dock-item" data-view="analytics" title="Analytics & Trends" onclick="window.workPulseApp && window.workPulseApp.switchView('analytics')">
+            <i data-lucide="bar-chart-2" class="icon-md"></i>
           </button>
-
-          <button id="btnOpenCloudModal" class="btn btn-outline btn-sm cloud-btn" title="Cloud Database Settings" onclick="window.workPulseApp && window.workPulseApp.openCloud()">
-            <i data-lucide="database"></i>
-            <span class="btn-text">Cloud Sync</span>
+          <button class="dock-item" data-view="cards" title="Task Cards Grid" onclick="window.workPulseApp && window.workPulseApp.switchView('cards')">
+            <i data-lucide="check-square" class="icon-md"></i>
           </button>
-
-          <button id="btnToggleTheme" class="btn-icon" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
-            <i data-lucide="moon" id="themeIcon"></i>
-          </button>
-
-          <button id="btnNewWorksheetEntry" class="btn btn-primary btn-sm btn-glow" onclick="window.workPulseApp && window.workPulseApp.openWorkModal()">
-            <i data-lucide="plus-circle"></i>
-            <span>Log Work</span>
-          </button>
-        </div>
+        </nav>
       </div>
-    </header>
 
-    <!-- Main Content Area -->
-    <main class="main-content container">
+      <div class="dock-bottom">
+        <button class="dock-item" id="btnDockReport" title="Daily Status Report" onclick="window.workPulseApp && window.workPulseApp.openReport()">
+          <i data-lucide="file-text" class="icon-md"></i>
+        </button>
+        <button class="dock-item" id="btnDockCloud" title="Cloud Database Sync" onclick="window.workPulseApp && window.workPulseApp.openCloud()">
+          <i data-lucide="database" class="icon-md"></i>
+        </button>
+        <a href="admin.html" class="dock-item hidden" id="btnDockAdmin" title="Admin Portal" style="display: none !important; color: #fbbf24;">
+          <i data-lucide="shield-check" class="icon-md"></i>
+        </a>
+        <button class="dock-item" id="btnDockToggleTheme" title="Toggle Night Mode">
+          <i data-lucide="moon" id="themeIcon" class="icon-md"></i>
+        </button>
+        <button class="dock-item" id="btnDockLogout" title="Sign Out" onclick="window.authManager && window.authManager.logout(); location.reload();" style="color: #f87171;">
+          <i data-lucide="log-out" class="icon-md"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <main class="workspace-main">
       
-      <!-- Summary Metrics Bar -->
-      <section class="metrics-grid">
-        <div class="metric-card metric-total">
-          <div class="metric-icon-wrap bg-blue-light">
-            <i data-lucide="list-todo" class="text-blue"></i>
-          </div>
-          <div class="metric-details">
-            <span class="metric-label">Total Tasks</span>
-            <div class="metric-value-row">
-              <span class="metric-value" id="metricTotalTasks">0</span>
-              <span class="metric-sub" id="metricFilterContext">Filtered</span>
-            </div>
-          </div>
+      <!-- Top Greeting Header & Digital Clock -->
+      <header class="greeting-header">
+        <div class="greeting-left">
+          <h1 class="greeting-title">
+            <span id="greetingTimeText">Good Morning</span>, <span class="user-highlight" id="greetingUserName">Kavin</span> ðŸ‘‹
+          </h1>
+          <p class="greeting-subtitle">Focus &bull; Plan &bull; Execute &bull; Succeed</p>
         </div>
 
-        <div class="metric-card metric-completed">
-          <div class="metric-icon-wrap bg-emerald-light">
-            <i data-lucide="check-circle-2" class="text-emerald"></i>
+        <div class="header-clock-wrap">
+          <div class="live-digital-clock" id="liveDigitalClock">
+            07:45 <span class="ampm">PM</span>
           </div>
-          <div class="metric-details">
-            <span class="metric-label">Completed</span>
-            <div class="metric-value-row">
-              <span class="metric-value" id="metricCompletedTasks">0</span>
-              <span class="metric-badge bg-emerald-badge" id="metricCompletionRate">0%</span>
-            </div>
+          <div class="live-date-str" id="liveDateDisplay">
+            Wednesday, Aug 26, 2026
           </div>
         </div>
+      </header>
 
-        <div class="metric-card metric-progress">
-          <div class="metric-icon-wrap bg-sky-light">
-            <i data-lucide="clock" class="text-sky"></i>
-          </div>
-          <div class="metric-details">
-            <span class="metric-label">In Progress / Pending</span>
-            <div class="metric-value-row">
-              <span class="metric-value" id="metricInProgressTasks">0</span>
-              <span class="metric-sub" id="metricPendingSub">0 pending</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="metric-card metric-hours">
-          <div class="metric-icon-wrap bg-amber-light">
-            <i data-lucide="timer" class="text-amber"></i>
-          </div>
-          <div class="metric-details">
-            <span class="metric-label">Hours Logged</span>
-            <div class="metric-value-row">
-              <span class="metric-value" id="metricTotalHours">0.0</span>
-              <span class="metric-sub">hrs</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Smart Filter & Control Bar -->
-      <section class="control-panel">
-        <div class="filters-row">
-          
-          <!-- User Workspace Scope Selector -->
-          <div class="date-pills-group" id="userScopePills">
-            <button class="filter-pill active" data-user-scope="me" id="pillScopeMe" onclick="window.workPulseApp && window.workPulseApp.setUserScope('me')">
+      <!-- Workspace Quick Filter & Control Bar -->
+      <section class="workspace-quick-bar">
+        <div class="quick-bar-left">
+          <!-- User Scope Toggle -->
+          <div class="date-pills-group" style="margin: 0;">
+            <button id="btnUserScopeSelf" class="filter-pill active" title="View my own entries" onclick="window.workPulseApp && window.workPulseApp.setUserScope('self')">
               <i data-lucide="user" class="icon-xs"></i>
-              <span id="labelMyWorksheet">My Worksheet</span>
+              <span id="labelUserScopeSelf">Kavin's Worksheet</span>
             </button>
-            <button class="filter-pill" data-user-scope="all" id="pillScopeAll" onclick="window.workPulseApp && window.workPulseApp.setUserScope('all')">
+            <button id="btnUserScopeAll" class="filter-pill" title="View entries across all team members" onclick="window.workPulseApp && window.workPulseApp.setUserScope('all')">
               <i data-lucide="users" class="icon-xs"></i>
               <span>All Friends / Team</span>
             </button>
           </div>
 
-          <!-- Date Filter Pills -->
-          <div class="date-pills-group" id="dateFilterPills">
-            <button class="filter-pill" data-date-filter="today" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('today')">Today</button>
-            <button class="filter-pill" data-date-filter="yesterday" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('yesterday')">Yesterday</button>
-            <button class="filter-pill" data-date-filter="this-week" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('this-week')">This Week</button>
-            <button class="filter-pill active" data-date-filter="this-month" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('this-month')">This Month</button>
-            <button class="filter-pill" data-date-filter="all" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('all')">All Dates</button>
-            <button class="filter-pill" data-date-filter="custom" id="btnCustomDatePill" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('custom')">
-              <i data-lucide="calendar" class="icon-xs"></i>
-              <span>Custom Date</span>
-            </button>
-          </div>
-
-          <!-- Custom Date Range Picker (Hidden by default) -->
-          <div class="custom-date-container hidden" id="customDateContainer">
-            <div class="date-input-wrap">
-              <label for="filterStartDate">From</label>
-              <input type="date" id="filterStartDate" class="form-input-sm">
-            </div>
-            <div class="date-input-wrap">
-              <label for="filterEndDate">To</label>
-              <input type="date" id="filterEndDate" class="form-input-sm">
-            </div>
-            <button id="btnApplyCustomDate" class="btn btn-primary btn-xs">Apply</button>
-            <button id="btnCloseCustomDate" class="btn btn-ghost btn-xs"><i data-lucide="x"></i></button>
-          </div>
-
-          <!-- Quick Actions & Carry Forward -->
-          <div class="panel-secondary-actions">
-            <button id="btnCarryForward" class="btn btn-outline btn-sm btn-subtle" title="Bring unfinished tasks from yesterday into today's worksheet" onclick="window.workPulseApp && window.workPulseApp.carryForward()">
-              <i data-lucide="corner-down-right"></i>
-              <span class="btn-text">Carry Forward Pending</span>
-            </button>
+          <!-- Date Quick Filter Pills -->
+          <div class="date-pills-group" id="dateFilterGroup" style="margin: 0;">
+            <button class="filter-pill active" data-range="today" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('today')">Today</button>
+            <button class="filter-pill" data-range="yesterday" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('yesterday')">Yesterday</button>
+            <button class="filter-pill" data-range="thisWeek" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisWeek')">This Week</button>
+            <button class="filter-pill" data-range="thisMonth" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">This Month</button>
+            <button class="filter-pill" data-range="all" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('all')">All Dates</button>
           </div>
         </div>
 
-        <div class="search-and-view-row">
+        <div class="quick-bar-right">
           <!-- Search input -->
-          <div class="search-input-wrap">
+          <div class="search-input-wrap" style="min-width: 200px;">
             <i data-lucide="search" class="search-icon"></i>
-            <input type="search" id="searchInput" class="search-input" placeholder="Search project name, tasks, or remarks..." autocomplete="off" autocorrect="off" spellcheck="false" name="app_search_query">
-            <button id="btnClearSearch" class="btn-clear hidden" aria-label="Clear search">
-              <i data-lucide="x" class="icon-xs"></i>
-            </button>
+            <input type="search" id="searchInput" class="search-input" placeholder="Search tasks, projects..." autocomplete="off">
           </div>
 
-          <!-- Project Filter Dropdown -->
-          <div class="select-wrap">
-            <select id="filterProject" class="form-select-sm">
-              <option value="all">All Projects</option>
-            </select>
-          </div>
-
-          <!-- Status Filter Dropdown -->
-          <div class="select-wrap">
-            <select id="filterStatus" class="form-select-sm">
-              <option value="all">All Statuses</option>
-              <option value="Completed">&#x2705; Completed</option>
-              <option value="In Progress">&#x1F504; In Progress</option>
-              <option value="Pending">&#x23F3; Pending</option>
-              <option value="Blocked">&#x1F6D1; Blocked</option>
-              <option value="Under Review">&#x1F50D; Under Review</option>
-              <option value="Leave">&#x1F3D6;&#xFE0F; Leave / Off</option>
-            </select>
-          </div>
-
-          <!-- View Mode Switcher -->
-          <div class="view-switcher" role="tablist">
-            <button class="view-btn active" data-view="table" title="Table View" aria-label="Table View" onclick="window.workPulseApp && window.workPulseApp.switchView('table')">
-              <i data-lucide="table"></i>
-            </button>
-            <button class="view-btn" data-view="cards" title="Mobile / Card View" aria-label="Card View" onclick="window.workPulseApp && window.workPulseApp.switchView('cards')">
-              <i data-lucide="layout-grid"></i>
-            </button>
-            <button class="view-btn" data-view="calendar" title="Calendar View" aria-label="Calendar View" onclick="window.workPulseApp && window.workPulseApp.switchView('calendar')">
-              <i data-lucide="calendar"></i>
-            </button>
-            <button class="view-btn" data-view="analytics" title="Analytics & Charts" aria-label="Analytics View" onclick="window.workPulseApp && window.workPulseApp.switchView('analytics')">
-              <i data-lucide="bar-chart-3"></i>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Views Container -->
-      <section class="content-view-area">
-        
-        <!-- 1. Table View (Desktop & Tablet Optimized) -->
-        <div id="tableViewContainer" class="view-panel active">
-          <div class="table-responsive-card">
-            <table class="worksheet-table" id="worksheetTable">
-              <thead>
-                <tr>
-                  <th class="col-date" data-sort="date">
-                    <div class="th-content">Date <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
-                  </th>
-                  <th class="col-project" data-sort="projectName">
-                    <div class="th-content">Project Name <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
-                  </th>
-                  <th class="col-work">Work Description & Notes</th>
-                  <th class="col-status" data-sort="status">
-                    <div class="th-content">Status <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
-                  </th>
-                  <th class="col-hours" data-sort="hours">
-                    <div class="th-content">Hours <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
-                  </th>
-                  <th class="col-priority">Priority</th>
-                  <th class="col-actions">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="worksheetTableBody">
-                <!-- Dynamically populated via JS -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- 2. Mobile Cards View (Phone Optimized) -->
-        <div id="cardsViewContainer" class="view-panel hidden">
-          <div class="cards-grid" id="worksheetCardsGrid">
-            <!-- Dynamically populated via JS -->
-          </div>
-        </div>
-
-        <!-- 3. Calendar View (Interactive Monthly View) -->
-        <div id="calendarViewContainer" class="view-panel hidden">
-          <div class="calendar-card">
-            <!-- Month Header & Controls -->
-            <div class="calendar-header-bar">
-              <div class="calendar-nav-left">
-                <button id="btnPrevMonth" class="btn btn-outline btn-sm btn-icon-sm" aria-label="Previous Month" title="Previous Month">
-                  <i data-lucide="chevron-left"></i>
-                </button>
-                <h2 id="calendarMonthTitle" class="calendar-month-title">August 2026</h2>
-                <button id="btnNextMonth" class="btn btn-outline btn-sm btn-icon-sm" aria-label="Next Month" title="Next Month">
-                  <i data-lucide="chevron-right"></i>
-                </button>
-                <button id="btnCalendarToday" class="btn btn-outline btn-xs">Today</button>
-              </div>
-
-              <!-- Month Summary Stats Strip -->
-              <div class="calendar-month-stats">
-                <div class="cstat-item">
-                  <span class="cstat-val text-blue" id="calStatWorkingDays">0</span>
-                  <span class="cstat-lbl">Work Days</span>
-                </div>
-                <div class="cstat-item">
-                  <span class="cstat-val text-emerald" id="calStatCompleted">0</span>
-                  <span class="cstat-lbl">Completed</span>
-                </div>
-                <div class="cstat-item">
-                  <span class="cstat-val text-amber" id="calStatHours">0.0h</span>
-                  <span class="cstat-lbl">Hours</span>
-                </div>
-                <div class="cstat-item">
-                  <span class="cstat-val text-muted" id="calStatLeave">0</span>
-                  <span class="cstat-lbl">Leaves</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Calendar Days Header (Mon-Sun) -->
-            <div class="calendar-weekdays-grid">
-              <div class="weekday-cell">Mon</div>
-              <div class="weekday-cell">Tue</div>
-              <div class="weekday-cell">Wed</div>
-              <div class="weekday-cell">Thu</div>
-              <div class="weekday-cell">Fri</div>
-              <div class="weekday-cell weekend">Sat</div>
-              <div class="weekday-cell weekend">Sun</div>
-            </div>
-
-            <!-- Calendar Days Grid (Populated dynamically) -->
-            <div class="calendar-days-grid" id="calendarDaysGrid">
-              <!-- Dynamically generated via UI renderer -->
-            </div>
-          </div>
-
-          <!-- Day Inspector Drawer / Details below calendar -->
-          <div id="calendarDayDetails" class="day-inspector-card hidden">
-            <div class="day-inspector-header">
-              <div class="day-inspector-title-wrap">
-                <i data-lucide="calendar-check" class="text-blue"></i>
-                <h3 id="inspectorDateTitle" class="inspector-date-title">Tasks for 06 Aug 2026</h3>
-              </div>
-              <div class="day-inspector-actions">
-                <button id="btnAddForSelectedDate" class="btn btn-primary btn-xs">
-                  <i data-lucide="plus"></i> Add Log For This Day
-                </button>
-                <button id="btnCloseDayInspector" class="btn-action" aria-label="Close details">
-                  <i data-lucide="x"></i>
-                </button>
-              </div>
-            </div>
-            <div id="inspectorTasksList" class="inspector-tasks-list"></div>
-          </div>
-        </div>
-
-        <!-- 4. Analytics View -->
-        <div id="analyticsViewContainer" class="view-panel hidden">
-          <div class="analytics-charts-grid">
-            <div class="chart-card">
-              <div class="chart-header">
-                <h3 class="chart-title">Status Breakdown</h3>
-                <span class="chart-subtitle">Distribution of tasks by status</span>
-              </div>
-              <div class="chart-body-donut">
-                <canvas id="statusDonutChart"></canvas>
-              </div>
-            </div>
-
-            <div class="chart-card">
-              <div class="chart-header">
-                <h3 class="chart-title">Hours by Project</h3>
-                <span class="chart-subtitle">Total time logged across active projects</span>
-              </div>
-              <div class="chart-body-bar">
-                <canvas id="projectHoursBarChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Empty State (When no tasks match) -->
-        <div id="emptyState" class="empty-state-card hidden">
-          <div class="empty-icon-wrap">
-            <i data-lucide="clipboard-list"></i>
-          </div>
-          <h3 class="empty-title">No worksheet entries found</h3>
-          <p class="empty-desc" id="emptyStateDesc">There are no work records matching your selected date or filters.</p>
-          <div class="empty-actions">
-            <button id="btnEmptyAdd" class="btn btn-primary">
-              <i data-lucide="plus"></i> Add Work Log
-            </button>
-            <button id="btnLoadSampleData" class="btn btn-outline">
-              <i data-lucide="sparkles"></i> Load Sample Data
-            </button>
-          </div>
-        </div>
-
-      </section>
-
-    </main>
-
-    <!-- Mobile Floating Action Button (FAB) -->
-    <button id="mobileFabAdd" class="mobile-fab" aria-label="Add new work entry">
-      <i data-lucide="plus"></i>
-    </button>
-
-    <!-- Mobile Bottom Navigation Bar -->
-    <nav class="mobile-bottom-nav">
-      <button class="mob-nav-item active" data-mob-filter="today">
-        <i data-lucide="sun"></i>
-        <span>Today</span>
-      </button>
-      <button class="mob-nav-item" data-mob-filter="this-week">
-        <i data-lucide="calendar"></i>
-        <span>Week</span>
-      </button>
-      <button class="mob-nav-item" id="mobNavAdd">
-        <div class="mob-nav-add-icon">
-          <i data-lucide="plus"></i>
-        </div>
-        <span>Log Work</span>
-      </button>
-      <button class="mob-nav-item" id="mobNavCalendar">
-        <i data-lucide="calendar-days"></i>
-        <span>Calendar</span>
-      </button>
-      <button class="mob-nav-item" id="mobNavAnalytics">
-        <i data-lucide="bar-chart-2"></i>
-        <span>Analytics</span>
-      </button>
-      <button class="mob-nav-item" id="mobNavCloud">
-        <i data-lucide="cloud"></i>
-        <span>Cloud</span>
-      </button>
-    </nav>
-
-    <!-- ================= MODALS ================= -->
-
-    <!-- 1. Add / Edit Work Log Modal -->
-    <div class="modal-overlay hidden" id="workModal">
-      <div class="modal-container modal-md" role="dialog" aria-labelledby="workModalTitle">
-        <div class="modal-header">
-          <div class="modal-header-left">
-            <i data-lucide="edit-3" class="modal-header-icon"></i>
-            <h2 id="workModalTitle" class="modal-title">Log Daily Work</h2>
-          </div>
-          <button class="btn-close-modal" id="btnCloseWorkModal" aria-label="Close modal">
-            <i data-lucide="x"></i>
+          <!-- + Log Work / Add Task Button -->
+          <button id="btnNewWorksheetEntry" class="btn btn-primary btn-glow" onclick="window.workPulseApp && window.workPulseApp.openWorkModal()">
+            <i data-lucide="plus"></i>
+            <span>Add Task</span>
           </button>
         </div>
+      </section>
 
-        <form id="workEntryForm" class="modal-form">
-          <input type="hidden" id="workEntryId">
+      <!-- OS Dashboard View (Default Hub matching Image 2) -->
+      <div id="dashboardHubView" class="view-panel active">
+        <div class="os-dashboard-grid">
+          
+          <!-- Row 1, Col 1: Mini Calendar Widget -->
+          <div class="os-card col-calendar">
+            <div class="os-card-header">
+              <span class="os-card-title"><i data-lucide="calendar" class="icon-sm text-purple"></i> Calendar</span>
+              <span style="font-size: 0.8rem; font-weight: 700; color: #c4b5fd;" id="miniCalMonthTitle">August 2026</span>
+            </div>
+            <div class="mini-cal-days">
+              <div class="mini-cal-weekday">S</div>
+              <div class="mini-cal-weekday">M</div>
+              <div class="mini-cal-weekday">T</div>
+              <div class="mini-cal-weekday">W</div>
+              <div class="mini-cal-weekday">T</div>
+              <div class="mini-cal-weekday">F</div>
+              <div class="mini-cal-weekday">S</div>
+              
+              <!-- Sample August days populated -->
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">2</div>
+              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">3</div>
+              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">4</div>
+              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">5</div>
+              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">6</div>
+              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">7</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">8</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">9</div>
+              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">10</div>
+              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">11</div>
+              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">12</div>
+              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">13</div>
+              <div class="mini-cal-cell has-work" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">14</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">15</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">16</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">17</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">18</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">19</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">20</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">21</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">22</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">23</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">24</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">25</div>
+              <div class="mini-cal-cell today" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('today')">26</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">27</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">28</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">29</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">30</div>
+              <div class="mini-cal-cell" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">31</div>
+            </div>
+          </div>
 
-          <!-- Date & Quick Selectors -->
-          <div class="form-group">
-            <div class="form-label-row">
-              <label for="workDate" class="form-label required">Work Date</label>
-              <div class="quick-date-chips" style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
-                <button type="button" class="chip-btn" id="chipToday">Today</button>
-                <button type="button" class="chip-btn" id="chipYesterday">Yesterday</button>
-                <button type="button" class="chip-btn chip-past-date" data-date="2026-08-21">Aug 21</button>
-                <button type="button" class="chip-btn chip-past-date" data-date="2026-08-20">Aug 20</button>
-                <button type="button" class="chip-btn chip-past-date" data-date="2026-08-19">Aug 19</button>
-                <button type="button" class="chip-btn chip-past-date" data-date="2026-08-18">Aug 18</button>
-                <button type="button" class="chip-btn chip-past-date" data-date="2026-08-15">Aug 15</button>
+          <!-- Row 1, Col 2: Today's Schedule Timeline -->
+          <div class="os-card col-schedule">
+            <div class="os-card-header">
+              <span class="os-card-title"><i data-lucide="clock" class="icon-sm text-blue"></i> Today's Schedule</span>
+              <button class="btn btn-ghost btn-xs" onclick="window.workPulseApp && window.workPulseApp.openWorkModal()">+ Add</button>
+            </div>
+            <div class="schedule-list" id="dashboardScheduleList">
+              <div class="schedule-item">
+                <div class="schedule-time">09:30<br>13:30</div>
+                <div class="schedule-dot dot-purple"></div>
+                <div class="schedule-details">
+                  <div class="schedule-title">MDI_Manu_CleaningEthanol</div>
+                  <div class="schedule-sub">Grab Pose & Audio changes</div>
+                </div>
+              </div>
+              <div class="schedule-item">
+                <div class="schedule-time">14:00<br>16:00</div>
+                <div class="schedule-dot dot-blue"></div>
+                <div class="schedule-details">
+                  <div class="schedule-title">MDI_LineClearance</div>
+                  <div class="schedule-sub">Step Wizard UI integration testing</div>
+                </div>
+              </div>
+              <div class="schedule-item">
+                <div class="schedule-time">16:30<br>18:00</div>
+                <div class="schedule-dot dot-emerald"></div>
+                <div class="schedule-details">
+                  <div class="schedule-title">Daily Sync & Google Sheets Sync</div>
+                  <div class="schedule-sub">Review tasks & export status</div>
+                </div>
               </div>
             </div>
-            <input type="date" id="workDate" class="form-input" required>
-            <span class="form-hint" style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem; display: block;">Click any previous day chip above or pick any past date on the calendar.</span>
           </div>
 
-          <!-- Project Name with Autocomplete Suggestions -->
-          <div class="form-group">
-            <label for="projectNameInput" class="form-label required">Project Name / Client</label>
-            <div class="input-autocomplete-wrapper">
-              <input type="text" id="projectNameInput" class="form-input" placeholder="e.g. Website Redesign, Client Portal, CRM" required autocomplete="off">
-              <div id="projectSuggestions" class="suggestions-dropdown hidden"></div>
-            </div>
-            <div class="project-tags-quick" id="projectQuickTags">
-              <!-- Dynamically populated recent projects -->
+          <!-- Row 1, Col 3: Hours & Metrics Card -->
+          <div class="os-card col-metrics">
+            <div class="metrics-weather-card">
+              <div class="metrics-weather-top">
+                <div>
+                  <div class="metrics-big-val" id="metricTotalHoursDisplay">52.0 hrs</div>
+                  <div class="metrics-sub-label" id="metricStatusSummary">17 Tasks &bull; 94% Rate</div>
+                </div>
+                <div class="weather-sun-icon">
+                  <i data-lucide="sun" class="icon-lg"></i>
+                </div>
+              </div>
+              
+              <div class="metrics-progress-bar-wrap">
+                <div class="progress-track">
+                  <div class="progress-fill" id="metricProgressBarFill" style="width: 94%;"></div>
+                </div>
+                <div class="progress-labels-row">
+                  <span>Completed: <strong id="metricCompletedCountDisplay" style="color: #34d399;">16</strong></span>
+                  <span>Pending: <strong id="metricPendingCountDisplay" style="color: #fbbf24;">1</strong></span>
+                  <span>Target: <strong>52h / 52h</strong></span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Work Done / Tasks Description -->
-          <div class="form-group">
-            <div class="form-label-row">
-              <label for="workDescription" class="form-label required">Work Description & Tasks Completed</label>
-              <span class="form-hint">Be specific (what was achieved / next steps)</span>
+          <!-- Row 2, Col 1: My Tasks Hub (Wide) -->
+          <div class="os-card col-tasks">
+            <div class="os-card-header">
+              <span class="os-card-title"><i data-lucide="check-circle-2" class="icon-sm text-emerald"></i> My Tasks</span>
+              
+              <!-- Task Filter Pills -->
+              <div class="task-pills-bar">
+                <button class="task-tab-pill active" data-task-filter="all" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisMonth')">All</button>
+                <button class="task-tab-pill" data-task-filter="today" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('today')">Today</button>
+                <button class="task-tab-pill" data-task-filter="upcoming" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('thisWeek')">This Week</button>
+                <button class="task-tab-pill" data-task-filter="completed" onclick="window.workPulseApp && window.workPulseApp.setDateFilter('all')">Completed</button>
+                <button class="btn btn-primary btn-xs" onclick="window.workPulseApp && window.workPulseApp.openWorkModal()">+ Add Task</button>
+              </div>
             </div>
-            <textarea id="workDescription" class="form-textarea" rows="4" placeholder="Describe the work done, tasks completed, meetings attended, or issues solved..." required></textarea>
+
+            <!-- Task List Rows -->
+            <div class="tasks-items-list" id="dashboardTaskList">
+              <!-- Dynamically populated via UIRenderer -->
+            </div>
+          </div>
+
+          <!-- Row 2, Col 2: Focus Timer (Pomodoro Widget) -->
+          <div class="os-card col-timer">
+            <div class="os-card-header">
+              <span class="os-card-title"><i data-lucide="timer" class="icon-sm text-purple"></i> Focus Timer</span>
+              <span class="badge-tag" style="background: rgba(139,92,246,0.15); color: #c4b5fd;">Pomodoro</span>
+            </div>
+
+            <div class="focus-timer-center">
+              <div class="timer-ring-container">
+                <svg class="timer-ring-svg" viewBox="0 0 160 160">
+                  <defs>
+                    <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#c084fc"/>
+                      <stop offset="100%" stop-color="#8b5cf6"/>
+                    </linearGradient>
+                  </defs>
+                  <circle class="timer-ring-bg" cx="80" cy="80" r="70"></circle>
+                  <circle class="timer-ring-progress" id="timerRingProgress" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="0"></circle>
+                </svg>
+
+                <div class="timer-digits-wrap">
+                  <div class="timer-digits" id="timerDigitsDisplay">25:00</div>
+                  <div class="timer-status-text" id="timerStatusText">Deep Focus</div>
+                </div>
+              </div>
+
+              <div class="timer-controls-row">
+                <button class="btn-timer-play" id="btnTimerToggle" title="Start / Pause Focus Timer" onclick="window.toggleFocusTimer && window.toggleFocusTimer()">
+                  <i data-lucide="play" id="timerPlayIcon"></i>
+                </button>
+                <button class="btn-timer-reset" id="btnTimerReset" title="Reset to 25 mins" onclick="window.resetFocusTimer && window.resetFocusTimer()">
+                  <i data-lucide="rotate-ccw" class="icon-xs"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3, Col 1: Upcoming Deadlines -->
+          <div class="os-card col-deadlines">
+            <div class="os-card-header">
+              <span class="os-card-title"><i data-lucide="calendar-check" class="icon-sm text-indigo"></i> Upcoming Deadlines</span>
+              <button class="btn btn-ghost btn-xs" onclick="window.workPulseApp && window.workPulseApp.switchView('table')">View All</button>
+            </div>
+            <div class="deadlines-list" id="dashboardDeadlinesList">
+              <div class="deadline-item">
+                <div class="deadline-left">
+                  <div class="deadline-icon-badge badge-purple"><i data-lucide="file-code" class="icon-xs"></i></div>
+                  <div>
+                    <div class="deadline-title">MDI LineClearance End-to-End Simulation</div>
+                    <div class="deadline-due">Due Tomorrow &bull; Aug 27, 2026</div>
+                  </div>
+                </div>
+                <span class="priority-pill priority-high">High</span>
+              </div>
+              <div class="deadline-item">
+                <div class="deadline-left">
+                  <div class="deadline-icon-badge badge-blue"><i data-lucide="cpu" class="icon-xs"></i></div>
+                  <div>
+                    <div class="deadline-title">VR Grab Pose Physics & Controller Testing</div>
+                    <div class="deadline-due">Due in 3 days &bull; Aug 29, 2026</div>
+                  </div>
+                </div>
+                <span class="priority-pill priority-medium">Medium</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3, Col 2: Quick Notes Scratchpad -->
+          <div class="os-card col-notes">
+            <div class="os-card-header">
+              <span class="os-card-title"><i data-lucide="edit-3" class="icon-sm text-purple"></i> Quick Notes & Scratchpad</span>
+              <button class="btn btn-outline btn-xs" onclick="window.workPulseApp && window.workPulseApp.openReport()"><i data-lucide="share" class="icon-xs"></i> Export Report</button>
+            </div>
+            <div class="quick-notes-body">
+              <textarea class="scratchpad-textarea" id="dashboardQuickNotes" placeholder="Write quick ideas, blockers, or notes here... (auto-saved)">â€¢ Grab pose refinement in progress
+â€¢ Line clearance step wizard integration 100% verified
+â€¢ Sync daily report before 6 PM</textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 1. Full Worksheet Table View -->
+      <div id="tableViewContainer" class="view-panel hidden">
+        <div class="table-responsive-card">
+          <table class="worksheet-table" id="worksheetTable">
+            <thead>
+              <tr>
+                <th class="col-date" data-sort="date">
+                  <div class="th-content">Date <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                </th>
+                <th class="col-project" data-sort="projectName">
+                  <div class="th-content">Project Name <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                </th>
+                <th class="col-work">Work Description & Notes</th>
+                <th class="col-status" data-sort="status">
+                  <div class="th-content">Status <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                </th>
+                <th class="col-hours" data-sort="hours">
+                  <div class="th-content">Hours <i data-lucide="arrow-up-down" class="sort-icon"></i></div>
+                </th>
+                <th class="col-priority">Priority</th>
+                <th class="col-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="worksheetTableBody">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 2. Mobile Cards Grid View -->
+      <div id="cardsViewContainer" class="view-panel hidden">
+        <div class="cards-grid" id="worksheetCardsGrid">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+
+      <!-- 3. Interactive Monthly Calendar View -->
+      <div id="calendarViewContainer" class="view-panel hidden">
+        <div class="calendar-card">
+          <div class="calendar-header-bar">
+            <div class="calendar-nav-left">
+              <button id="btnCalPrev" class="btn btn-outline btn-sm"><i data-lucide="chevron-left"></i></button>
+              <h2 id="calendarMonthTitle" class="calendar-month-title">August 2026</h2>
+              <button id="btnCalNext" class="btn btn-outline btn-sm"><i data-lucide="chevron-right"></i></button>
+              <button id="btnCalToday" class="btn btn-ghost btn-sm">Today</button>
+            </div>
+            
+            <div class="calendar-month-stats">
+              <div class="cstat-item"><span class="cstat-val text-emerald" id="calStatCompleted">0</span> <span class="cstat-lbl">Done</span></div>
+              <div class="cstat-item"><span class="cstat-val text-amber" id="calStatPending">0</span> <span class="cstat-lbl">Pending</span></div>
+              <div class="cstat-item"><span class="cstat-val text-purple" id="calStatHours">0h</span> <span class="cstat-lbl">Hours</span></div>
+            </div>
+          </div>
+
+          <div class="calendar-weekdays-grid">
+            <div class="weekday-cell">Sun</div>
+            <div class="weekday-cell">Mon</div>
+            <div class="weekday-cell">Tue</div>
+            <div class="weekday-cell">Wed</div>
+            <div class="weekday-cell">Thu</div>
+            <div class="weekday-cell">Fri</div>
+            <div class="weekday-cell">Sat</div>
+          </div>
+
+          <div class="calendar-days-grid" id="calendarDaysGrid">
+            <!-- Dynamically populated via UIRenderer -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Analytics & Charts View -->
+      <div id="analyticsViewContainer" class="view-panel hidden">
+        <div class="os-dashboard-grid">
+          <div class="os-card col-deadlines">
+            <div class="os-card-header"><span class="os-card-title">Daily Hours Distribution</span></div>
+            <canvas id="hoursChart" height="220"></canvas>
+          </div>
+          <div class="os-card col-notes">
+            <div class="os-card-header"><span class="os-card-title">Task Status Breakdown</span></div>
+            <canvas id="statusChart" height="220"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       Modal 1: Add / Edit Work Log (FIXED: Constrained 600px width, Dark Chips)
+       ========================================================================= -->
+  <div id="workModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="workModalTitle" class="modal-title">Log Daily Work</h2>
+        <button id="btnCloseWorkModal" class="btn-icon btn-sm" aria-label="Close modal"><i data-lucide="x"></i></button>
+      </div>
+
+      <form id="workForm">
+        <input type="hidden" id="workEntryId">
+        <div class="modal-body">
+          
+          <!-- Work Date Selection -->
+          <div class="form-group">
+            <label for="workDate" class="form-label required">Work Date</label>
+            <div class="date-quick-chips">
+              <button type="button" class="chip-btn" data-date="today">Today</button>
+              <button type="button" class="chip-btn" data-date="yesterday">Yesterday</button>
+              <button type="button" class="chip-btn" data-date="2026-08-21">Aug 21</button>
+              <button type="button" class="chip-btn" data-date="2026-08-20">Aug 20</button>
+              <button type="button" class="chip-btn" data-date="2026-08-19">Aug 19</button>
+              <button type="button" class="chip-btn" data-date="2026-08-18">Aug 18</button>
+              <button type="button" class="chip-btn" data-date="2026-08-15">Aug 15</button>
+            </div>
+            <input type="date" id="workDate" class="form-input" required style="margin-top: 0.5rem;">
+          </div>
+
+          <!-- Project Name Autocomplete -->
+          <div class="form-group autocomplete-wrapper">
+            <label for="workProject" class="form-label required">Project Name / Client</label>
+            <input type="text" id="workProject" class="form-input" placeholder="e.g. MDI_LineClearance or Parisson Area" required autocomplete="off">
+            <div id="projectAutocompleteList" class="autocomplete-suggestions hidden"></div>
+          </div>
+
+          <!-- Work Description -->
+          <div class="form-group">
+            <label for="workDesc" class="form-label required">Work Description & Tasks Completed</label>
+            <textarea id="workDesc" class="form-textarea" placeholder="Describe the work done, tasks completed, or issues resolved..." required></textarea>
           </div>
 
           <!-- Status & Hours Row -->
@@ -3048,14 +2452,11 @@ code {
 
             <div class="form-group">
               <label for="workHours" class="form-label">Hours Spent</label>
-              <div class="input-unit-wrap">
-                <input type="number" id="workHours" class="form-input" min="0" max="24" step="0.5" placeholder="e.g. 3.5">
-                <span class="unit-text">hrs</span>
-              </div>
+              <input type="number" id="workHours" class="form-input" min="0" max="24" step="0.5" placeholder="e.g. 4.0">
             </div>
           </div>
 
-          <!-- Priority & Remarks Row -->
+          <!-- Priority & Remarks -->
           <div class="form-row-2">
             <div class="form-group">
               <label for="workPriority" class="form-label">Priority</label>
@@ -3068,418 +2469,62 @@ code {
             </div>
 
             <div class="form-group">
-              <label for="workRemarks" class="form-label">Remarks / Blockers (Optional)</label>
-              <input type="text" id="workRemarks" class="form-input" placeholder="e.g. Waiting on client API keys">
+              <label for="workRemarks" class="form-label">Remarks / Next Steps</label>
+              <input type="text" id="workRemarks" class="form-input" placeholder="e.g. Ready for review">
             </div>
           </div>
 
-          <!-- Modal Footer Actions -->
-          <div class="modal-footer">
-            <button type="button" class="btn btn-outline" id="btnCancelWorkModal">Cancel</button>
-            <button type="submit" class="btn btn-primary" id="btnSaveWorkEntry">
-              <i data-lucide="save"></i>
-              <span id="saveBtnText">Save Work Log</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- 2. Cloud Server & Database Settings Modal -->
-    <div class="modal-overlay hidden" id="cloudModal">
-      <div class="modal-container modal-lg" role="dialog" aria-labelledby="cloudModalTitle">
-        <div class="modal-header">
-          <div class="modal-header-left">
-            <i data-lucide="cloud-cog" class="modal-header-icon text-sky"></i>
-            <h2 id="cloudModalTitle" class="modal-title">Cloud Database & Online Storage</h2>
-          </div>
-          <button class="btn-close-modal" id="btnCloseCloudModal" aria-label="Close modal">
-            <i data-lucide="x"></i>
-          </button>
-        </div>
-
-        <div class="modal-body scrollable-modal-body">
-          <div class="cloud-info-banner">
-            <i data-lucide="sheet" class="banner-icon text-emerald"></i>
-            <div>
-              <strong>Single Source of Truth: Google Sheets (Google Apps Script)</strong>
-              <p>All work data is saved directly into your Google Sheet via Google Apps Script Web App. View, edit, and manage your sheet in Google Drive on phone or PC.</p>
-            </div>
-          </div>
-
-          <!-- Google Sheets Config Section -->
-          <div class="config-form-section" style="margin-top: 1rem;">
-            <div class="form-group">
-              <label for="googleSheetUrl" class="form-label required">Google Apps Script Web App URL</label>
-              <input type="url" id="googleSheetUrl" class="form-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec" value="https://script.google.com/macros/s/AKfycbxfaG9lH-EfdXODX7toUQw4V7r1rZS8uMcuT9hLp_799Fpk3XWPv4sVWmPV30ZjMeQRqw/exec">
-              <span class="form-hint">Every task you save will automatically write rows into your Google Sheet in real-time!</span>
-            </div>
-
-            <!-- Quick Google Sheets Setup Accordion -->
-            <details class="setup-details" open style="margin-top: 1.25rem;">
-              <summary class="setup-summary">
-                <i data-lucide="help-circle" class="icon-sm text-emerald"></i>
-                <span>Google Apps Script Code (Click to view or copy)</span>
-              </summary>
-              <div class="setup-content">
-                <ol class="setup-steps">
-                  <li>Open your Google Sheet at <a href="https://sheets.google.com" target="_blank" rel="noopener">Google Sheets</a>.</li>
-                  <li>Click <strong>Extensions</strong> ➔ <strong>Apps Script</strong> in the top menu.</li>
-                  <li>Replace the code with the script below and click <strong>Save (💾)</strong>:</li>
-                </ol>
-                <div class="code-box">
-                  <pre><code>function doGet(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return ContentService.createTextOutput(JSON.stringify([])).setMimeType(ContentService.MimeType.JSON);
-  var headers = data[0];
-  var result = [];
-  for (var i = 1; i < data.length; i++) {
-    var row = data[i];
-    var obj = {};
-    for (var j = 0; j < headers.length; j++) obj[headers[j]] = row[j];
-    var rawDate = obj["Date"];
-    var dateStr = "";
-    if (rawDate instanceof Date) dateStr = Utilities.formatDate(rawDate, "GMT", "yyyy-MM-dd");
-    else if (rawDate) dateStr = String(rawDate).substring(0, 10);
-    result.push({
-      id: String(obj["ID"] || ("row-" + i)),
-      userId: String(obj["User"] || "").toLowerCase().indexOf("admin") !== -1 ? "user_admin_mnkavin" : "user_8chili_kavin",
-      userName: String(obj["User"] || "Kavin (8chili)"),
-      date: dateStr,
-      projectName: String(obj["Project Name"] || "General"),
-      work: String(obj["Work Description"] || ""),
-      status: String(obj["Status"] || "In Progress"),
-      hoursWorked: parseFloat(obj["Hours"] || 0),
-      priority: String(obj["Priority"] || "Medium"),
-      remarks: String(obj["Remarks"] || "")
-    });
-  }
-  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-}
-
-function doPost(e) {
-  try {
-    var contents = JSON.parse(e.postData.contents);
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var headers = ["ID", "User", "Date", "Project Name", "Work Description", "Status", "Hours", "Priority", "Remarks", "Updated At"];
-    if (sheet.getLastRow() === 0) sheet.appendRow(headers);
-    if (contents.action === "sync_all" && Array.isArray(contents.entries)) {
-      sheet.clearContents();
-      sheet.appendRow(headers);
-      var rows = contents.entries.map(function(item) {
-        return [item.id || "", item.user || item.userName || "Kavin (8chili)", item.date || "", item.projectName || "", item.work || "", item.status || "In Progress", item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
-      });
-      if (rows.length > 0) sheet.getRange(2, 1, rows.length, 10).setValues(rows);
-    } else if (contents.action === "upsert") {
-      var item = contents.entry || contents;
-      var data = sheet.getDataRange().getValues();
-      var foundRow = -1;
-      for (var i = 1; i < data.length; i++) {
-        if (String(data[i][0]) === String(item.id)) { foundRow = i + 1; break; }
-      }
-      var rowValues = [item.id, item.user || item.userName || "Kavin (8chili)", item.date, item.projectName, item.work, item.status, item.hoursWorked || 0, item.priority || "Medium", item.remarks || "", new Date().toISOString()];
-      if (foundRow > 0) sheet.getRange(foundRow, 1, 1, 10).setValues([rowValues]);
-      else sheet.appendRow(rowValues);
-    } else if (contents.action === "delete" && contents.id) {
-      var data = sheet.getDataRange().getValues();
-      for (var i = 1; i < data.length; i++) {
-        if (String(data[i][0]) === String(contents.id)) { sheet.deleteRow(i + 1); break; }
-      }
-    }
-    return ContentService.createTextOutput(JSON.stringify({ success: true })).setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ error: err.message })).setMimeType(ContentService.MimeType.JSON);
-  }
-}</code></pre>
-                  <button type="button" id="btnCopySheetScript" class="btn btn-xs btn-outline btn-copy">
-                    <i data-lucide="copy"></i> Copy Google Apps Script
-                  </button>
-                </div>
-                <p class="step-footer">4. Click <strong>Deploy ➔ New Deployment</strong> ➔ type <strong>Web app</strong> ➔ <em>Who has access</em>: <strong>"Anyone"</strong> ➔ click <strong>Deploy</strong> and paste your Web App URL above!</p>
-              </div>
-            </details>
-          </div>
-
-          <!-- Connection Test Feedback -->
-          <div id="cloudTestResult" class="test-result-box hidden" style="margin-top: 1rem;"></div>
-        </div>
-
-        <div class="modal-footer" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; gap: 0.5rem;">
-            <button type="button" id="btnTestCloudConnection" class="btn btn-outline">
-              <i data-lucide="activity"></i> Test Connection
-            </button>
-            <button type="button" id="btnPushAllToSheets" class="btn btn-outline" style="border-color: #10b981; color: #10b981;">
-              <i data-lucide="upload-cloud"></i> Push All Data to Sheet
-            </button>
-          </div>
-          <button type="button" id="btnSaveCloudSettings" class="btn btn-primary">
-            <i data-lucide="check"></i> Save & Sync Now
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. Import & Export Modal -->
-    <div class="modal-overlay hidden" id="importExportModal">
-      <div class="modal-container modal-md" role="dialog" aria-labelledby="ieModalTitle">
-        <div class="modal-header">
-          <div class="modal-header-left">
-            <i data-lucide="arrow-up-down" class="modal-header-icon"></i>
-            <h2 id="ieModalTitle" class="modal-title">Import & Export Worksheet Data</h2>
-          </div>
-          <button class="btn-close-modal" id="btnCloseIEModal" aria-label="Close modal">
-            <i data-lucide="x"></i>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <div class="ie-tabs" role="tablist">
-            <button class="ie-tab active" data-ietab="export">Export Data</button>
-            <button class="ie-tab" data-ietab="import">Import Data</button>
-          </div>
-
-          <!-- Export Tab -->
-          <div id="tabExportContent" class="ie-tab-content active">
-            <p class="tab-desc">Export your filtered or complete daily worksheet records to submit for office reports or backups.</p>
-            
-            <div class="export-options-grid">
-              <button id="btnExportExcel" class="export-card-btn">
-                <div class="export-icon-box bg-emerald-light">
-                  <i data-lucide="sheet" class="text-emerald"></i>
-                </div>
-                <div class="export-card-info">
-                  <strong>Excel Spreadsheet (.xlsx)</strong>
-                  <span>Formatted spreadsheet with columns & headers</span>
-                </div>
-              </button>
-
-              <button id="btnExportCsv" class="export-card-btn">
-                <div class="export-icon-box bg-blue-light">
-                  <i data-lucide="file-spreadsheet" class="text-blue"></i>
-                </div>
-                <div class="export-card-info">
-                  <strong>CSV File (.csv)</strong>
-                  <span>Universal format for Google Sheets & Excel</span>
-                </div>
-              </button>
-
-              <button id="btnExportJson" class="export-card-btn">
-                <div class="export-icon-box bg-amber-light">
-                  <i data-lucide="file-code" class="text-amber"></i>
-                </div>
-                <div class="export-card-info">
-                  <strong>JSON Backup (.json)</strong>
-                  <span>Full structured backup for cloud migration</span>
-                </div>
-              </button>
-
-              <button id="btnPrintWorksheet" class="export-card-btn">
-                <div class="export-icon-box bg-purple-light">
-                  <i data-lucide="printer" class="text-purple"></i>
-                </div>
-                <div class="export-card-info">
-                  <strong>Print / Save PDF Report</strong>
-                  <span>Clean printable daily office timesheet</span>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <!-- Import Tab -->
-          <div id="tabImportContent" class="ie-tab-content hidden">
-            <p class="tab-desc">Upload an Excel (.xlsx) / CSV file, or copy and paste cells directly from your spreadsheet!</p>
-            
-            <div class="drop-zone" id="fileDropZone">
-              <i data-lucide="upload-cloud" class="drop-icon"></i>
-              <p class="drop-title">Drag & Drop your Excel (.xlsx) or CSV file here</p>
-              <p class="drop-sub">or click to browse files from your computer</p>
-              <input type="file" id="importFileInput" accept=".xlsx, .xls, .csv, .json" class="hidden">
-              <button type="button" class="btn btn-outline btn-sm" id="btnBrowseFile">Choose File</button>
-            </div>
-
-            <!-- Direct Paste from Excel / Google Sheets -->
-            <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
-              <details>
-                <summary style="cursor: pointer; font-size: 0.8125rem; font-weight: 600; color: #60a5fa; display: flex; align-items: center; gap: 0.35rem;">
-                  <i data-lucide="clipboard" class="icon-xs"></i>
-                  <span>Or Copy & Paste directly from Excel / Google Sheets (Instant)</span>
-                </summary>
-                <div style="margin-top: 0.6rem;">
-                  <textarea id="importPasteTextarea" class="form-input" rows="4" placeholder="Copy rows from Excel and paste here (e.g. 2026-08-03 [Tab] MDI Project [Tab] Task details [Tab] Completed [Tab] 8)"></textarea>
-                  <button type="button" id="btnParsePastedData" class="btn btn-outline btn-xs" style="margin-top: 0.4rem;">
-                    <i data-lucide="sparkles"></i> Parse Pasted Rows
-                  </button>
-                </div>
-              </details>
-            </div>
-
-            <div class="import-format-guide" style="margin-top: 0.75rem;">
-              <span class="guide-title">Supported Columns in CSV / Excel:</span>
-              <p class="guide-sample"><code>Date, Project Name, Work Description, Status, Hours, Priority, Remarks</code></p>
-            </div>
-
-            <div id="importPreviewArea" class="import-preview-box hidden" style="margin-top: 1rem;">
-              <div class="preview-header">
-                <span id="importPreviewCount">0 rows found</span>
-                <button type="button" id="btnConfirmImport" class="btn btn-primary btn-sm btn-glow">Confirm & Import Data</button>
-              </div>
-              <div class="preview-table-wrap" id="previewTableWrap"></div>
-            </div>
-          </div>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline" id="btnCloseIEFooter">Close</button>
+          <button type="button" id="btnCancelWorkModal" class="btn btn-ghost">Cancel</button>
+          <button type="submit" id="btnSaveWorkModal" class="btn btn-primary btn-glow">Save Work Log</button>
         </div>
-      </div>
+      </form>
     </div>
-
-    <!-- 4. Daily Status Report Generator Modal (For WhatsApp / Slack / Email) -->
-    <div class="modal-overlay hidden" id="reportModal">
-      <div class="modal-container modal-md" role="dialog" aria-labelledby="reportModalTitle">
-        <div class="modal-header">
-          <div class="modal-header-left">
-            <i data-lucide="message-square" class="modal-header-icon text-emerald"></i>
-            <h2 id="reportModalTitle" class="modal-title">Daily Office Status Report</h2>
-          </div>
-          <button class="btn-close-modal" id="btnCloseReportModal" aria-label="Close modal">
-            <i data-lucide="x"></i>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <div class="report-header-controls">
-            <label for="reportDateSelect" class="form-label-inline">Report Date:</label>
-            <select id="reportDateSelect" class="form-select-sm"></select>
-            <div class="report-format-toggle">
-              <button class="btn-xs format-btn active" data-format="standard">Standard</button>
-              <button class="btn-xs format-btn" data-format="compact">Compact</button>
-              <button class="btn-xs format-btn" data-format="bullets">Bullets</button>
-            </div>
-          </div>
-
-          <div class="report-preview-box">
-            <textarea id="dailyReportText" class="report-textarea" rows="12" readonly></textarea>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline" id="btnCloseReportFooter">Close</button>
-          <button type="button" class="btn btn-primary" id="btnCopyDailyReport">
-            <i data-lucide="clipboard-copy"></i>
-            <span>Copy to Clipboard</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 5. User Account Switcher & Profile Modal -->
-    <div class="modal-overlay hidden" id="userAuthModal">
-      <div class="modal-container modal-md" role="dialog" aria-labelledby="userModalTitle">
-        <div class="modal-header">
-          <div class="modal-header-left">
-            <i data-lucide="users" class="modal-header-icon text-blue"></i>
-            <h2 id="userModalTitle" class="modal-title">User Accounts & Profiles</h2>
-          </div>
-          <button class="btn-close-modal" id="btnCloseUserModal" aria-label="Close modal">
-            <i data-lucide="x"></i>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <div class="user-tabs-nav">
-            <button class="user-tab-btn active" id="tabBtnSwitchUser">👥 Switch User</button>
-            <button class="user-tab-btn" id="tabBtnNewUser">➕ New Profile</button>
-          </div>
-
-          <!-- Tab 1: Switch Account -->
-          <div id="tabContentSwitchUser" class="user-tab-pane">
-            <p class="section-hint" style="margin-bottom: 0.85rem; font-size: 0.8125rem; color: var(--text-muted);">
-              Select an account below to view their personal worksheet or separate records:
-            </p>
-            <div class="users-list-grid" id="usersListContainer">
-              <!-- Dynamically populated user profile cards -->
-            </div>
-          </div>
-
-          <!-- Tab 2: Register New Profile -->
-          <div id="tabContentNewUser" class="user-tab-pane hidden">
-            <form id="newUserForm" class="modal-form">
-              <div class="form-group">
-                <label for="newUserName" class="form-label required">Display Name</label>
-                <input type="text" id="newUserName" class="form-input" placeholder="e.g. Rahul Sharma, Priya" required>
-              </div>
-
-              <div class="form-group">
-                <label for="newUserUsername" class="form-label required">Username (Unique ID)</label>
-                <input type="text" id="newUserUsername" class="form-input" placeholder="e.g. rahul, priya_dev" required>
-              </div>
-
-              <div class="form-group">
-                <label for="newUserRole" class="form-label">Role / Designation</label>
-                <input type="text" id="newUserRole" class="form-input" placeholder="e.g. Frontend Developer, QA Engineer">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Profile Avatar Color</label>
-                <div class="color-picker-row">
-                  <label class="color-circle" style="background-color: #3b82f6;"><input type="radio" name="userColor" value="#3b82f6" checked></label>
-                  <label class="color-circle" style="background-color: #10b981;"><input type="radio" name="userColor" value="#10b981"></label>
-                  <label class="color-circle" style="background-color: #8b5cf6;"><input type="radio" name="userColor" value="#8b5cf6"></label>
-                  <label class="color-circle" style="background-color: #f59e0b;"><input type="radio" name="userColor" value="#f59e0b"></label>
-                  <label class="color-circle" style="background-color: #ec4899;"><input type="radio" name="userColor" value="#ec4899"></label>
-                  <label class="color-circle" style="background-color: #06b6d4;"><input type="radio" name="userColor" value="#06b6d4"></label>
-                </div>
-              </div>
-
-              <div class="modal-footer" style="padding-top: 1rem;">
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                  <i data-lucide="user-check"></i>
-                  <span>Create & Switch to Profile</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 5. Dedicated Admin Governance & Multi-User Management Portal Modal -->
-    <div class="modal-overlay hidden" id="adminPortalModal">
-      <div class="modal-container modal-xl" role="dialog" aria-labelledby="adminModalTitle">
-        <div class="modal-header">
-          <div class="modal-header-left">
-            <div class="modal-icon-badge bg-amber-light text-amber">
-              <i data-lucide="shield-check"></i>
-            </div>
-            <div>
-              <h2 id="adminModalTitle" class="modal-title">👑 WorkPulse Admin Dashboard</h2>
-              <p class="modal-subtitle">Team members governance, user worksheet inspector, and dual cloud sync</p>
-            </div>
-          </div>
-          <button class="btn-close-modal" id="btnCloseAdminModal" aria-label="Close modal">
-            <i data-lucide="x"></i>
-          </button>
-        </div>
-
-        <div class="modal-body" id="adminDashboardContainer">
-          <!-- Dynamically populated by AdminManager -->
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline" id="btnCloseAdminFooter">Close</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Toast Notification Container -->
-    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
-
   </div>
 
-  <!-- Application JavaScript Modules -->
+  <!-- Modal 2: Daily Report Modal -->
+  <div id="reportModal" class="modal-backdrop hidden" role="dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">Daily Status Report</h2>
+        <button id="btnCloseReportModal" class="btn-icon btn-sm"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <textarea id="dailyReportPreview" class="form-textarea" style="min-height: 180px; font-family: monospace; font-size: 0.8rem;" readonly></textarea>
+      </div>
+      <div class="modal-footer">
+        <button id="btnCopyReportText" class="btn btn-primary"><i data-lucide="copy"></i> Copy to WhatsApp / Slack</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Cloud Database Sync Modal -->
+  <div id="cloudModal" class="modal-backdrop hidden" role="dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">Google Sheets Cloud Sync</h2>
+        <button id="btnCloseCloudModal" class="btn-icon btn-sm"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="googleSheetUrl" class="form-label">Google Apps Script Web App URL</label>
+          <input type="url" id="googleSheetUrl" class="form-input" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
+        <div id="cloudTestResult" class="test-result-box hidden"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="btnTestCloudConnection" class="btn btn-outline">Test Connection</button>
+        <button id="btnPushAllToSheets" class="btn btn-primary">Sync All Data Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Application JavaScript Core Modules -->
   <script>
 /**
  * Authentication & User Management Service (WorkPulse)
@@ -5027,6 +4072,83 @@ class UIRenderer {
     if (pendSubEl) pendSubEl.textContent = `${pending} pending, ${blocked} blocked`;
     if (hoursEl) hoursEl.textContent = typeof totalHours === 'number' ? totalHours.toFixed(1) : parseFloat(totalHours || 0).toFixed(1);
     if (ctxEl) ctxEl.textContent = dateContext;
+
+    // OS Workspace Dashboard Metrics Card
+    const totalHoursDisplay = document.getElementById('metricTotalHoursDisplay');
+    const statusSummary = document.getElementById('metricStatusSummary');
+    const progressBarFill = document.getElementById('metricProgressBarFill');
+    const completedCountDisplay = document.getElementById('metricCompletedCountDisplay');
+    const pendingCountDisplay = document.getElementById('metricPendingCountDisplay');
+
+    if (totalHoursDisplay) totalHoursDisplay.textContent = `${totalHours.toFixed(1)} hrs`;
+    if (statusSummary) statusSummary.textContent = `${totalTasks} Tasks • ${rate}% Rate`;
+    if (progressBarFill) progressBarFill.style.width = `${Math.min(100, rate)}%`;
+    if (completedCountDisplay) completedCountDisplay.textContent = completed;
+    if (pendingCountDisplay) pendingCountDisplay.textContent = pending + inProgress;
+  }
+
+  // Render Dashboard Hub Task List (Image 2 My Tasks Widget)
+  renderDashboardTasks(entries, onStatusChange, onEdit, onDuplicate, onDelete) {
+    const listEl = document.getElementById('dashboardTaskList');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+
+    if (entries.length === 0) {
+      listEl.innerHTML = `
+        <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem;">
+          <i data-lucide="check-circle" style="width: 28px; height: 28px; margin: 0 auto 0.5rem auto; display: block; opacity: 0.5;"></i>
+          No tasks recorded for this filter. Click <strong>+ Add Task</strong> above to log work.
+        </div>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
+
+    entries.forEach(entry => {
+      const row = document.createElement('div');
+      row.className = 'task-item-row';
+      const isDone = entry.status === 'Completed';
+
+      row.innerHTML = `
+        <div class="task-item-left">
+          <div class="task-check-circle ${isDone ? 'completed' : ''}" data-id="${entry.id}" title="${isDone ? 'Mark as In Progress' : 'Mark as Completed'}">
+            ${isDone ? '<i data-lucide="check" style="width: 12px; height: 12px;"></i>' : ''}
+          </div>
+          <div style="flex: 1; min-width: 0;">
+            <div class="task-item-title ${isDone ? 'completed' : ''}">${this.escapeHtml(entry.work.split('\n')[0])}</div>
+            <div style="display: flex; align-items: center; gap: 0.4rem; margin-top: 0.2rem;">
+              <span class="project-pill" style="font-size: 0.68rem; padding: 0.1rem 0.4rem;">${this.escapeHtml(entry.projectName)}</span>
+              ${entry.hoursWorked ? `<span style="font-size: 0.7rem; color: #c4b5fd; font-weight: 600;">${entry.hoursWorked}h</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="task-item-right">
+          <span class="task-item-date">${UIRenderer.formatDisplayDate(entry.date)}</span>
+          <button class="btn-action edit" title="Edit task" data-id="${entry.id}"><i data-lucide="edit-2" class="icon-xs"></i></button>
+          <button class="btn-action delete" title="Delete task" data-id="${entry.id}"><i data-lucide="trash-2" class="icon-xs"></i></button>
+        </div>
+      `;
+
+      // Checkbox click event
+      const checkBtn = row.querySelector('.task-check-circle');
+      if (checkBtn) {
+        checkBtn.addEventListener('click', () => {
+          const nextStatus = isDone ? 'In Progress' : 'Completed';
+          onStatusChange(entry.id, nextStatus);
+          if (nextStatus === 'Completed' && window.confetti) window.confetti();
+        });
+      }
+
+      const editBtn = row.querySelector('.btn-action.edit');
+      if (editBtn) editBtn.addEventListener('click', () => onEdit(entry));
+      
+      const delBtn = row.querySelector('.btn-action.delete');
+      if (delBtn) delBtn.addEventListener('click', () => onDelete(entry.id));
+
+      listEl.appendChild(row);
+    });
+
+    if (window.lucide) window.lucide.createIcons();
   }
 
   // Render Table View (Desktop & Tablet)
@@ -6723,6 +5845,17 @@ async function initWorkPulseApp() {
       showUserBadge
     );
 
+    // Render Dashboard Tasks Hub
+    if (typeof ui.renderDashboardTasks === 'function') {
+      ui.renderDashboardTasks(
+        entries,
+        handleStatusChange,
+        handleEditEntry,
+        handleDuplicateEntry,
+        handleDeleteEntry
+      );
+    }
+
     // Render Mobile Cards View
     ui.renderCards(
       entries,
@@ -7034,14 +6167,21 @@ async function initWorkPulseApp() {
 
   function switchView(viewName) {
     currentView = viewName;
-    document.querySelectorAll('.view-btn').forEach(b => {
+    document.querySelectorAll('.view-btn, .dock-item[data-view]').forEach(b => {
       b.classList.toggle('active', b.dataset.view === viewName);
     });
 
-    document.getElementById('tableViewContainer').classList.toggle('hidden', viewName !== 'table');
-    document.getElementById('cardsViewContainer').classList.toggle('hidden', viewName !== 'cards');
-    document.getElementById('calendarViewContainer').classList.toggle('hidden', viewName !== 'calendar');
-    document.getElementById('analyticsViewContainer').classList.toggle('hidden', viewName !== 'analytics');
+    const hubEl = document.getElementById('dashboardHubView');
+    const tableEl = document.getElementById('tableViewContainer');
+    const cardsEl = document.getElementById('cardsViewContainer');
+    const calEl = document.getElementById('calendarViewContainer');
+    const chartEl = document.getElementById('analyticsViewContainer');
+
+    if (hubEl) hubEl.classList.toggle('hidden', viewName !== 'dashboard');
+    if (tableEl) tableEl.classList.toggle('hidden', viewName !== 'table');
+    if (cardsEl) cardsEl.classList.toggle('hidden', viewName !== 'cards');
+    if (calEl) calEl.classList.toggle('hidden', viewName !== 'calendar');
+    if (chartEl) chartEl.classList.toggle('hidden', viewName !== 'analytics');
 
     if (viewName === 'calendar') {
       renderCalendarView();
@@ -7873,14 +7013,101 @@ if (document.readyState === 'loading') {
 
 </script>
 
-  <!-- PWA Service Worker Registration -->
+  <!-- Live Clock & Focus Timer Logic -->
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('WorkPulse PWA Service Worker registered:', reg.scope))
-          .catch(err => console.log('Service Worker registration skipped:', err));
-      });
+    // 1. Live Digital Clock Ticker
+    function updateLiveClock() {
+      const clockEl = document.getElementById('liveDigitalClock');
+      const dateEl = document.getElementById('liveDateDisplay');
+      const greetingTimeEl = document.getElementById('greetingTimeText');
+      
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      
+      let greeting = 'Good Morning';
+      if (hours >= 12 && hours < 17) greeting = 'Good Afternoon';
+      else if (hours >= 17) greeting = 'Good Evening';
+      if (greetingTimeEl) greetingTimeEl.textContent = greeting;
+
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      const formattedHours = String(hours).padStart(2, '0');
+
+      if (clockEl) {
+        clockEl.innerHTML = `${formattedHours}:${minutes} <span class="ampm">${ampm}</span>`;
+      }
+      if (dateEl) {
+        const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
+        dateEl.textContent = now.toLocaleDateString('en-US', options);
+      }
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    // 2. Focus Timer (Pomodoro) Controller
+    let timerDuration = 25 * 60;
+    let timerRemaining = timerDuration;
+    let timerInterval = null;
+    let isTimerRunning = false;
+
+    window.toggleFocusTimer = function() {
+      const playIcon = document.getElementById('timerPlayIcon');
+      const statusText = document.getElementById('timerStatusText');
+
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+        if (statusText) statusText.textContent = 'Paused';
+      } else {
+        isTimerRunning = true;
+        if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
+        if (statusText) statusText.textContent = 'Deep Focus';
+        
+        timerInterval = setInterval(() => {
+          if (timerRemaining > 0) {
+            timerRemaining--;
+            updateTimerUI();
+          } else {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+            if (statusText) statusText.textContent = 'Completed! ðŸŽ¯';
+            if (window.confetti) window.confetti();
+          }
+        }, 1000);
+      }
+      if (window.lucide) window.lucide.createIcons();
+    };
+
+    window.resetFocusTimer = function() {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      timerRemaining = timerDuration;
+      const playIcon = document.getElementById('timerPlayIcon');
+      const statusText = document.getElementById('timerStatusText');
+      if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+      if (statusText) statusText.textContent = 'Deep Focus';
+      updateTimerUI();
+      if (window.lucide) window.lucide.createIcons();
+    };
+
+    function updateTimerUI() {
+      const digitsEl = document.getElementById('timerDigitsDisplay');
+      const ringEl = document.getElementById('timerRingProgress');
+      
+      const m = Math.floor(timerRemaining / 60);
+      const s = timerRemaining % 60;
+      if (digitsEl) digitsEl.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+      if (ringEl) {
+        const totalOffset = 440;
+        const progress = (timerDuration - timerRemaining) / timerDuration;
+        const offset = totalOffset - (progress * totalOffset);
+        ringEl.style.strokeDashoffset = offset;
+      }
     }
   </script>
 </body>

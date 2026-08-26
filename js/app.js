@@ -235,6 +235,17 @@ async function initWorkPulseApp() {
       showUserBadge
     );
 
+    // Render Dashboard Tasks Hub
+    if (typeof ui.renderDashboardTasks === 'function') {
+      ui.renderDashboardTasks(
+        entries,
+        handleStatusChange,
+        handleEditEntry,
+        handleDuplicateEntry,
+        handleDeleteEntry
+      );
+    }
+
     // Render Mobile Cards View
     ui.renderCards(
       entries,
@@ -546,14 +557,21 @@ async function initWorkPulseApp() {
 
   function switchView(viewName) {
     currentView = viewName;
-    document.querySelectorAll('.view-btn').forEach(b => {
+    document.querySelectorAll('.view-btn, .dock-item[data-view]').forEach(b => {
       b.classList.toggle('active', b.dataset.view === viewName);
     });
 
-    document.getElementById('tableViewContainer').classList.toggle('hidden', viewName !== 'table');
-    document.getElementById('cardsViewContainer').classList.toggle('hidden', viewName !== 'cards');
-    document.getElementById('calendarViewContainer').classList.toggle('hidden', viewName !== 'calendar');
-    document.getElementById('analyticsViewContainer').classList.toggle('hidden', viewName !== 'analytics');
+    const hubEl = document.getElementById('dashboardHubView');
+    const tableEl = document.getElementById('tableViewContainer');
+    const cardsEl = document.getElementById('cardsViewContainer');
+    const calEl = document.getElementById('calendarViewContainer');
+    const chartEl = document.getElementById('analyticsViewContainer');
+
+    if (hubEl) hubEl.classList.toggle('hidden', viewName !== 'dashboard');
+    if (tableEl) tableEl.classList.toggle('hidden', viewName !== 'table');
+    if (cardsEl) cardsEl.classList.toggle('hidden', viewName !== 'cards');
+    if (calEl) calEl.classList.toggle('hidden', viewName !== 'calendar');
+    if (chartEl) chartEl.classList.toggle('hidden', viewName !== 'analytics');
 
     if (viewName === 'calendar') {
       renderCalendarView();

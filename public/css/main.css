@@ -1,105 +1,95 @@
-/* =========================================================
-   WorkPulse - Luxury Dark Ember & Sunset Glow Design System
+﻿/* =========================================================
+   WorkPulse - Midnight Purple OS Workspace Design System
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
 :root {
-  /* Core Luxury Dark Obsidian Palette */
-  --bg-primary: #080604;
-  --bg-surface: rgba(18, 13, 9, 0.75);
-  --bg-surface-elevated: rgba(28, 20, 14, 0.85);
-  --bg-subtle: rgba(255, 120, 20, 0.05);
-  --bg-hover: rgba(255, 130, 25, 0.12);
+  /* Midnight Purple & Deep Indigo Palette */
+  --bg-primary: #080a14;
+  --bg-secondary: #0c0f1f;
+  --bg-surface: rgba(18, 22, 42, 0.75);
+  --bg-surface-elevated: rgba(26, 32, 60, 0.88);
+  --bg-subtle: rgba(139, 92, 246, 0.06);
+  --bg-hover: rgba(139, 92, 246, 0.14);
   
-  /* Glowing Borders */
-  --border-color: rgba(255, 130, 25, 0.16);
-  --border-hover: rgba(255, 150, 40, 0.4);
-  --border-focus: #ff7a18;
-  --border-glow: 0 0 20px rgba(255, 110, 0, 0.25);
+  /* Borders */
+  --border-color: rgba(139, 92, 246, 0.16);
+  --border-hover: rgba(168, 85, 247, 0.38);
+  --border-focus: #8b5cf6;
+  --border-glow: 0 0 16px rgba(139, 92, 246, 0.25);
 
   /* Typography Colors */
-  --text-primary: #fbfaf8;
-  --text-secondary: #d1c3b7;
-  --text-muted: #8e7d70;
-  --text-inverse: #080604;
+  --text-primary: #ffffff;
+  --text-secondary: #cbd5e1;
+  --text-muted: #8b9bb4;
+  --text-inverse: #080a14;
 
-  /* Primary Brand - Sunset Ember & Flame */
-  --brand-primary: #ff6a00;
-  --brand-primary-hover: #ff851b;
-  --brand-gradient: linear-gradient(135deg, #ff7a18 0%, #d44e00 100%);
-  --brand-gradient-hover: linear-gradient(135deg, #ff8c2e 0%, #eb5b00 100%);
-  --brand-gradient-glow: 0 2px 12px rgba(255, 106, 0, 0.25);
-  --brand-primary-light: rgba(255, 106, 0, 0.08);
-  --brand-primary-subtle: rgba(255, 106, 0, 0.15);
+  /* Primary Brand - Vibrant Violet / Purple */
+  --brand-primary: #8b5cf6;
+  --brand-primary-hover: #a855f7;
+  --brand-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  --brand-gradient-hover: linear-gradient(135deg, #9f75ff 0%, #7c3aed 100%);
+  --brand-gradient-glow: 0 4px 18px rgba(139, 92, 246, 0.35);
+  --brand-primary-light: rgba(139, 92, 246, 0.12);
+  --brand-primary-subtle: rgba(139, 92, 246, 0.2);
 
-  /* Status Colors with Luxury Dark Glow */
-  --status-completed-bg: rgba(16, 185, 129, 0.12);
+  /* Status Colors */
+  --status-completed-bg: rgba(16, 185, 129, 0.14);
   --status-completed-text: #34d399;
-  --status-completed-border: rgba(16, 185, 129, 0.28);
+  --status-completed-border: rgba(16, 185, 129, 0.3);
 
-  --status-progress-bg: rgba(255, 122, 24, 0.12);
-  --status-progress-text: #ff9e42;
-  --status-progress-border: rgba(255, 122, 24, 0.3);
+  --status-progress-bg: rgba(139, 92, 246, 0.15);
+  --status-progress-text: #c4b5fd;
+  --status-progress-border: rgba(139, 92, 246, 0.35);
 
-  --status-pending-bg: rgba(245, 158, 11, 0.12);
+  --status-pending-bg: rgba(245, 158, 11, 0.14);
   --status-pending-text: #fbbf24;
-  --status-pending-border: rgba(245, 158, 11, 0.28);
+  --status-pending-border: rgba(245, 158, 11, 0.3);
 
-  --status-blocked-bg: rgba(244, 63, 94, 0.12);
+  --status-blocked-bg: rgba(244, 63, 94, 0.14);
   --status-blocked-text: #fb7185;
-  --status-blocked-border: rgba(244, 63, 94, 0.28);
+  --status-blocked-border: rgba(244, 63, 94, 0.3);
 
-  --status-review-bg: rgba(168, 85, 247, 0.12);
-  --status-review-text: #c084fc;
-  --status-review-border: rgba(168, 85, 247, 0.28);
+  --status-review-bg: rgba(56, 189, 248, 0.14);
+  --status-review-text: #38bdf8;
+  --status-review-border: rgba(56, 189, 248, 0.3);
 
-  --status-leave-bg: rgba(56, 189, 248, 0.12);
-  --status-leave-text: #38bdf8;
-  --status-leave-border: rgba(56, 189, 248, 0.28);
+  --status-leave-bg: rgba(217, 70, 239, 0.14);
+  --status-leave-text: #e879f9;
+  --status-leave-border: rgba(217, 70, 239, 0.3);
 
   /* Accent Tones */
+  --accent-purple: #8b5cf6;
+  --accent-indigo: #6366f1;
+  --accent-cyan: #06b6d4;
   --accent-amber: #f59e0b;
-  --accent-orange: #ff7a18;
-  --accent-flame: #ff4500;
   --accent-emerald: #10b981;
-  --accent-sky: #38bdf8;
+  --accent-rose: #f43f5e;
 
-  /* Shadows & Subtle Refined Glows */
+  /* Shadows & Glassmorphic Glows */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 200, 150, 0.04);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.75);
-  --shadow-glow: 0 0 16px rgba(255, 106, 0, 0.2);
-  --shadow-glow-card: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 220, 150, 0.08);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.65), 0 0 20px rgba(139, 92, 246, 0.06);
+  --shadow-lg: 0 18px 45px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.12);
+  --shadow-glow: 0 0 22px rgba(139, 92, 246, 0.3);
 
   /* Radius */
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 22px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 26px;
   --radius-full: 9999px;
 
-  /* Typography - Crisp, Proportional & Geometric (No distortion) */
+  /* Typography */
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-brand: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', Consolas, Monaco, monospace;
 
   /* Transitions */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Light Mode Overrides (if toggled) */
-body.theme-light {
-  --bg-primary: #080604;
-  --bg-surface: rgba(18, 13, 9, 0.82);
-  --bg-surface-elevated: rgba(28, 20, 14, 0.92);
-  --text-primary: #fbfaf8;
-  --text-secondary: #d1c3b7;
-  --text-muted: #8e7d70;
-  --border-color: rgba(255, 130, 25, 0.18);
 }
 
 /* Global Reset & Base Styles */
@@ -130,44 +120,25 @@ body {
   font-feature-settings: "tnum", "cv02", "cv03", "cv04", "cv11";
 }
 
-/* Atmospheric Subtle Sunset Glow & Mesh Texture */
+/* Atmospheric Nebula Gradient Backdrop */
 body::before {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 420px;
-  background: radial-gradient(ellipse 60% 280px at 50% -60px, rgba(255, 106, 0, 0.12) 0%, rgba(255, 60, 0, 0.03) 60%, transparent 80%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-body::after {
-  content: '';
-  position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 120, 20, 0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(139, 92, 246, 0.14) 0%, transparent 50%),
+    radial-gradient(circle at 50% 85%, rgba(124, 58, 237, 0.08) 0%, transparent 60%),
+    #080a14;
   pointer-events: none;
   z-index: 0;
 }
 
-.app-container {
+.app-layout-wrapper {
   display: flex;
-  flex-direction: column;
   min-height: 100vh;
   position: relative;
   z-index: 1;
-}
-
-.container {
-  width: 100%;
-  max-width: 1360px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
 }
 
 /* Typography Utility */
@@ -176,7 +147,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.2;
   color: var(--text-primary);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 
 p {
@@ -186,22 +157,21 @@ p {
 a {
   color: var(--brand-primary);
   text-decoration: none;
-  transition: color var(--transition-fast), text-shadow var(--transition-fast);
+  transition: color var(--transition-fast);
 }
 
 a:hover {
   color: var(--brand-primary-hover);
-  text-shadow: 0 0 12px rgba(255, 106, 0, 0.5);
 }
 
 code {
-  font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+  font-family: var(--font-mono);
   font-size: 0.85em;
-  background: rgba(255, 120, 20, 0.08);
-  border: 1px solid rgba(255, 120, 20, 0.2);
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.25);
   padding: 0.15rem 0.4rem;
   border-radius: var(--radius-sm);
-  color: #ff9e42;
+  color: #c4b5fd;
 }
 
 /* Visibility Utilities */
@@ -215,18 +185,18 @@ code {
 .icon-md { width: 20px; height: 20px; }
 .icon-lg { width: 24px; height: 24px; }
 
-/* Custom Luxury Amber Scrollbars */
+/* Custom Purple Scrollbars */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #080604;
+  background: #080a14;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 120, 20, 0.22);
+  background: rgba(139, 92, 246, 0.25);
   border-radius: var(--radius-full);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 140, 30, 0.45);
+  background: rgba(168, 85, 247, 0.5);
 }

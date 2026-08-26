@@ -93,6 +93,83 @@ class UIRenderer {
     if (pendSubEl) pendSubEl.textContent = `${pending} pending, ${blocked} blocked`;
     if (hoursEl) hoursEl.textContent = typeof totalHours === 'number' ? totalHours.toFixed(1) : parseFloat(totalHours || 0).toFixed(1);
     if (ctxEl) ctxEl.textContent = dateContext;
+
+    // OS Workspace Dashboard Metrics Card
+    const totalHoursDisplay = document.getElementById('metricTotalHoursDisplay');
+    const statusSummary = document.getElementById('metricStatusSummary');
+    const progressBarFill = document.getElementById('metricProgressBarFill');
+    const completedCountDisplay = document.getElementById('metricCompletedCountDisplay');
+    const pendingCountDisplay = document.getElementById('metricPendingCountDisplay');
+
+    if (totalHoursDisplay) totalHoursDisplay.textContent = `${totalHours.toFixed(1)} hrs`;
+    if (statusSummary) statusSummary.textContent = `${totalTasks} Tasks • ${rate}% Rate`;
+    if (progressBarFill) progressBarFill.style.width = `${Math.min(100, rate)}%`;
+    if (completedCountDisplay) completedCountDisplay.textContent = completed;
+    if (pendingCountDisplay) pendingCountDisplay.textContent = pending + inProgress;
+  }
+
+  // Render Dashboard Hub Task List (Image 2 My Tasks Widget)
+  renderDashboardTasks(entries, onStatusChange, onEdit, onDuplicate, onDelete) {
+    const listEl = document.getElementById('dashboardTaskList');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+
+    if (entries.length === 0) {
+      listEl.innerHTML = `
+        <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem;">
+          <i data-lucide="check-circle" style="width: 28px; height: 28px; margin: 0 auto 0.5rem auto; display: block; opacity: 0.5;"></i>
+          No tasks recorded for this filter. Click <strong>+ Add Task</strong> above to log work.
+        </div>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
+
+    entries.forEach(entry => {
+      const row = document.createElement('div');
+      row.className = 'task-item-row';
+      const isDone = entry.status === 'Completed';
+
+      row.innerHTML = `
+        <div class="task-item-left">
+          <div class="task-check-circle ${isDone ? 'completed' : ''}" data-id="${entry.id}" title="${isDone ? 'Mark as In Progress' : 'Mark as Completed'}">
+            ${isDone ? '<i data-lucide="check" style="width: 12px; height: 12px;"></i>' : ''}
+          </div>
+          <div style="flex: 1; min-width: 0;">
+            <div class="task-item-title ${isDone ? 'completed' : ''}">${this.escapeHtml(entry.work.split('\n')[0])}</div>
+            <div style="display: flex; align-items: center; gap: 0.4rem; margin-top: 0.2rem;">
+              <span class="project-pill" style="font-size: 0.68rem; padding: 0.1rem 0.4rem;">${this.escapeHtml(entry.projectName)}</span>
+              ${entry.hoursWorked ? `<span style="font-size: 0.7rem; color: #c4b5fd; font-weight: 600;">${entry.hoursWorked}h</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="task-item-right">
+          <span class="task-item-date">${UIRenderer.formatDisplayDate(entry.date)}</span>
+          <button class="btn-action edit" title="Edit task" data-id="${entry.id}"><i data-lucide="edit-2" class="icon-xs"></i></button>
+          <button class="btn-action delete" title="Delete task" data-id="${entry.id}"><i data-lucide="trash-2" class="icon-xs"></i></button>
+        </div>
+      `;
+
+      // Checkbox click event
+      const checkBtn = row.querySelector('.task-check-circle');
+      if (checkBtn) {
+        checkBtn.addEventListener('click', () => {
+          const nextStatus = isDone ? 'In Progress' : 'Completed';
+          onStatusChange(entry.id, nextStatus);
+          if (nextStatus === 'Completed' && window.confetti) window.confetti();
+        });
+      }
+
+      const editBtn = row.querySelector('.btn-action.edit');
+      if (editBtn) editBtn.addEventListener('click', () => onEdit(entry));
+      
+      const delBtn = row.querySelector('.btn-action.delete');
+      if (delBtn) delBtn.addEventListener('click', () => onDelete(entry.id));
+
+      listEl.appendChild(row);
+    });
+
+    if (window.lucide) window.lucide.createIcons();
   }
 
   // Render Table View (Desktop & Tablet)
