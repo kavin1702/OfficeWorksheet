@@ -1,5 +1,5 @@
-/**
- * Actual Office Daily Worksheet Data (Aug 2026)
+﻿/**
+ * Actual Office Daily Worksheet Data (August 2026)
  * Assigned directly to user: kavin@8chili.com (Kavin)
  */
 
@@ -10,7 +10,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userName: "Kavin (8chili)",
     date: "2026-08-03",
     projectName: "MDI_Manu_CleaningEthanol",
-    work: "• Updated Grab Pose\n• Implemented audio changes",
+    work: "â€¢ Updated Grab Pose\nâ€¢ Implemented audio changes",
     status: "Completed",
     hoursWorked: 8.0,
     priority: "High",
@@ -24,7 +24,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userName: "Kavin (8chili)",
     date: "2026-08-04",
     projectName: "MDI_Manu_CleaningEthanol",
-    work: "• Tested 4 simulations in MDI environment",
+    work: "â€¢ Tested 4 simulations in MDI environment",
     status: "Completed",
     hoursWorked: 8.0,
     priority: "High",
@@ -66,7 +66,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userName: "Kavin (8chili)",
     date: "2026-08-06",
     projectName: "MDI_Parisson Area Cleaning",
-    work: "Step Wizard — worked on 10 sequential simulation steps",
+    work: "Step Wizard â€” worked on 10 sequential simulation steps",
     status: "In Progress",
     hoursWorked: 3.5,
     priority: "High",
@@ -103,6 +103,20 @@ const SAMPLE_WORKSHEET_DATA = [
     updatedAt: "2026-08-06T18:00:00Z"
   },
   {
+    id: "task-aug-06-4",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-06",
+    projectName: "MDI_Cleaning of Purified Water",
+    work: "Fixed Audio triggers, Detect Visual markers and Grab Pose",
+    status: "In Progress",
+    hoursWorked: 2.0,
+    priority: "Medium",
+    remarks: "Audio cue alignment completed.",
+    createdAt: "2026-08-06T16:00:00Z",
+    updatedAt: "2026-08-06T18:00:00Z"
+  },
+  {
     id: "task-aug-07-1",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
@@ -129,6 +143,48 @@ const SAMPLE_WORKSHEET_DATA = [
     remarks: "Environment layout finalized.",
     createdAt: "2026-08-07T14:00:00Z",
     updatedAt: "2026-08-07T18:00:00Z"
+  },
+  {
+    id: "task-aug-07-3",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-07",
+    projectName: "MDI_Manu_Ethanol",
+    work: "Updating VIVE package and VR SDK dependencies",
+    status: "In Progress",
+    hoursWorked: 3.0,
+    priority: "High",
+    remarks: "VIVE SDK upgrade in progress.",
+    createdAt: "2026-08-07T14:00:00Z",
+    updatedAt: "2026-08-07T17:00:00Z"
+  },
+  {
+    id: "task-aug-07-4",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-07",
+    projectName: "MDI_Setup and Ops",
+    work: "Updating VIVE package configuration and build settings",
+    status: "In Progress",
+    hoursWorked: 2.5,
+    priority: "Medium",
+    remarks: "Testing headset tracking.",
+    createdAt: "2026-08-07T14:00:00Z",
+    updatedAt: "2026-08-07T16:30:00Z"
+  },
+  {
+    id: "task-aug-07-5",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-07",
+    projectName: "FFS - Cleaning of Parisson Area",
+    work: "Step Wizard setup and flow integration",
+    status: "In Progress",
+    hoursWorked: 2.5,
+    priority: "Medium",
+    remarks: "Initial step sequence mapped.",
+    createdAt: "2026-08-07T14:00:00Z",
+    updatedAt: "2026-08-07T16:30:00Z"
   },
   {
     id: "task-aug-08-1",
@@ -159,12 +215,54 @@ const SAMPLE_WORKSHEET_DATA = [
     updatedAt: "2026-08-08T18:00:00Z"
   },
   {
+    id: "task-aug-08-3",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-08",
+    projectName: "Leave / Weekend",
+    work: "Weekend / Off",
+    status: "Leave",
+    hoursWorked: 0,
+    priority: "Low",
+    remarks: "Weekend",
+    createdAt: "2026-08-08T00:00:00Z",
+    updatedAt: "2026-08-08T00:00:00Z"
+  },
+  {
+    id: "task-aug-09",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-09",
+    projectName: "Leave / Weekend",
+    work: "Weekend / Off",
+    status: "Leave",
+    hoursWorked: 0,
+    priority: "Low",
+    remarks: "Weekend",
+    createdAt: "2026-08-09T00:00:00Z",
+    updatedAt: "2026-08-09T00:00:00Z"
+  },
+  {
+    id: "task-aug-10",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-10",
+    projectName: "FFS_Cleaning Of Parisson Area",
+    work: "â€¢ Completed the Step Wizard for all steps\nâ€¢ Fixed Detect Visual functionality for all steps",
+    status: "Completed",
+    hoursWorked: 8.0,
+    priority: "High",
+    remarks: "All step wizards verified and working.",
+    createdAt: "2026-08-10T09:30:00Z",
+    updatedAt: "2026-08-10T18:00:00Z"
+  },
+  {
     id: "task-aug-11-1",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-11",
     projectName: "MDI-LineClearance",
-    work: "Simulation step update — corrected order of operation for steps 4 & 5",
+    work: "Simulation step update â€” corrected order of operation for steps 4 & 5",
     status: "In Progress",
     hoursWorked: 4.0,
     priority: "Medium",
@@ -184,6 +282,20 @@ const SAMPLE_WORKSHEET_DATA = [
     priority: "Medium",
     remarks: "Cleaned redundant mesh colliders.",
     createdAt: "2026-08-11T14:00:00Z",
+    updatedAt: "2026-08-11T18:00:00Z"
+  },
+  {
+    id: "task-aug-11-3",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-11",
+    projectName: "FFS - Cleaning of Parisson Area",
+    work: "â€¢ Worked on the Step Events\nâ€¢ Configured and updated event behavior for the simulation steps",
+    status: "In Progress",
+    hoursWorked: 8.0,
+    priority: "High",
+    remarks: "Event triggers connected to state machine.",
+    createdAt: "2026-08-11T09:30:00Z",
     updatedAt: "2026-08-11T18:00:00Z"
   },
   {
@@ -215,7 +327,21 @@ const SAMPLE_WORKSHEET_DATA = [
     updatedAt: "2026-08-12T16:00:00Z"
   },
   {
-    id: "task-aug-13",
+    id: "task-aug-12-3",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-12",
+    projectName: "MDI_Manu_Ethanol",
+    work: "â€¢ Correction work on simulation models\nâ€¢ Testing on the VR platform",
+    status: "In Progress",
+    hoursWorked: 8.0,
+    priority: "High",
+    remarks: "Performance testing on target hardware.",
+    createdAt: "2026-08-12T09:30:00Z",
+    updatedAt: "2026-08-12T18:00:00Z"
+  },
+  {
+    id: "task-aug-13-1",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-13",
@@ -229,7 +355,21 @@ const SAMPLE_WORKSHEET_DATA = [
     updatedAt: "2026-08-13T13:30:00Z"
   },
   {
-    id: "task-aug-14",
+    id: "task-aug-13-2",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-13",
+    projectName: "Leave / Off",
+    work: "Official Leave",
+    status: "Leave",
+    hoursWorked: 0,
+    priority: "Low",
+    remarks: "Approved Leave",
+    createdAt: "2026-08-13T00:00:00Z",
+    updatedAt: "2026-08-13T00:00:00Z"
+  },
+  {
+    id: "task-aug-14-1",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-14",
@@ -241,6 +381,20 @@ const SAMPLE_WORKSHEET_DATA = [
     remarks: "Completed line clearance run-through with 0 errors.",
     createdAt: "2026-08-14T09:30:00Z",
     updatedAt: "2026-08-14T13:30:00Z"
+  },
+  {
+    id: "task-aug-14-2",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-14",
+    projectName: "Leave / Off",
+    work: "Official Leave",
+    status: "Leave",
+    hoursWorked: 0,
+    priority: "Low",
+    remarks: "Approved Leave",
+    createdAt: "2026-08-14T00:00:00Z",
+    updatedAt: "2026-08-14T00:00:00Z"
   }
 ];
 

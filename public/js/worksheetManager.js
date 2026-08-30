@@ -27,17 +27,24 @@ class WorksheetManager {
     let list = await this.storage.fetchAll();
     if (!list || list.length === 0) {
       if (window.SAMPLE_WORKSHEET_DATA) {
-        list = window.SAMPLE_WORKSHEET_DATA;
+        list = [...window.SAMPLE_WORKSHEET_DATA];
         await this.storage.batchImport(list);
       }
     } else {
-      // Automatically migrate all work data to kavin@8chili.com
+      // Automatically migrate all work data to kavin@8chili.com and normalize dates
       let migrated = false;
       list.forEach(e => {
         if (!e.userId || e.userId === 'user_kavin' || e.userId === 'user_admin_mnkavin' || e.userName === 'Kavin' || e.userName === 'Kavin M' || !e.userName) {
           e.userId = 'user_8chili_kavin';
           e.userName = 'Kavin (8chili)';
           migrated = true;
+        }
+        if (e.date && this.storage && typeof this.storage.normalizeDate === 'function') {
+          const nd = this.storage.normalizeDate(e.date);
+          if (nd !== e.date) {
+            e.date = nd;
+            migrated = true;
+          }
         }
       });
       if (migrated) {
@@ -302,6 +309,16 @@ class WorksheetManager {
       const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       startDate = WorksheetManager.formatDateIso(firstDay);
       endDate = WorksheetManager.formatDateIso(lastDay);
+
+      // Fallback: If device date differs from worksheet data month, show August 2026
+      const hasMonthRecords = this.entries.some(e => e.date && e.date >= startDate && e.date <= endDate);
+      if (!hasMonthRecords && this.entries.some(e => e.date && e.date.startsWith('2026-08'))) {
+        startDate = '2026-08-01';
+        endDate = '2026-08-31';
+      }
+    } else if (this.filters.dateRange === 'all') {
+      startDate = null;
+      endDate = null;
     } else if (this.filters.dateRange === 'custom') {
       startDate = this.filters.customStartDate;
       endDate = this.filters.customEndDate;

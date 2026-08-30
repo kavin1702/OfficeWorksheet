@@ -340,23 +340,69 @@ class CloudStorageService {
   }
 
   normalizeDate(d) {
-    if (!d) return '';
+    if (!d) return WorksheetManager.getTodayStr();
     let str = String(d).trim();
-    if (str.startsWith('2001-08-') || str.startsWith('2001-8-')) {
-      str = '2026-08-' + str.substring(str.lastIndexOf('-') + 1).padStart(2, '0');
+
+    // Already YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+      return str;
     }
-    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+
+    // YYYY-M-D or YYYY/M/D or YYYY/MM/DD
+    const ymdMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+    if (ymdMatch) {
+      return `${ymdMatch[1]}-${String(ymdMatch[2]).padStart(2, '0')}-${String(ymdMatch[3]).padStart(2, '0')}`;
+    }
+
+    // DD-MM-YYYY or DD/MM/YYYY
+    const dmyMatch = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+    if (dmyMatch) {
+      return `${dmyMatch[3]}-${String(dmyMatch[2]).padStart(2, '0')}-${String(dmyMatch[1]).padStart(2, '0')}`;
+    }
+
+    // Month name lookup
+    const months = {
+      jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
+      jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12'
+    };
+
+    // Formats like: "Tue Aug 04", "Aug 04", "Aug 4", "04 Aug 2026", "Aug 4, 2026", "4-Aug-2026", "Tue Aug 04 2026"
+    const mMatch = str.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s*[-/,\s]*\s*(\d{1,2})/i) ||
+                   str.match(/(\d{1,2})\s*[-/,\s]*\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*/i);
+
+    if (mMatch) {
+      let mStr, dStr;
+      if (isNaN(parseInt(mMatch[1], 10))) {
+        mStr = mMatch[1].toLowerCase().substring(0, 3);
+        dStr = mMatch[2];
+      } else {
+        dStr = mMatch[1];
+        mStr = mMatch[2].toLowerCase().substring(0, 3);
+      }
+      
+      const monthNum = months[mStr] || '08';
+      const dayNum = String(parseInt(dStr, 10)).padStart(2, '0');
+      
+      // Look for year 202X or default to 2026
+      const yrMatch = str.match(/202\d/);
+      const yr = yrMatch ? yrMatch[0] : '2026';
+      
+      return `${yr}-${monthNum}-${dayNum}`;
+    }
+
+    // Fallback Date object
     try {
-      const dt = new Date(d);
+      const dt = new Date(str);
       if (!isNaN(dt.getTime())) {
         let yr = dt.getFullYear();
-        if (yr === 2001) yr = 2026;
+        if (yr < 2020 || yr > 2030) yr = 2026;
         const mo = String(dt.getMonth() + 1).padStart(2, '0');
         const da = String(dt.getDate()).padStart(2, '0');
         return `${yr}-${mo}-${da}`;
       }
     } catch (e) {}
-    return str.substring(0, 10);
+
+    return '2026-08-01';
   }
 
   // Network Listeners
