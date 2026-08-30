@@ -2279,6 +2279,28 @@ code {
               <!-- Populated via UIRenderer -->
             </div>
           </div>
+
+          <!-- Selected Day Task Details Inspector -->
+          <div class="calendar-day-inspector hidden" id="calendarDayDetails" style="margin-top: 1.25rem;">
+            <div class="card" style="background: rgba(18, 22, 44, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: var(--radius-lg); padding: 1.25rem; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                  <h3 id="inspectorDateTitle" style="font-size: 1.05rem; font-weight: 700; color: #ffffff; margin: 0;">Tasks for Selected Day</h3>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <button class="btn btn-primary btn-sm" id="btnAddForSelectedDate">
+                    <i data-lucide="plus" class="icon-xs"></i> Add Log For This Day
+                  </button>
+                  <button class="btn btn-outline btn-sm" id="btnCloseDayInspector">
+                    <i data-lucide="x" class="icon-xs"></i>
+                  </button>
+                </div>
+              </div>
+              <div id="inspectorTasksList" class="inspector-tasks-list">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 4. Analytics & Charts View (FIXED: Working Donut & Bar Charts) -->
@@ -4719,22 +4741,27 @@ class UIRenderer {
     const monthName = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     if (monthTitle) monthTitle.textContent = monthName;
 
-    // Month Stats
+    // Month Stats (safe null checks)
     const stats = manager.getMonthStats(year, month);
-    document.getElementById('calStatWorkingDays').textContent = stats.workingDaysCount;
-    document.getElementById('calStatCompleted').textContent = stats.completedCount;
-    document.getElementById('calStatHours').textContent = `${stats.totalHours}h`;
-    document.getElementById('calStatLeave').textContent = stats.leaveDaysCount;
+    const statCompleted = document.getElementById('calStatCompleted');
+    const statPending = document.getElementById('calStatPending');
+    const statHours = document.getElementById('calStatHours');
+    const statWorkDays = document.getElementById('calStatWorkingDays');
+    const statLeave = document.getElementById('calStatLeave');
+
+    if (statCompleted) statCompleted.textContent = stats.completedCount || 0;
+    if (statPending) statPending.textContent = stats.pendingCount || 0;
+    if (statHours) statHours.textContent = `${stats.totalHours || 0}h`;
+    if (statWorkDays) statWorkDays.textContent = stats.workingDaysCount || 0;
+    if (statLeave) statLeave.textContent = stats.leaveDaysCount || 0;
 
     // Get Entries for this month
     const entriesMap = manager.getEntriesForMonth(year, month);
 
     grid.innerHTML = '';
 
-    // Calculate start day (0=Sun, 1=Mon, ..., 6=Sat)
-    let firstDayIndex = dateObj.getDay(); 
-    // Shift to Mon=0, ..., Sun=6
-    firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+    // Calculate start day (0=Sun, 1=Mon, ..., 6=Sat) matching Sun Mon Tue Wed Thu Fri Sat
+    const firstDayIndex = dateObj.getDay(); 
 
     const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
     const prevMonthLastDay = new Date(year, month, 0).getDate();
@@ -4745,10 +4772,10 @@ class UIRenderer {
     for (let x = firstDayIndex; x > 0; x--) {
       const prevDate = prevMonthLastDay - x + 1;
       const cell = document.createElement('div');
-      cell.className = 'calendar-day-cell other-month';
+      cell.className = 'cal-day-cell other-month';
       cell.innerHTML = `
-        <div class="day-header-row">
-          <span class="day-number">${prevDate}</span>
+        <div class="day-header-row" style="display: flex; justify-content: space-between;">
+          <span class="cal-day-num" style="opacity: 0.35;">${prevDate}</span>
         </div>
       `;
       grid.appendChild(cell);
@@ -4761,7 +4788,7 @@ class UIRenderer {
       const fullDate = `${year}-${monthStr}-${dayStr}`;
 
       const cell = document.createElement('div');
-      cell.className = 'calendar-day-cell';
+      cell.className = 'cal-day-cell';
       if (fullDate === todayStr) cell.classList.add('today');
       if (fullDate === selectedDate) cell.classList.add('selected');
 
@@ -4777,35 +4804,35 @@ class UIRenderer {
       let tasksHtml = '';
       const visibleTasks = dayEntries.slice(0, 3);
       visibleTasks.forEach(task => {
-        let statusCls = 'in-progress';
-        if (task.status === 'Completed') statusCls = 'completed';
-        else if (task.status === 'Pending') statusCls = 'pending';
-        else if (task.status === 'Blocked') statusCls = 'blocked';
-        else if (task.status === 'Leave') statusCls = 'leave';
+        let statusStyle = 'background: rgba(139, 92, 246, 0.22); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.35);';
+        if (task.status === 'Completed') statusStyle = 'background: rgba(16, 185, 129, 0.22); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35);';
+        else if (task.status === 'Pending') statusStyle = 'background: rgba(245, 158, 11, 0.22); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35);';
+        else if (task.status === 'Blocked') statusStyle = 'background: rgba(244, 63, 94, 0.22); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.35);';
+        else if (task.status === 'Leave') statusStyle = 'background: rgba(217, 70, 239, 0.22); color: #e879f9; border: 1px solid rgba(217, 70, 239, 0.35);';
 
         tasksHtml += `
-          <div class="cal-task-pill ${statusCls}" title="${this.escapeHtml(task.projectName)}: ${this.escapeHtml(task.work)}">
+          <div class="cal-task-pill" style="${statusStyle} font-size: 0.68rem; font-weight: 600; padding: 0.1rem 0.35rem; border-radius: 4px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${this.escapeHtml(task.projectName)}: ${this.escapeHtml(task.work)}">
             <span>${this.escapeHtml(task.projectName)}</span>
           </div>
         `;
       });
 
       if (dayEntries.length > 3) {
-        tasksHtml += `<span class="cal-more-tag">+${dayEntries.length - 3} more</span>`;
+        tasksHtml += `<span style="font-size: 0.65rem; color: #a78bfa; font-weight: 700; margin-top: 2px;">+${dayEntries.length - 3} more</span>`;
       }
 
       cell.innerHTML = `
-        <div class="day-header-row">
-          <span class="day-number">${i}</span>
-          ${totalDayHours > 0 ? `<span class="day-total-hours">${totalDayHours}h</span>` : ''}
+        <div class="day-header-row" style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="cal-day-num" style="font-weight: 700; color: #ffffff;">${i}</span>
+          ${totalDayHours > 0 ? `<span style="font-size: 0.7rem; font-weight: 700; color: #34d399;">${totalDayHours}h</span>` : ''}
         </div>
-        <div class="day-tasks-container">
+        <div class="cal-day-badges" style="display: flex; flex-direction: column; gap: 2px; margin-top: 4px;">
           ${tasksHtml}
         </div>
       `;
 
       cell.addEventListener('click', () => {
-        document.querySelectorAll('.calendar-day-cell').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('.cal-day-cell').forEach(c => c.classList.remove('selected'));
         cell.classList.add('selected');
         onDateSelect(fullDate);
       });
@@ -4818,10 +4845,10 @@ class UIRenderer {
     const nextDays = (7 - (totalCellsSoFar % 7)) % 7;
     for (let j = 1; j <= nextDays; j++) {
       const cell = document.createElement('div');
-      cell.className = 'calendar-day-cell other-month';
+      cell.className = 'cal-day-cell other-month';
       cell.innerHTML = `
-        <div class="day-header-row">
-          <span class="day-number">${j}</span>
+        <div class="day-header-row" style="display: flex; justify-content: space-between;">
+          <span class="cal-day-num" style="opacity: 0.35;">${j}</span>
         </div>
       `;
       grid.appendChild(cell);

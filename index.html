@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -585,6 +585,28 @@
 
             <div class="calendar-days-grid" id="calendarDaysGrid">
               <!-- Populated via UIRenderer -->
+            </div>
+          </div>
+
+          <!-- Selected Day Task Details Inspector -->
+          <div class="calendar-day-inspector hidden" id="calendarDayDetails" style="margin-top: 1.25rem;">
+            <div class="card" style="background: rgba(18, 22, 44, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: var(--radius-lg); padding: 1.25rem; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                  <h3 id="inspectorDateTitle" style="font-size: 1.05rem; font-weight: 700; color: #ffffff; margin: 0;">Tasks for Selected Day</h3>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <button class="btn btn-primary btn-sm" id="btnAddForSelectedDate">
+                    <i data-lucide="plus" class="icon-xs"></i> Add Log For This Day
+                  </button>
+                  <button class="btn btn-outline btn-sm" id="btnCloseDayInspector">
+                    <i data-lucide="x" class="icon-xs"></i>
+                  </button>
+                </div>
+              </div>
+              <div id="inspectorTasksList" class="inspector-tasks-list">
+                <!-- Populated via JS -->
+              </div>
             </div>
           </div>
         </div>
