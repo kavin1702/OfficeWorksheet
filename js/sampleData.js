@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Master Simulation Project Catalogs & Actual Worksheet Records
  * User: kavin@8chili.com (Kavin)
  */
 
 // 1. 12 Master Simulations Worked On (Development / Setup / Implementation)
 const SIMULATIONS_WORKED_ON = [
-  "MDI â€“ Manufacturing / Manual Cleaning of Ethanol",
-  "FFS â€“ Cleaning of Parisson Area",
-  "MDI â€“ Cleaning of Purified Water",
-  "MDI â€“ Setup and Operations",
+  "MDI - Manufacturing / Manual Cleaning of Ethanol",
+  "FFS - Cleaning of Parisson Area",
+  "MDI - Cleaning of Purified Water",
+  "MDI - Setup and Operations",
   "Lupin Ophthalmic (including Jammed / Toppled Bottle)",
   "Lighting in Gowning",
-  "Operation of Filling Machine â€“ FFS",
-  "Cleaning Nozzle Shroud â€“ FFS",
+  "Operation of Filling Machine - FFS",
+  "Cleaning Nozzle Shroud - FFS",
   "Jammed / Toppled Nozzles",
   "SVP2 Intervention",
   "Ophtha 3 Assembly",
@@ -21,13 +21,13 @@ const SIMULATIONS_WORKED_ON = [
 
 // 2. 7 Master Simulations Tested (QA / Verification / Review)
 const SIMULATIONS_TESTED = [
-  "MDI â€“ Cleaning of Purified Water",
-  "MDI â€“ Cleaning of Ethanol",
-  "MDI â€“ Line Clearance",
-  "MDI â€“ Setup and Operation",
-  "MDI â€“ Parital Cleaning",
-  "FFS â€“ Cleaning of Nozzle Shrouds",
-  "FFS â€“ Cleaning of Parisson Area"
+  "MDI - Cleaning of Purified Water",
+  "MDI - Cleaning of Ethanol",
+  "MDI - Line Clearance",
+  "MDI - Setup and Operation",
+  "MDI - Partial Cleaning",
+  "FFS - Cleaning of Nozzle Shrouds",
+  "FFS - Cleaning of Parisson Area"
 ];
 
 // 3. Complete Initial Worksheet Records for Kavin (kavin@8chili.com)
@@ -37,9 +37,9 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-03",
-    projectName: "MDI â€“ Manufacturing / Manual Cleaning of Ethanol",
+    projectName: "MDI - Manufacturing / Manual Cleaning of Ethanol",
     workType: "Worked",
-    work: "â€¢ Updated Grab Pose in VR\nâ€¢ Implemented audio trigger changes",
+    work: "- Updated Grab Pose in VR\n- Implemented audio trigger changes",
     status: "Completed",
     hoursWorked: 8.0,
     priority: "High",
@@ -52,9 +52,9 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-04",
-    projectName: "MDI â€“ Cleaning of Ethanol",
+    projectName: "MDI - Cleaning of Ethanol",
     workType: "Tested",
-    work: "â€¢ Tested 4 simulations in MDI environment\nâ€¢ Verified controller interaction limits",
+    work: "- Tested 4 simulations in MDI environment\n- Verified controller interaction limits",
     status: "Completed",
     hoursWorked: 8.0,
     priority: "High",
@@ -67,7 +67,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-05",
-    projectName: "FFS â€“ Cleaning of Parisson Area",
+    projectName: "FFS - Cleaning of Parisson Area",
     workType: "Worked",
     work: "Storyboard explanation and process walkthrough with team",
     status: "Completed",
@@ -82,7 +82,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-05",
-    projectName: "MDI â€“ Manufacturing / Manual Cleaning of Ethanol",
+    projectName: "MDI - Manufacturing / Manual Cleaning of Ethanol",
     workType: "Worked",
     work: "Updated the simulation package and asset references",
     status: "Completed",
@@ -97,9 +97,9 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-06",
-    projectName: "FFS â€“ Cleaning of Parisson Area",
+    projectName: "FFS - Cleaning of Parisson Area",
     workType: "Worked",
-    work: "Step Wizard â€” worked on 10 sequential simulation steps",
+    work: "Step Wizard - worked on 10 sequential simulation steps",
     status: "In Progress",
     hoursWorked: 3.5,
     priority: "High",
@@ -112,7 +112,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-06",
-    projectName: "MDI â€“ Cleaning of Purified Water",
+    projectName: "MDI - Cleaning of Purified Water",
     workType: "Worked",
     work: "Grab Pose correction and hand interaction refinement",
     status: "In Progress",
@@ -127,7 +127,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-06",
-    projectName: "MDI â€“ Cleaning of Purified Water",
+    projectName: "MDI - Cleaning of Purified Water",
     workType: "Tested",
     work: "Fixed Audio triggers, Detect Visual markers and tested Grab Pose in headset",
     status: "Completed",
@@ -142,7 +142,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-07",
-    projectName: "MDI â€“ Setup and Operations",
+    projectName: "MDI - Setup and Operations",
     workType: "Worked",
     work: "Updating VIVE package and VR SDK dependencies",
     status: "In Progress",
@@ -157,7 +157,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-07",
-    projectName: "MDI â€“ Setup and Operation",
+    projectName: "MDI - Setup and Operation",
     workType: "Tested",
     work: "Testing headset tracking and operator ergonomics in virtual cleanroom",
     status: "In Progress",
@@ -172,7 +172,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-07",
-    projectName: "FFS â€“ Cleaning of Parisson Area",
+    projectName: "FFS - Cleaning of Parisson Area",
     workType: "Tested",
     work: "Testing step wizard sequence and error highlighting",
     status: "In Progress",
@@ -187,7 +187,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-08",
-    projectName: "MDI â€“ Line Clearance",
+    projectName: "MDI - Line Clearance",
     workType: "Tested",
     work: "Step Wizard testing for sequential line clearance verification",
     status: "In Progress",
@@ -202,7 +202,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-08",
-    projectName: "MDI â€“ Parital Cleaning",
+    projectName: "MDI - Partial Cleaning",
     workType: "Tested",
     work: "Verification testing for partial cleaning protocols",
     status: "In Progress",
@@ -217,9 +217,9 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-10",
-    projectName: "FFS â€“ Cleaning of Parisson Area",
+    projectName: "FFS - Cleaning of Parisson Area",
     workType: "Worked",
-    work: "â€¢ Completed the Step Wizard for all steps\nâ€¢ Fixed Detect Visual functionality for all steps",
+    work: "- Completed the Step Wizard for all steps\n- Fixed Detect Visual functionality for all steps",
     status: "Completed",
     hoursWorked: 8.0,
     priority: "High",
@@ -232,7 +232,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-11",
-    projectName: "FFS â€“ Cleaning of Nozzle Shrouds",
+    projectName: "FFS - Cleaning of Nozzle Shrouds",
     workType: "Tested",
     work: "Tested Nozzle Shroud disinfection steps and tool snap interactions",
     status: "Completed",
@@ -247,9 +247,9 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-11",
-    projectName: "Cleaning Nozzle Shroud â€“ FFS",
+    projectName: "Cleaning Nozzle Shroud - FFS",
     workType: "Worked",
-    work: "Model updates & asset reference corrections across scene nodes",
+    work: "Model updates and asset reference corrections across scene nodes",
     status: "In Progress",
     hoursWorked: 4.0,
     priority: "Medium",
@@ -292,7 +292,7 @@ const SAMPLE_WORKSHEET_DATA = [
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-13",
-    projectName: "Operation of Filling Machine â€“ FFS",
+    projectName: "Operation of Filling Machine - FFS",
     workType: "Worked",
     work: "Rotary dial and HMI control panel scripting",
     status: "In Progress",
@@ -364,7 +364,7 @@ const SAMPLE_WORKSHEET_DATA = [
   }
 ];
 
-// Export catalogs & dataset
+// Export catalogs and dataset
 window.SIMULATIONS_WORKED_ON = SIMULATIONS_WORKED_ON;
 window.SIMULATIONS_TESTED = SIMULATIONS_TESTED;
 window.SAMPLE_WORKSHEET_DATA = SAMPLE_WORKSHEET_DATA;

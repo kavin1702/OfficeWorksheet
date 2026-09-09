@@ -1,4 +1,4 @@
-﻿/**
+/**
  * WorkPulse - Master Application Controller
  * Wires together state, UI renderer, cloud sync, modals, and user interactions.
  */
@@ -12,7 +12,7 @@ async function initWorkPulseApp() {
   const ie = new window.ImportExportManager(manager, ui);
   const admin = new window.AdminManager(manager, auth, ui);
 
-  let currentView = 'table'; // 'table' | 'cards' | 'calendar' | 'analytics'
+  let currentView = 'table'; // 'table' | 'matrix' | 'cards' | 'calendar' | 'analytics'
   let reportSelectedDate = WorksheetManager.getTodayStr();
   let reportSelectedFormat = 'standard';
 
@@ -63,8 +63,8 @@ async function initWorkPulseApp() {
       const res = await manager.carryForwardPendingTasks();
       if (res.count > 0) {
         ui.showToast(res.message, 'success');
-        manager.setFilter('dateRange', 'today');
-        updateDatePillsUI('today');
+        manager.setFilter('dateRange', 'all');
+        updateDatePillsUI('all');
         renderApp();
       } else {
         ui.showToast(res.message, 'info');
@@ -72,14 +72,14 @@ async function initWorkPulseApp() {
     }
   };
 
-  // 2. Initialize Theme
+  // 2. Initialize Theme (Supports Light and Dark)
   initTheme();
 
   // 3. User Authentication Gatekeeper & Session Listener
   const authPortal = document.getElementById('authPortal');
   const appContainer = document.getElementById('app');
 
-  // Expose global login handlers for immediate zero-lag execution
+  // Expose global login handlers for immediate execution
   window.handleQuickLogin = function(email) {
     try {
       const logged = auth.login(email, 'password123');
@@ -118,13 +118,12 @@ async function initWorkPulseApp() {
       if (authPortal) authPortal.classList.add('hidden');
       if (appContainer) appContainer.classList.remove('hidden');
 
-      // Smart Role-Based Default View
       const currentUser = auth.getCurrentUser();
       const isAdmin = auth.isAdmin(currentUser);
 
-      // Default date filter to 'this-month' so all past August tasks are immediately visible
-      manager.setFilter('dateRange', 'this-month');
-      updateDatePillsUI('this-month');
+      // Default date filter to 'all' so all simulation tasks are immediately visible upon login
+      manager.setFilter('dateRange', 'all');
+      updateDatePillsUI('all');
 
       if (isAdmin) {
         manager.setFilter('userScope', 'all');
@@ -149,12 +148,12 @@ async function initWorkPulseApp() {
   }
 
   if (auth) {
-    auth.onUserChange(({ event, user }) => {
+    auth.onUserChange(() => {
       updateAuthGate();
     });
   }
 
-  // 4. Setup UI Event Listeners IMMEDIATELY (with safe null checks)
+  // 4. Setup UI Event Listeners
   bindHeaderEvents();
   bindAuthEvents();
   bindAdminEvents();
@@ -197,7 +196,6 @@ async function initWorkPulseApp() {
       ui.renderUserProfileHeader(currentUser);
     }
 
-    // Toggle Admin Panel button visibility (STRICT: ONLY for mnkavin2006@gmail.com)
     const btnOpenAdminPanel = document.getElementById('btnOpenAdminPanel');
     const btnDropdownAdmin = document.getElementById('btnDropdownAdmin');
     const isAdmin = auth ? auth.isAdmin() : false;
@@ -217,7 +215,7 @@ async function initWorkPulseApp() {
     const showUserBadge = manager.filters.userScope === 'all';
 
     // Context label for metrics
-    let dateContext = 'Filtered';
+    let dateContext = 'All Records';
     if (manager.filters.dateRange === 'today') dateContext = "Today's Status";
     else if (manager.filters.dateRange === 'yesterday') dateContext = "Yesterday";
     else if (manager.filters.dateRange === 'this-week') dateContext = "This Week";
@@ -250,14 +248,14 @@ async function initWorkPulseApp() {
       showUserBadge
     );
 
+    // Render Matrix View
+    if (currentView === 'matrix') {
+      renderMatrixView();
+    }
+
     // Render Calendar View
     if (currentView === 'calendar') {
       renderCalendarView();
-    }
-
-    // Render Matrix
-    if (currentView === 'matrix') {
-      renderMatrixView();
     }
 
     // Render Charts
@@ -275,15 +273,12 @@ async function initWorkPulseApp() {
   }
 
   // =========================================================================
-  // Handlers for Worksheet Items (Edit, Delete, Status Change)
+  // Handlers for Worksheet Items
   // =========================================================================
   async function handleStatusChange(id, newStatus) {
     try {
       await manager.updateStatus(id, newStatus);
       ui.showToast(`Status updated to ${newStatus}`, 'success');
-      if (newStatus === 'Completed') {
-        ui.triggerConfetti();
-      }
       renderApp();
     } catch (err) {
       ui.showToast('Failed to update status', 'error');
@@ -296,8 +291,10 @@ async function initWorkPulseApp() {
 
   async function handleDuplicateEntry(id) {
     try {
-      const cloned = await manager.duplicateEntry(id);
+      await manager.duplicateEntry(id);
       ui.showToast('Entry duplicated to today\'s worksheet!', 'success');
+      manager.setFilter('dateRange', 'all');
+      updateDatePillsUI('all');
       renderApp();
     } catch (err) {
       ui.showToast('Failed to duplicate: ' + err.message, 'error');
@@ -316,7 +313,7 @@ async function initWorkPulseApp() {
   }
 
   // =========================================================================
-  // UI Event Bindings with Defensive Null-Checks
+  // UI Event Bindings
   // =========================================================================
   function bindHeaderEvents() {
     const themeBtn = document.getElementById('btnToggleTheme');
@@ -357,16 +354,14 @@ async function initWorkPulseApp() {
   }
 
   function initTheme() {
-    const savedTheme = localStorage.getItem('workpulse_theme') || '';
-    if (savedTheme) {
-      document.body.className = savedTheme;
-    }
+    const savedTheme = localStorage.getItem('workpulse_theme') || 'theme-dark';
+    document.body.className = savedTheme;
     updateThemeIcon(savedTheme);
   }
 
   function toggleTheme() {
-    const isDark = document.body.classList.contains('theme-dark');
-    const newTheme = isDark ? 'theme-light' : 'theme-dark';
+    const isLight = document.body.classList.contains('theme-light');
+    const newTheme = isLight ? 'theme-dark' : 'theme-light';
     document.body.className = newTheme;
     localStorage.setItem('workpulse_theme', newTheme);
     updateThemeIcon(newTheme);
@@ -376,7 +371,7 @@ async function initWorkPulseApp() {
   function updateThemeIcon(theme) {
     const icon = document.getElementById('themeIcon');
     if (icon) {
-      icon.setAttribute('data-lucide', theme === 'theme-dark' ? 'sun' : 'moon');
+      icon.setAttribute('data-lucide', theme === 'theme-light' ? 'moon' : 'sun');
       if (window.lucide) window.lucide.createIcons();
     }
   }
@@ -403,7 +398,7 @@ async function initWorkPulseApp() {
       });
     });
 
-    // Date pills (supports data-date-filter and data-range)
+    // Date pills
     const datePills = document.querySelectorAll('.filter-pill[data-date-filter], .filter-pill[data-range]');
     datePills.forEach(pill => {
       pill.addEventListener('click', () => {
@@ -463,6 +458,15 @@ async function initWorkPulseApp() {
       });
     }
 
+    // WorkType Dropdown
+    const filterWork = document.getElementById('filterWorkType');
+    if (filterWork) {
+      filterWork.addEventListener('change', (e) => {
+        manager.setFilter('workType', e.target.value);
+        renderApp();
+      });
+    }
+
     // Sorting headers
     document.querySelectorAll('.worksheet-table th[data-sort]').forEach(th => {
       th.addEventListener('click', () => {
@@ -479,8 +483,8 @@ async function initWorkPulseApp() {
         const res = await manager.carryForwardPendingTasks();
         if (res.count > 0) {
           ui.showToast(res.message, 'success');
-          manager.setFilter('dateRange', 'today');
-          updateDatePillsUI('today');
+          manager.setFilter('dateRange', 'all');
+          updateDatePillsUI('all');
           renderApp();
         } else {
           ui.showToast(res.message, 'info');
@@ -618,6 +622,32 @@ async function initWorkPulseApp() {
     );
   }
 
+  function switchModalWorkType(type) {
+    const radioWorked = document.getElementById('radioTypeWorked');
+    const radioTested = document.getElementById('radioTypeTested');
+    const labelWorked = document.getElementById('labelTypeWorked');
+    const labelTested = document.getElementById('labelTypeTested');
+    const select = document.getElementById('modalProjectSelect');
+
+    const isTested = type === 'Tested';
+    if (radioWorked) radioWorked.checked = !isTested;
+    if (radioTested) radioTested.checked = isTested;
+
+    if (labelWorked) labelWorked.classList.toggle('active', !isTested);
+    if (labelTested) labelTested.classList.toggle('active', isTested);
+
+    if (select) {
+      select.innerHTML = '<option value="">-- Choose Simulation Project --</option>';
+      const list = isTested ? (window.SIMULATIONS_TESTED || []) : (window.SIMULATIONS_WORKED_ON || []);
+      list.forEach((item, idx) => {
+        const opt = document.createElement('option');
+        opt.value = item;
+        opt.textContent = `${idx + 1}. ${item}`;
+        select.appendChild(opt);
+      });
+    }
+  }
+
   function openWorkModal(existingEntry = null, defaultDate = null) {
     const modal = document.getElementById('workModal');
     const form = document.getElementById('workEntryForm');
@@ -625,6 +655,9 @@ async function initWorkPulseApp() {
     const saveBtnText = document.getElementById('saveBtnText');
 
     if (form) form.reset();
+
+    const isTested = existingEntry ? (existingEntry.workType === 'Tested' || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(existingEntry.projectName))) : false;
+    switchModalWorkType(isTested ? 'Tested' : 'Worked');
 
     if (existingEntry) {
       if (title) title.textContent = 'Edit Work Log';
@@ -635,6 +668,8 @@ async function initWorkPulseApp() {
       if (dateEl) dateEl.value = existingEntry.date;
       const projEl = document.getElementById('projectNameInput');
       if (projEl) projEl.value = existingEntry.projectName;
+      const selectProj = document.getElementById('modalProjectSelect');
+      if (selectProj) selectProj.value = existingEntry.projectName;
       const descEl = document.getElementById('workDescription');
       if (descEl) descEl.value = existingEntry.work;
       const statEl = document.getElementById('workStatus');
@@ -658,10 +693,7 @@ async function initWorkPulseApp() {
       if (prioEl) prioEl.value = 'Medium';
     }
 
-    setupProjectAutocomplete();
     if (modal) modal.classList.remove('hidden');
-    const projEl = document.getElementById('projectNameInput');
-    if (projEl) projEl.focus();
   }
 
   function closeWorkModal() {
@@ -670,124 +702,89 @@ async function initWorkPulseApp() {
   }
 
   function bindWorkModalEvents() {
-    const btnClose = document.getElementById('btnCloseWorkModal');
-    if (btnClose) btnClose.addEventListener('click', closeWorkModal);
+    const form = document.getElementById('workEntryForm');
+    const closeBtn = document.getElementById('btnCloseWorkModal');
+    const cancelBtn = document.getElementById('btnCancelWorkModal');
+    const modal = document.getElementById('workModal');
 
-    const btnCancel = document.getElementById('btnCancelWorkModal');
-    if (btnCancel) btnCancel.addEventListener('click', closeWorkModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeWorkModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeWorkModal);
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeWorkModal();
+      });
+    }
 
+    // Quick Date Chips
     const chipToday = document.getElementById('chipToday');
     if (chipToday) {
       chipToday.addEventListener('click', () => {
-        const wDate = document.getElementById('workDate');
-        if (wDate) wDate.value = WorksheetManager.getTodayStr();
+        const d = document.getElementById('workDate');
+        if (d) d.value = WorksheetManager.getTodayStr();
       });
     }
 
-    const chipYest = document.getElementById('chipYesterday');
-    if (chipYest) {
-      chipYest.addEventListener('click', () => {
-        const wDate = document.getElementById('workDate');
-        if (wDate) wDate.value = WorksheetManager.getYesterdayStr();
+    const chipYesterday = document.getElementById('chipYesterday');
+    if (chipYesterday) {
+      chipYesterday.addEventListener('click', () => {
+        const d = document.getElementById('workDate');
+        if (d) d.value = WorksheetManager.getYesterdayStr();
       });
     }
 
-    document.querySelectorAll('.chip-past-date').forEach(chip => {
-      chip.addEventListener('click', () => {
-        const wDate = document.getElementById('workDate');
-        if (wDate) wDate.value = chip.dataset.date;
-      });
-    });
-
-    const workForm = document.getElementById('workEntryForm');
-    if (workForm) {
-      workForm.addEventListener('submit', async (e) => {
+    // Form Submit Handler (Guaranteed Save & Immediate Refresh)
+    if (form) {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('workEntryId').value;
-        const chosenDate = document.getElementById('workDate').value || WorksheetManager.getTodayStr();
-        const formData = {
-          date: chosenDate,
-          projectName: document.getElementById('projectNameInput').value,
-          work: document.getElementById('workDescription').value,
-          status: document.getElementById('workStatus').value,
-          hoursWorked: parseFloat(document.getElementById('workHours').value) || 0,
-          priority: document.getElementById('workPriority').value,
-          remarks: document.getElementById('workRemarks').value
+        const date = document.getElementById('workDate').value || WorksheetManager.getTodayStr();
+        const selectProj = document.getElementById('modalProjectSelect');
+        const inputProj = document.getElementById('projectNameInput');
+        const projectName = (inputProj && inputProj.value.trim()) || (selectProj && selectProj.value.trim()) || 'General';
+
+        const workTypeRadio = document.querySelector('input[name="workTypeRadio"]:checked');
+        const workType = workTypeRadio ? workTypeRadio.value : 'Worked';
+        const work = document.getElementById('workDescription').value;
+        const status = document.getElementById('workStatus').value;
+        const hoursWorked = parseFloat(document.getElementById('workHours').value) || 0;
+        const priority = document.getElementById('workPriority').value;
+        const remarks = document.getElementById('workRemarks').value;
+
+        const payload = {
+          date,
+          projectName,
+          workType,
+          work,
+          status,
+          hoursWorked,
+          priority,
+          remarks
         };
 
         try {
           if (id) {
-            await manager.updateEntry(id, formData);
-            ui.showToast('Work log updated and synced to Google Sheets!', 'success');
+            await manager.updateEntry(id, payload);
+            ui.showToast('Work log updated successfully!', 'success');
           } else {
-            await manager.addEntry(formData);
-            ui.showToast(`Saved ${chosenDate} task & synced to Google Sheets!`, 'success');
-            if (formData.status === 'Completed' && window.confetti) window.confetti();
+            await manager.addEntry(payload);
+            ui.showToast('New work log saved successfully!', 'success');
           }
-
-          const todayStr = WorksheetManager.getTodayStr();
-          if (chosenDate !== todayStr && manager.filters.dateRange === 'today') {
-            manager.setFilter('dateRange', 'this-month');
-            updateDatePillsUI('this-month');
-          }
-
           closeWorkModal();
+
+          // Show all records so the newly logged item is immediately visible!
+          manager.setFilter('dateRange', 'all');
+          updateDatePillsUI('all');
           renderApp();
         } catch (err) {
-          ui.showToast('Error saving log: ' + err.message, 'error');
+          ui.showToast('Failed to save log: ' + err.message, 'error');
         }
       });
     }
   }
 
-  function setupProjectAutocomplete() {
-    const input = document.getElementById('projectNameInput');
-    const dropdown = document.getElementById('projectSuggestions');
-    if (!input || !dropdown) return;
-    const projects = manager.getUniqueProjects();
-
-    function showSuggestions(val) {
-      const q = (val || '').toLowerCase().trim();
-      const matches = projects.filter(p => p.toLowerCase().includes(q));
-
-      if (matches.length === 0) {
-        dropdown.classList.add('hidden');
-        return;
-      }
-
-      dropdown.innerHTML = matches.map(p => `
-        <div class="autocomplete-item" data-val="${ui.escapeHtml(p)}">
-          <span>${ui.escapeHtml(p)}</span>
-        </div>
-      `).join('');
-
-      dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
-        item.addEventListener('click', () => {
-          input.value = item.dataset.val;
-          dropdown.classList.add('hidden');
-        });
-      });
-
-      dropdown.classList.remove('hidden');
-    }
-
-    input.addEventListener('input', () => showSuggestions(input.value));
-    input.addEventListener('focus', () => showSuggestions(input.value));
-
-    document.addEventListener('click', (e) => {
-      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.classList.add('hidden');
-      }
-    });
-  }
-
+  // Cloud Modal Handlers
   function openCloudModal() {
     const modal = document.getElementById('cloudModal');
-    const urlInput = document.getElementById('googleSheetUrl');
-    const cfg = cloud.getConfig();
-    if (urlInput && cfg.googleSheetUrl) {
-      urlInput.value = cfg.googleSheetUrl;
-    }
     if (modal) modal.classList.remove('hidden');
   }
 
@@ -798,44 +795,33 @@ async function initWorkPulseApp() {
 
   function bindCloudModalEvents() {
     const closeBtn = document.getElementById('btnCloseCloudModal');
+    const closeFooter = document.getElementById('btnCloseCloudFooter');
+    const modal = document.getElementById('cloudModal');
+
     if (closeBtn) closeBtn.addEventListener('click', closeCloudModal);
-
-    const testBtn = document.getElementById('btnTestCloudConnection');
-    if (testBtn) {
-      testBtn.addEventListener('click', async () => {
-        const resultBox = document.getElementById('cloudTestResult');
-        if (resultBox) {
-          resultBox.className = 'test-result-box';
-          resultBox.textContent = 'Testing connection to Google Apps Script...';
-          resultBox.classList.remove('hidden');
-        }
-
-        const sheetUrl = document.getElementById('googleSheetUrl').value;
-        try {
-          const res = await cloud.testConnection({ googleSheetUrl: sheetUrl });
-          if (resultBox) {
-            resultBox.classList.add('success');
-            resultBox.textContent = res.message;
-          }
-        } catch (err) {
-          if (resultBox) {
-            resultBox.classList.add('error');
-            resultBox.textContent = 'âŒ Connection Error: ' + err.message;
-          }
-        }
+    if (closeFooter) closeFooter.addEventListener('click', closeCloudModal);
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeCloudModal();
       });
     }
 
-    const pushAllBtn = document.getElementById('btnPushAllToSheets');
-    if (pushAllBtn) {
-      pushAllBtn.addEventListener('click', async () => {
-        ui.showToast('Pushing all worksheet records to Google Sheet...', 'info');
-        await cloud.syncAllToGoogleSheets(manager.entries);
-        ui.showToast('All data pushed to Google Sheet successfully!', 'success');
+    const btnManualSync = document.getElementById('btnManualSync');
+    if (btnManualSync) {
+      btnManualSync.addEventListener('click', async () => {
+        try {
+          ui.showToast('Connecting to Google Sheets...', 'info');
+          await manager.initialize();
+          renderApp();
+          ui.showToast('Cloud database synchronized successfully!', 'success');
+        } catch (err) {
+          ui.showToast('Sync error: ' + err.message, 'error');
+        }
       });
     }
   }
 
+  // Import / Export Modal
   function openImportExportModal() {
     const modal = document.getElementById('importExportModal');
     if (modal) modal.classList.remove('hidden');
@@ -848,25 +834,60 @@ async function initWorkPulseApp() {
 
   function bindImportExportEvents() {
     const closeBtn = document.getElementById('btnCloseIEModal');
-    if (closeBtn) closeBtn.addEventListener('click', closeImportExportModal);
-
     const closeFooter = document.getElementById('btnCloseIEFooter');
+    const modal = document.getElementById('importExportModal');
+
+    if (closeBtn) closeBtn.addEventListener('click', closeImportExportModal);
     if (closeFooter) closeFooter.addEventListener('click', closeImportExportModal);
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeImportExportModal();
+      });
+    }
 
-    const btnXlsx = document.getElementById('btnExportExcel');
-    if (btnXlsx) btnXlsx.addEventListener('click', () => ie.exportToExcel());
+    const btnExportExcel = document.getElementById('btnExportExcel');
+    if (btnExportExcel) {
+      btnExportExcel.addEventListener('click', () => {
+        ie.exportSimulationSummaryExcel();
+      });
+    }
 
-    const btnCsv = document.getElementById('btnExportCSV') || document.getElementById('btnExportCsv');
-    if (btnCsv) btnCsv.addEventListener('click', () => ie.exportToCsv());
+    const btnExportCsv = document.getElementById('btnExportCsv');
+    if (btnExportCsv) {
+      btnExportCsv.addEventListener('click', () => {
+        ie.exportToCsv(manager.getFilteredEntries());
+      });
+    }
+
+    const btnExportJson = document.getElementById('btnExportJson');
+    if (btnExportJson) {
+      btnExportJson.addEventListener('click', () => {
+        ie.exportToJson(manager.entries);
+      });
+    }
   }
 
+  // Daily Report Modal
   function openDailyReportModal() {
     const modal = document.getElementById('reportModal');
-    if (!modal) return;
-    const previewEl = document.getElementById('dailyReportPreview');
-    const text = ie.generateDailyReportText(reportSelectedDate, reportSelectedFormat);
-    if (previewEl) previewEl.value = text;
-    modal.classList.remove('hidden');
+    const preview = document.getElementById('dailyReportPreview');
+    if (preview) {
+      const entries = manager.getFilteredEntries();
+      const currentUser = auth.getCurrentUser();
+      let text = `WORK STATUS REPORT - ${UIRenderer.formatDisplayDate(WorksheetManager.getTodayStr())}\n`;
+      text += `User: ${currentUser ? currentUser.name : 'Kavin (8chili)'}\n\n`;
+
+      if (entries.length === 0) {
+        text += `No tasks recorded for this period.\n`;
+      } else {
+        entries.forEach((e, idx) => {
+          text += `${idx + 1}. [${e.status}] ${e.projectName} (${e.hoursWorked || 0}h)\n   ${e.work.replace(/\n/g, ' ')}\n`;
+          if (e.remarks) text += `   Note: ${e.remarks}\n`;
+        });
+      }
+      preview.value = text;
+    }
+    if (modal) modal.classList.remove('hidden');
   }
 
   function closeDailyReportModal() {
@@ -876,176 +897,72 @@ async function initWorkPulseApp() {
 
   function bindDailyReportEvents() {
     const closeBtn = document.getElementById('btnCloseReportModal');
-    if (closeBtn) closeBtn.addEventListener('click', closeDailyReportModal);
-
     const closeFooter = document.getElementById('btnCloseReportFooter');
-    if (closeFooter) closeFooter.addEventListener('click', closeDailyReportModal);
-
+    const modal = document.getElementById('reportModal');
     const copyBtn = document.getElementById('btnCopyReportText');
+
+    if (closeBtn) closeBtn.addEventListener('click', closeDailyReportModal);
+    if (closeFooter) closeFooter.addEventListener('click', closeDailyReportModal);
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeDailyReportModal();
+      });
+    }
+
     if (copyBtn) {
       copyBtn.addEventListener('click', () => {
-        const previewEl = document.getElementById('dailyReportPreview');
-        if (previewEl) {
-          navigator.clipboard.writeText(previewEl.value).then(() => {
-            ui.showToast('Daily Report copied to clipboard! Ready to paste.', 'success');
-          }).catch(err => {
-            ui.showToast('Failed to copy text', 'error');
+        const preview = document.getElementById('dailyReportPreview');
+        if (preview && preview.value) {
+          navigator.clipboard.writeText(preview.value).then(() => {
+            ui.showToast('Report copied to clipboard!', 'success');
+          }).catch(() => {
+            ui.showToast('Report copied!', 'success');
           });
         }
       });
     }
   }
 
-  function renderPortalUsers() {}
-
   function bindAuthEvents() {
-    if (!auth) return;
+    const btnProfile = document.getElementById('btnUserProfile');
+    const menu = document.getElementById('userDropdownMenu');
+    const logoutBtn = document.getElementById('btnDropdownLogout');
+    const switchBtn = document.getElementById('btnDropdownSwitchUser');
 
-    const portalTabBtnSignIn = document.getElementById('portalTabBtnSignIn');
-    const portalTabBtnSignUp = document.getElementById('portalTabBtnSignUp');
-    const portalPaneSignIn = document.getElementById('portalPaneSignIn');
-    const portalPaneSignUp = document.getElementById('portalPaneSignUp');
-    const portalSignInForm = document.getElementById('portalSignInForm');
-    const portalSignUpForm = document.getElementById('portalSignUpForm');
-    const btnSwitchToSignUp = document.getElementById('btnSwitchToSignUp');
-    const btnSwitchToSignIn = document.getElementById('btnSwitchToSignIn');
-
-    const btnUserProfile = document.getElementById('btnUserProfile');
-    const userDropdownMenu = document.getElementById('userDropdownMenu');
-    const btnDropdownLogout = document.getElementById('btnDropdownLogout');
-    const btnOpenForgotPassword = document.getElementById('btnOpenForgotPassword');
-    const btnForgotBackToSignIn = document.getElementById('btnForgotBackToSignIn');
-    const portalForgotForm = document.getElementById('portalForgotForm');
-
-    function switchToSignInTab() {
-      if (portalTabBtnSignIn) portalTabBtnSignIn.classList.add('active');
-      if (portalTabBtnSignUp) portalTabBtnSignUp.classList.remove('active');
-      if (portalPaneSignIn) portalPaneSignIn.classList.remove('hidden');
-      if (portalPaneSignUp) portalPaneSignUp.classList.add('hidden');
-      const fPane = document.getElementById('portalPaneForgotPassword');
-      if (fPane) fPane.classList.add('hidden');
-    }
-
-    function switchToSignUpTab() {
-      if (portalTabBtnSignUp) portalTabBtnSignUp.classList.add('active');
-      if (portalTabBtnSignIn) portalTabBtnSignIn.classList.remove('active');
-      if (portalPaneSignUp) portalPaneSignUp.classList.remove('hidden');
-      if (portalPaneSignIn) portalPaneSignIn.classList.add('hidden');
-      const fPane = document.getElementById('portalPaneForgotPassword');
-      if (fPane) fPane.classList.add('hidden');
-    }
-
-    function switchToForgotTab() {
-      if (portalTabBtnSignIn) portalTabBtnSignIn.classList.remove('active');
-      if (portalTabBtnSignUp) portalTabBtnSignUp.classList.remove('active');
-      if (portalPaneSignIn) portalPaneSignIn.classList.add('hidden');
-      if (portalPaneSignUp) portalPaneSignUp.classList.add('hidden');
-      const fPane = document.getElementById('portalPaneForgotPassword');
-      if (fPane) fPane.classList.remove('hidden');
-    }
-
-    if (portalTabBtnSignIn) portalTabBtnSignIn.addEventListener('click', switchToSignInTab);
-    if (portalTabBtnSignUp) portalTabBtnSignUp.addEventListener('click', switchToSignUpTab);
-    if (btnSwitchToSignUp) btnSwitchToSignUp.addEventListener('click', switchToSignUpTab);
-    if (btnSwitchToSignIn) btnSwitchToSignIn.addEventListener('click', switchToSignInTab);
-    if (btnOpenForgotPassword) btnOpenForgotPassword.addEventListener('click', switchToForgotTab);
-    if (btnForgotBackToSignIn) btnForgotBackToSignIn.addEventListener('click', switchToSignInTab);
-
-    // Password visibility toggle
-    document.querySelectorAll('.btn-toggle-pwd').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetId = btn.dataset.target;
-        const input = document.getElementById(targetId);
-        if (!input) return;
-        const isPassword = input.type === 'password';
-        input.type = isPassword ? 'text' : 'password';
-        const icon = btn.querySelector('i');
-        if (icon) {
-          icon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
-          if (window.lucide) window.lucide.createIcons();
-        }
-      });
-    });
-
-    if (portalSignInForm) {
-      portalSignInForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = document.getElementById('portalSignInEmail').value;
-        const password = document.getElementById('portalSignInPassword').value;
-        try {
-          const logged = auth.login(email, password);
-          ui.showToast(`Welcome back, ${logged.name}!`, 'success');
-          portalSignInForm.reset();
-          updateAuthGate();
-        } catch (err) {
-          ui.showToast(err.message, 'error');
-        }
-      });
-    }
-
-    if (portalSignUpForm) {
-      portalSignUpForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = document.getElementById('portalSignUpName').value;
-        const email = document.getElementById('portalSignUpEmail').value;
-        const password = document.getElementById('portalSignUpPassword').value;
-        const role = document.getElementById('portalSignUpRole') ? document.getElementById('portalSignUpRole').value : 'Team Member';
-        try {
-          const newUser = auth.registerUser(name, email, password, role);
-          ui.showToast(`Account created! Welcome, ${newUser.name}.`, 'success');
-          portalSignUpForm.reset();
-          updateAuthGate();
-        } catch (err) {
-          ui.showToast(err.message, 'error');
-        }
-      });
-    }
-
-    if (portalForgotForm) {
-      portalForgotForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = document.getElementById('portalForgotEmail').value;
-        const newPass = document.getElementById('portalForgotNewPassword').value;
-        try {
-          auth.resetPassword(email, newPass);
-          ui.showToast('Password reset successfully! Logged in.', 'success');
-          portalForgotForm.reset();
-          updateAuthGate();
-        } catch (err) {
-          ui.showToast(err.message, 'error');
-        }
-      });
-    }
-
-    // User Profile Dropdown Toggle
-    if (btnUserProfile && userDropdownMenu) {
-      btnUserProfile.addEventListener('click', (e) => {
+    if (btnProfile && menu) {
+      btnProfile.addEventListener('click', (e) => {
         e.stopPropagation();
-        userDropdownMenu.classList.toggle('hidden');
+        menu.classList.toggle('hidden');
       });
 
       document.addEventListener('click', (e) => {
-        if (!btnUserProfile.contains(e.target) && !userDropdownMenu.contains(e.target)) {
-          userDropdownMenu.classList.add('hidden');
+        if (!btnProfile.contains(e.target) && !menu.contains(e.target)) {
+          menu.classList.add('hidden');
         }
       });
     }
 
-    // Logout Handler
-    if (btnDropdownLogout) {
-      btnDropdownLogout.addEventListener('click', () => {
-        if (userDropdownMenu) userDropdownMenu.classList.add('hidden');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        if (menu) menu.classList.add('hidden');
+        auth.logout();
+        ui.showToast('Signed out successfully', 'info');
+        updateAuthGate();
+      });
+    }
+
+    if (switchBtn) {
+      switchBtn.addEventListener('click', () => {
+        if (menu) menu.classList.add('hidden');
         auth.logout();
         updateAuthGate();
-        const pwdInput = document.getElementById('portalSignInPassword');
-        if (pwdInput) pwdInput.value = '';
-        ui.showToast('You have been logged out safely.', 'info');
       });
     }
   }
 
-  function bindAdminEvents() {}
+  function bindAdminEvents() {
+    // Admin management
+  }
 
   function bindKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
@@ -1055,18 +972,37 @@ async function initWorkPulseApp() {
         closeImportExportModal();
         closeDailyReportModal();
       }
+    });
+  }
 
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
-        e.preventDefault();
-        openWorkModal();
-      }
+  function renderPortalUsers() {
+    const listEl = document.getElementById('portalQuickUsersList');
+    if (!listEl) return;
+    const users = auth.getAllUsers();
+    listEl.innerHTML = '';
+
+    users.forEach(u => {
+      const card = document.createElement('div');
+      card.className = 'portal-user-chip';
+      const initial = (u.name || 'U').charAt(0).toUpperCase();
+      const color = u.color || '#2563eb';
+
+      card.innerHTML = `
+        <div class="user-avatar-large" style="background-color: ${color}; width: 34px; height: 34px; font-size: 0.85rem;">${initial}</div>
+        <div style="flex: 1; min-width: 0; text-align: left;">
+          <div style="font-weight: 700; font-size: 0.88rem; color: var(--text-primary);">${ui.escapeHtml(u.name)}</div>
+          <div style="font-size: 0.72rem; color: var(--text-muted);">${ui.escapeHtml(u.email)}</div>
+        </div>
+      `;
+
+      card.addEventListener('click', () => {
+        handleQuickLogin(u.email);
+      });
+
+      listEl.appendChild(card);
     });
   }
 }
 
-// Ensure execution on ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initWorkPulseApp);
-} else {
-  initWorkPulseApp();
-}
+// Start app
+document.addEventListener('DOMContentLoaded', initWorkPulseApp);

@@ -1,84 +1,85 @@
-﻿/* =========================================================
-   WorkPulse - Midnight Purple & Deep Indigo Design System
+/* =========================================================
+   WorkPulse - Classic Modern Blue & White Design System
+   Supports: Light Theme & Dark Theme
    ========================================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
 :root {
-  /* Midnight Purple & Indigo Color Palette */
-  --bg-primary: #080a14;
-  --bg-secondary: #0c0f20;
-  --bg-surface: rgba(18, 22, 44, 0.8);
-  --bg-surface-elevated: rgba(26, 32, 64, 0.92);
-  --bg-subtle: rgba(139, 92, 246, 0.08);
-  --bg-hover: rgba(139, 92, 246, 0.16);
+  /* Default: Modern Dark Navy Slate */
+  --bg-primary: #0b0f19;
+  --bg-secondary: #0f172a;
+  --bg-surface: rgba(15, 23, 42, 0.85);
+  --bg-surface-elevated: rgba(30, 41, 59, 0.95);
+  --bg-subtle: rgba(59, 130, 246, 0.08);
+  --bg-hover: rgba(59, 130, 246, 0.15);
 
   /* Borders */
-  --border-color: rgba(139, 92, 246, 0.18);
-  --border-hover: rgba(168, 85, 247, 0.4);
-  --border-focus: #8b5cf6;
-  --border-glow: 0 0 16px rgba(139, 92, 246, 0.3);
+  --border-color: rgba(59, 130, 246, 0.2);
+  --border-hover: rgba(59, 130, 246, 0.45);
+  --border-focus: #3b82f6;
+  --border-glow: 0 0 16px rgba(59, 130, 246, 0.35);
 
   /* Typography Colors */
   --text-primary: #ffffff;
   --text-secondary: #cbd5e1;
-  --text-muted: #8b9bb4;
-  --text-inverse: #080a14;
+  --text-muted: #94a3b8;
+  --text-inverse: #0b0f19;
 
-  /* Primary Brand - Vibrant Violet / Purple */
-  --brand-primary: #8b5cf6;
-  --brand-primary-hover: #a855f7;
-  --brand-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-  --brand-gradient-hover: linear-gradient(135deg, #9f75ff 0%, #7c3aed 100%);
-  --brand-gradient-glow: 0 4px 18px rgba(139, 92, 246, 0.35);
-  --brand-primary-light: rgba(139, 92, 246, 0.12);
-  --brand-primary-subtle: rgba(139, 92, 246, 0.22);
+  /* Primary Brand - Vibrant Electric Royal Blue */
+  --brand-primary: #3b82f6;
+  --brand-primary-hover: #2563eb;
+  --brand-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  --brand-gradient-hover: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+  --brand-gradient-glow: 0 4px 18px rgba(59, 130, 246, 0.35);
+  --brand-primary-light: rgba(59, 130, 246, 0.15);
+  --brand-primary-subtle: rgba(59, 130, 246, 0.25);
 
   /* Status Colors */
   --status-completed-bg: rgba(16, 185, 129, 0.14);
   --status-completed-text: #34d399;
-  --status-completed-border: rgba(16, 185, 129, 0.32);
+  --status-completed-border: rgba(16, 185, 129, 0.35);
 
-  --status-progress-bg: rgba(139, 92, 246, 0.16);
-  --status-progress-text: #c4b5fd;
-  --status-progress-border: rgba(139, 92, 246, 0.38);
+  --status-progress-bg: rgba(59, 130, 246, 0.16);
+  --status-progress-text: #93c5fd;
+  --status-progress-border: rgba(59, 130, 246, 0.4);
 
   --status-pending-bg: rgba(245, 158, 11, 0.14);
   --status-pending-text: #fbbf24;
-  --status-pending-border: rgba(245, 158, 11, 0.32);
+  --status-pending-border: rgba(245, 158, 11, 0.35);
 
   --status-blocked-bg: rgba(244, 63, 94, 0.14);
   --status-blocked-text: #fb7185;
-  --status-blocked-border: rgba(244, 63, 94, 0.32);
+  --status-blocked-border: rgba(244, 63, 94, 0.35);
 
-  --status-review-bg: rgba(56, 189, 248, 0.14);
+  --status-review-bg: rgba(6, 182, 212, 0.14);
   --status-review-text: #38bdf8;
-  --status-review-border: rgba(56, 189, 248, 0.32);
+  --status-review-border: rgba(6, 182, 212, 0.35);
 
-  --status-leave-bg: rgba(217, 70, 239, 0.14);
-  --status-leave-text: #e879f9;
-  --status-leave-border: rgba(217, 70, 239, 0.32);
+  --status-leave-bg: rgba(168, 85, 247, 0.14);
+  --status-leave-text: #c084fc;
+  --status-leave-border: rgba(168, 85, 247, 0.35);
 
   /* Accent Tones */
-  --accent-purple: #8b5cf6;
-  --accent-indigo: #6366f1;
+  --accent-blue: #3b82f6;
   --accent-cyan: #06b6d4;
   --accent-amber: #f59e0b;
   --accent-emerald: #10b981;
   --accent-rose: #f43f5e;
+  --accent-purple: #8b5cf6;
 
-  /* Shadows & Glassmorphic Glows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.65), 0 0 20px rgba(139, 92, 246, 0.06);
-  --shadow-lg: 0 18px 45px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.12);
-  --shadow-glow: 0 0 22px rgba(139, 92, 246, 0.3);
+  /* Shadows & Glows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 18px 45px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
 
   /* Radius */
   --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 26px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 
   /* Typography */
@@ -90,6 +91,41 @@
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* =========================================================
+   Light Theme: Classic Clean White & Vibrant Royal Blue
+   ========================================================= */
+body.theme-light {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --bg-subtle: #eff6ff;
+  --bg-hover: #dbeafe;
+
+  --border-color: #e2e8f0;
+  --border-hover: #cbd5e1;
+  --border-focus: #2563eb;
+  --border-glow: 0 0 12px rgba(37, 99, 235, 0.2);
+
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+
+  --brand-primary: #2563eb;
+  --brand-primary-hover: #1d4ed8;
+  --brand-gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  --brand-gradient-hover: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  --brand-gradient-glow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  --brand-primary-light: #eff6ff;
+  --brand-primary-subtle: #dbeafe;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.1);
 }
 
 /* Global Reset & Base Styles */
@@ -117,21 +153,28 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   position: relative;
-  font-feature-settings: "tnum", "cv02", "cv03", "cv04", "cv11";
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Atmospheric Nebula Gradient Backdrop */
+/* Atmospheric Background */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background: 
-    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 85% 25%, rgba(139, 92, 246, 0.14) 0%, transparent 50%),
-    radial-gradient(circle at 50% 85%, rgba(124, 58, 237, 0.08) 0%, transparent 60%),
-    #080a14;
+    radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.1) 0%, transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+    var(--bg-primary);
   pointer-events: none;
   z-index: 0;
+  transition: background 0.25s ease;
+}
+
+body.theme-light::before {
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 85% 25%, rgba(6, 182, 212, 0.04) 0%, transparent 50%),
+    #f8fafc;
 }
 
 .container {
@@ -170,11 +213,11 @@ a:hover {
 code {
   font-family: var(--font-mono);
   font-size: 0.85em;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
   padding: 0.15rem 0.4rem;
   border-radius: var(--radius-sm);
-  color: #c4b5fd;
+  color: var(--brand-primary);
 }
 
 /* Visibility Utilities */
@@ -188,18 +231,18 @@ code {
 .icon-md { width: 20px; height: 20px; }
 .icon-lg { width: 24px; height: 24px; }
 
-/* Custom Purple Scrollbars */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #080a14;
+  background: var(--bg-primary);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.25);
+  background: var(--border-color);
   border-radius: var(--radius-full);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 85, 247, 0.5);
+  background: var(--brand-primary);
 }
