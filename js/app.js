@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WorkPulse - Master Application Controller
  * Wires together state, UI renderer, cloud sync, modals, and user interactions.
  */
@@ -166,14 +166,16 @@ async function initWorkPulseApp() {
   bindDailyReportEvents();
   bindKeyboardShortcuts();
 
-  // 5. Initialize Cloud Sync Status Listener
+  // 5. Initialize Cloud Sync Status Listener & Remote Changes
   cloud.onStatusChange((status, message) => {
     updateCloudStatusBadge(status, message);
   });
 
-  cloud.onDataChange(async () => {
-    await manager.initialize();
-    renderApp();
+  cloud.onDataChange(async (evt) => {
+    if (evt && evt.action === 'remote_sync') {
+      await manager.initialize();
+      renderApp();
+    }
   });
 
   // 6. Initialize Gatekeeper UI
@@ -291,11 +293,27 @@ async function initWorkPulseApp() {
 
   async function handleDuplicateEntry(id) {
     try {
-      await manager.duplicateEntry(id);
+      const cloned = await manager.duplicateEntry(id);
       ui.showToast('Entry duplicated to today\'s worksheet!', 'success');
+      
+      manager.setFilter('search', '');
+      manager.setFilter('project', 'all');
+      manager.setFilter('status', 'all');
+      manager.setFilter('workType', 'all');
       manager.setFilter('dateRange', 'all');
       updateDatePillsUI('all');
       renderApp();
+
+      if (cloned && cloned.id) {
+        setTimeout(() => {
+          const row = document.querySelector(`tr[data-id="${cloned.id}"]`) || document.querySelector(`.worksheet-card[data-id="${cloned.id}"]`);
+          if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            row.classList.add('row-highlight-pulse');
+            setTimeout(() => row.classList.remove('row-highlight-pulse'), 3000);
+          }
+        }, 120);
+      }
     } catch (err) {
       ui.showToast('Failed to duplicate: ' + err.message, 'error');
     }
@@ -732,7 +750,7 @@ async function initWorkPulseApp() {
       });
     }
 
-    // Form Submit Handler (Guaranteed Save & Immediate Refresh)
+    // Form Submit Handler (Guaranteed Immediate Display & Filter Synchronization)
     if (form) {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -761,22 +779,80 @@ async function initWorkPulseApp() {
           remarks
         };
 
+        const submitBtn = document.getElementById('btnSaveWorkModal');
+        if (submitBtn) submitBtn.disabled = true;
+
         try {
+          let savedRecord;
           if (id) {
-            await manager.updateEntry(id, payload);
+            savedRecord = await manager.updateEntry(id, payload);
             ui.showToast('Work log updated successfully!', 'success');
           } else {
-            await manager.addEntry(payload);
+            savedRecord = await manager.addEntry(payload);
             ui.showToast('New work log saved successfully!', 'success');
           }
           closeWorkModal();
 
-          // Show all records so the newly logged item is immediately visible!
+          // 1. Reset all search and dropdown filters so the new entry cannot be hidden
+          manager.setFilter('search', '');
+          const searchInput = document.getElementById('searchInput');
+          const btnClearSearch = document.getElementById('btnClearSearch');
+          if (searchInput) searchInput.value = '';
+          if (btnClearSearch) btnClearSearch.classList.add('hidden');
+
+          manager.setFilter('project', 'all');
+          const filterProj = document.getElementById('filterProject');
+          if (filterProj) filterProj.value = 'all';
+
+          manager.setFilter('status', 'all');
+          const filterStat = document.getElementById('filterStatus');
+          if (filterStat) filterStat.value = 'all';
+
+          manager.setFilter('workType', 'all');
+          const filterWork = document.getElementById('filterWorkType');
+          if (filterWork) filterWork.value = 'all';
+
+          // 2. Set date filter to 'all' so any date is immediately shown
           manager.setFilter('dateRange', 'all');
           updateDatePillsUI('all');
+          const customDateContainer = document.getElementById('customDateContainer');
+          if (customDateContainer) customDateContainer.classList.add('hidden');
+
+          // 3. If in calendar view, update selected date to the entry's date
+          if (savedRecord && savedRecord.date) {
+            const parts = savedRecord.date.split('-');
+            if (parts.length >= 3) {
+              calendarYear = parseInt(parts[0], 10);
+              calendarMonth = parseInt(parts[1], 10) - 1;
+              calendarSelectedDate = savedRecord.date;
+            }
+          }
+
+          // 4. Switch to table view if currently on matrix or analytics
+          if (currentView === 'matrix' || currentView === 'analytics') {
+            switchView('table');
+          }
+
+          // 5. Immediate App Render
           renderApp();
+
+          // 6. Highlight and scroll to the new entry
+          if (savedRecord && savedRecord.id) {
+            setTimeout(() => {
+              const targetRow = document.querySelector(`tr[data-id="${savedRecord.id}"]`) || document.querySelector(`.worksheet-card[data-id="${savedRecord.id}"]`);
+              if (targetRow) {
+                targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetRow.classList.add('row-highlight-pulse');
+                setTimeout(() => {
+                  targetRow.classList.remove('row-highlight-pulse');
+                }, 3000);
+              }
+            }, 120);
+          }
         } catch (err) {
           ui.showToast('Failed to save log: ' + err.message, 'error');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
         }
       });
     }

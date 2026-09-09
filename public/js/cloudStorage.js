@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Google Apps Script Cloud Storage Engine (WorkPulse)
  * Dedicated Single Source of Truth: Google Sheets via Google Apps Script Web App.
  */
@@ -11,7 +11,7 @@ class CloudStorageService {
     this.statusListeners = [];
     this.dataChangeListeners = [];
     this.currentStatus = 'connected'; // 'connected', 'syncing', 'local', 'error'
-    this.statusMessage = '📊 Google Sheets Cloud Connected';
+    this.statusMessage = 'ðŸ“Š Google Sheets Cloud Connected';
     this.pollingInterval = null;
 
     // Default live Google Apps Script Web App endpoint
@@ -56,7 +56,7 @@ class CloudStorageService {
   // Initialize Google Sheets connection
   initClient() {
     if (this.config.googleSheetUrl && this.config.googleSheetUrl.trim()) {
-      this.setStatus('connected', '📊 Google Sheets Cloud Active');
+      this.setStatus('connected', 'ðŸ“Š Google Sheets Cloud Active');
     } else {
       this.setStatus('local', 'Local Storage Mode');
     }
@@ -73,27 +73,27 @@ class CloudStorageService {
       this.setStatus('syncing', 'Testing Google Sheets connection...');
       const res = await fetch(url + (url.includes('?') ? '&' : '?') + 'action=test');
       if (res.ok) {
-        this.setStatus('connected', '📊 Google Sheets Cloud Active');
+        this.setStatus('connected', 'ðŸ“Š Google Sheets Cloud Active');
         return {
           success: true,
-          message: '✅ Google Apps Script Web App is connected and responding perfectly!'
+          message: 'âœ… Google Apps Script Web App is connected and responding perfectly!'
         };
       } else {
         return {
           success: false,
-          message: `⚠️ Google Sheet responded with HTTP status ${res.status}.`
+          message: `âš ï¸ Google Sheet responded with HTTP status ${res.status}.`
         };
       }
     } catch (err) {
       // Even if CORS blocks reading the test response, the POST web app endpoint is live
       return {
         success: true,
-        message: '✅ Google Apps Script Web App endpoint configured. Ready to sync.'
+        message: 'âœ… Google Apps Script Web App endpoint configured. Ready to sync.'
       };
     }
   }
 
-  // Deduplicate entries by normalized (date, projectName, work)
+  // Deduplicate entries by ID and normalized signature (date, projectName, work)
   deduplicateEntries(entries) {
     if (!entries || !Array.isArray(entries)) return [];
     const seen = new Map();
@@ -104,15 +104,19 @@ class CloudStorageService {
       const normDate = this.normalizeDate(item.date);
       const cleanProject = (item.projectName || '').trim().toLowerCase();
       const cleanWork = (item.work || '').trim().toLowerCase();
-      const key = `${normDate}__${cleanProject}__${cleanWork}`;
+      const sigKey = `${normDate}__${cleanProject}__${cleanWork}`;
+      const idKey = item.id ? `id_${item.id}` : null;
 
       item.date = normDate;
 
-      if (!seen.has(key)) {
-        seen.set(key, item);
+      let matchKey = idKey && seen.has(idKey) ? idKey : (seen.has(sigKey) ? sigKey : null);
+
+      if (!matchKey) {
+        if (idKey) seen.set(idKey, item);
+        seen.set(sigKey, item);
         result.push(item);
       } else {
-        const existing = seen.get(key);
+        const existing = seen.get(matchKey);
         if ((!existing.remarks || existing.remarks.length === 0) && item.remarks) {
           existing.remarks = item.remarks;
         }
@@ -125,9 +129,17 @@ class CloudStorageService {
     return result;
   }
 
-  // Fetch all records (Google Sheets First -> LocalStorage Cache fallback)
+  // Fetch all records (Google Sheets First with Local Cache Merge)
   async fetchAll() {
-    let entries = [];
+    let localEntries = [];
+    const local = localStorage.getItem(this.storageKey);
+    if (local) {
+      try {
+        localEntries = JSON.parse(local) || [];
+      } catch (e) {
+        localEntries = [];
+      }
+    }
 
     // 1. Google Sheets Fetch
     if (this.config.googleSheetUrl && navigator.onLine) {
@@ -138,7 +150,7 @@ class CloudStorageService {
         if (res.ok) {
           const sheetData = await res.json();
           if (Array.isArray(sheetData) && sheetData.length > 0) {
-            entries = sheetData.map((item, idx) => {
+            const remoteEntries = sheetData.map((item, idx) => {
               const rawUser = item.user || item.userName || item.user_name || '';
               let userId = item.userId || item.user_id;
               let userName = rawUser;
@@ -169,10 +181,12 @@ class CloudStorageService {
               };
             });
 
-            entries = this.deduplicateEntries(entries);
-            localStorage.setItem(this.storageKey, JSON.stringify(entries));
-            this.setStatus('connected', '📊 Google Sheets Synced');
-            return entries;
+            // Local entries take precedence for newest unsynced updates, then merge remote
+            const combined = [...localEntries, ...remoteEntries];
+            const merged = this.deduplicateEntries(combined);
+            localStorage.setItem(this.storageKey, JSON.stringify(merged));
+            this.setStatus('connected', 'ðŸ“Š Google Sheets Synced');
+            return merged;
           }
         }
       } catch (err) {
@@ -180,29 +194,24 @@ class CloudStorageService {
       }
     }
 
-    // 2. LocalStorage Fallback
-    const local = localStorage.getItem(this.storageKey);
-    if (local) {
-      try {
-        entries = JSON.parse(local);
-      } catch (e) {
-        entries = [];
-      }
+    // 2. LocalStorage Cache Fallback
+    if (localEntries.length > 0) {
+      this.setStatus('connected', 'ðŸ“Š Google Sheets Cloud Active');
+      return this.deduplicateEntries(localEntries);
     }
 
     // 3. Preload initial sample if empty
-    if (!entries || entries.length === 0) {
-      if (window.SAMPLE_WORKSHEET_DATA) {
-        entries = [...window.SAMPLE_WORKSHEET_DATA];
-        localStorage.setItem(this.storageKey, JSON.stringify(entries));
-      }
+    let entries = [];
+    if (window.SAMPLE_WORKSHEET_DATA) {
+      entries = [...window.SAMPLE_WORKSHEET_DATA];
+      localStorage.setItem(this.storageKey, JSON.stringify(entries));
     }
 
-    this.setStatus('connected', '📊 Google Sheets Cloud Active');
+    this.setStatus('connected', 'ðŸ“Š Google Sheets Cloud Active');
     return this.deduplicateEntries(entries);
   }
 
-  // Save single entry (Local + Google Apps Script Web App)
+  // Save single entry (Local Cache + Asynchronous Google Apps Script Web App Push)
   async saveEntry(entry) {
     const local = localStorage.getItem(this.storageKey);
     let entries = local ? JSON.parse(local) : [];
@@ -223,7 +232,6 @@ class CloudStorageService {
 
     // Push to Google Sheets in background
     this.pushToGoogleSheets(entry, 'upsert');
-    this.notifyDataChange({ action: 'save', entry });
     return entry;
   }
 
@@ -238,7 +246,6 @@ class CloudStorageService {
 
     // Push to Google Sheets
     this.syncAllToGoogleSheets(deduplicated);
-    this.notifyDataChange({ action: 'batchImport', count: newEntries.length });
     return deduplicated;
   }
 
@@ -255,7 +262,6 @@ class CloudStorageService {
       this.pushToGoogleSheets(entryToDelete, 'delete');
     }
 
-    this.notifyDataChange({ action: 'delete', id });
     return true;
   }
 
@@ -366,7 +372,6 @@ class CloudStorageService {
       jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12'
     };
 
-    // Formats like: "Tue Aug 04", "Aug 04", "Aug 4", "04 Aug 2026", "Aug 4, 2026", "4-Aug-2026", "Tue Aug 04 2026"
     const mMatch = str.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s*[-/,\s]*\s*(\d{1,2})/i) ||
                    str.match(/(\d{1,2})\s*[-/,\s]*\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*/i);
 
@@ -383,14 +388,12 @@ class CloudStorageService {
       const monthNum = months[mStr] || '08';
       const dayNum = String(parseInt(dStr, 10)).padStart(2, '0');
       
-      // Look for year 202X or default to 2026
       const yrMatch = str.match(/202\d/);
       const yr = yrMatch ? yrMatch[0] : '2026';
       
       return `${yr}-${monthNum}-${dayNum}`;
     }
 
-    // Fallback Date object
     try {
       const dt = new Date(str);
       if (!isNaN(dt.getTime())) {
@@ -407,9 +410,10 @@ class CloudStorageService {
 
   // Network Listeners
   bindNetworkListeners() {
-    window.addEventListener('online', () => {
+    window.addEventListener('online', async () => {
       this.setStatus('connected', 'Network restored. Syncing Google Sheets...');
-      this.fetchAll();
+      const updated = await this.fetchAll();
+      this.notifyDataChange({ action: 'remote_sync', count: updated.length });
     });
     window.addEventListener('offline', () => {
       this.setStatus('local', 'Offline. Changes saved locally.');
@@ -419,9 +423,10 @@ class CloudStorageService {
   // Auto Polling (every 60s)
   startAutoPolling() {
     if (this.pollingInterval) clearInterval(this.pollingInterval);
-    this.pollingInterval = setInterval(() => {
+    this.pollingInterval = setInterval(async () => {
       if (this.config.autoSync && navigator.onLine) {
-        this.fetchAll();
+        const updated = await this.fetchAll();
+        this.notifyDataChange({ action: 'remote_sync', count: updated.length });
       }
     }, 60000);
   }

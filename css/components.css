@@ -1,4 +1,4 @@
-/* =========================================================
+﻿/* =========================================================
    WorkPulse - Component Styles (Adaptive Light & Dark Modes)
    ========================================================= */
 
@@ -1103,4 +1103,23 @@
 .toast-error {
   border-color: rgba(244, 63, 94, 0.4);
   color: #f43f5e;
+}
+
+
+/* Row Highlight Pulse Animation for Newly Added/Updated Logs */
+@keyframes rowHighlightPulse {
+  0% {
+    background-color: rgba(37, 99, 235, 0.35) !important;
+    box-shadow: 0 0 16px rgba(37, 99, 235, 0.4);
+  }
+  50% {
+    background-color: rgba(37, 99, 235, 0.18) !important;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.row-highlight-pulse {
+  animation: rowHighlightPulse 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
