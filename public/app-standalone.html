@@ -1688,6 +1688,123 @@ code {
 .btn-toggle-pwd:hover {
   color: #ffffff !important;
 }
+
+/* ==========================================================================
+   Simulation Matrix Tracker & WorkType Badges
+   ========================================================================== */
+.worktype-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.worktype-badge.worked {
+  background: rgba(139, 92, 246, 0.18);
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+}
+
+.worktype-badge.tested {
+  background: rgba(6, 182, 212, 0.18);
+  color: #38bdf8;
+  border: 1px solid rgba(6, 182, 212, 0.4);
+}
+
+.matrix-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.matrix-card {
+  background: rgba(18, 22, 44, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+
+.matrix-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.matrix-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.worktype-toggle-group {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.worktype-radio-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  background: rgba(26, 32, 60, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.worktype-radio-label:hover {
+  background: rgba(38, 48, 92, 0.8);
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.worktype-radio-label.active {
+  background: rgba(139, 92, 246, 0.22);
+  border-color: #8b5cf6;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
+}
+
+.worktype-radio-label input[type="radio"] {
+  accent-color: #8b5cf6;
+}
+
+.btn-chip {
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: rgba(26, 32, 60, 0.7);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-chip:hover {
+  background: rgba(139, 92, 246, 0.25);
+  color: #ffffff;
+  border-color: #8b5cf6;
+}
 /* =========================================================
    WorkPulse - Responsive Styles (Classic Layout)
    ========================================================= */
@@ -2189,10 +2306,22 @@ code {
             </select>
           </div>
 
+          <!-- Work Type Filter Dropdown -->
+          <div class="select-wrap">
+            <select id="filterWorkType" class="form-select-sm" onchange="window.workPulseApp && window.workPulseApp.handleFilterChange()">
+              <option value="all">All Types (Worked & Tested)</option>
+              <option value="Worked">ðŸ› ï¸ Simulations Worked On</option>
+              <option value="Tested">ðŸ§ª Simulations Tested</option>
+            </select>
+          </div>
+
           <!-- View Mode Switcher -->
           <div class="view-switcher" role="tablist">
             <button class="view-btn active" data-view="table" title="Table View" onclick="window.workPulseApp && window.workPulseApp.switchView('table')">
               <i data-lucide="table"></i>
+            </button>
+            <button class="view-btn" data-view="matrix" title="Simulation Matrix Tracker (12 Worked + 7 Tested)" onclick="window.workPulseApp && window.workPulseApp.switchView('matrix')">
+              <i data-lucide="flask-conical"></i>
             </button>
             <button class="view-btn" data-view="cards" title="Mobile / Card View" onclick="window.workPulseApp && window.workPulseApp.switchView('cards')">
               <i data-lucide="layout-grid"></i>
@@ -2303,7 +2432,90 @@ code {
           </div>
         </div>
 
-        <!-- 4. Analytics & Charts View (FIXED: Working Donut & Bar Charts) -->
+        <!-- 4. Simulation Matrix View (12 Worked On + 7 Tested) -->
+        <div id="matrixViewContainer" class="view-panel hidden">
+          <div class="matrix-grid">
+            
+            <!-- Master Action Bar for Simulations -->
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; background: rgba(18, 22, 44, 0.75); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: var(--radius-lg); padding: 1rem 1.35rem;">
+              <div>
+                <h2 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0 0 0.2rem 0;">Simulation Project Master Tracking</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Comprehensive breakdown for <strong>Kavin (8chili)</strong> across development and QA verification.</p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <button class="btn btn-outline btn-sm" onclick="window.workPulseApp && window.workPulseApp.exportSimulationExcel()">
+                  <i data-lucide="file-spreadsheet" class="icon-xs text-emerald"></i>
+                  <span>Export Master Sheet (.xlsx)</span>
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="window.workPulseApp && window.workPulseApp.openWorkModal()">
+                  <i data-lucide="plus" class="icon-xs"></i>
+                  <span>+ Log Work</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Table 1: 12 Simulations Worked On -->
+            <div class="matrix-card">
+              <div class="matrix-card-header">
+                <div class="matrix-title">
+                  <i data-lucide="hammer" class="text-purple"></i>
+                  <span>12 Simulations Worked On (Development & Implementation)</span>
+                </div>
+                <span class="badge badge-primary" id="matrixWorkedCountBadge">0 / 12 Active</span>
+              </div>
+              <div class="table-responsive-card">
+                <table class="worksheet-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 40px; text-align: center;">#</th>
+                      <th>Simulation Project</th>
+                      <th style="width: 130px;">Status</th>
+                      <th style="width: 140px; text-align: center;">Tasks Logged</th>
+                      <th style="width: 110px; text-align: center;">Hours Spent</th>
+                      <th style="width: 150px;">Progress</th>
+                      <th style="width: 140px; text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="matrixWorkedTableBody">
+                    <!-- Populated via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Table 2: 7 Simulations Tested -->
+            <div class="matrix-card">
+              <div class="matrix-card-header">
+                <div class="matrix-title">
+                  <i data-lucide="flask-conical" class="text-blue"></i>
+                  <span>7 Simulations Tested (QA & Verification)</span>
+                </div>
+                <span class="badge badge-primary" id="matrixTestedCountBadge" style="background: rgba(6, 182, 212, 0.18); color: #38bdf8; border-color: rgba(6, 182, 212, 0.4);">0 / 7 Active</span>
+              </div>
+              <div class="table-responsive-card">
+                <table class="worksheet-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 40px; text-align: center;">#</th>
+                      <th>Simulation Tested</th>
+                      <th style="width: 130px;">Status</th>
+                      <th style="width: 140px; text-align: center;">Tests Logged</th>
+                      <th style="width: 110px; text-align: center;">Hours Spent</th>
+                      <th style="width: 150px;">Pass Rate</th>
+                      <th style="width: 140px; text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="matrixTestedTableBody">
+                    <!-- Populated via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 5. Analytics & Charts View (FIXED: Working Donut & Bar Charts) -->
         <div id="analyticsViewContainer" class="view-panel hidden">
           <div class="analytics-grid">
             <div class="chart-card">
@@ -2344,25 +2556,48 @@ code {
         <input type="hidden" id="workEntryId">
         <div class="modal-body">
           
-          <!-- Work Date Selection -->
+          <!-- Work Type Toggle (Worked vs Tested) -->
+          <div class="form-group">
+            <label class="form-label required">Simulation Type</label>
+            <div class="worktype-toggle-group">
+              <label class="worktype-radio-label active" id="labelTypeWorked">
+                <input type="radio" name="workTypeRadio" id="radioTypeWorked" value="Worked" checked onchange="window.workPulseApp && window.workPulseApp.switchModalWorkType('Worked')">
+                <span>ðŸ› ï¸ Simulation Worked On (Dev)</span>
+              </label>
+              <label class="worktype-radio-label" id="labelTypeTested">
+                <input type="radio" name="workTypeRadio" id="radioTypeTested" value="Tested" onchange="window.workPulseApp && window.workPulseApp.switchModalWorkType('Tested')">
+                <span>ðŸ§ª Simulation Tested (QA)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Work Date Selection (Supports any past date seamlessly) -->
           <div class="form-group">
             <label for="workDate" class="form-label required">Work Date</label>
-            <div class="date-quick-chips">
-              <button type="button" class="chip-btn" id="chipToday">Today</button>
-              <button type="button" class="chip-btn" id="chipYesterday">Yesterday</button>
-              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-21">Aug 21</button>
-              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-20">Aug 20</button>
-              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-19">Aug 19</button>
-              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-18">Aug 18</button>
-              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-15">Aug 15</button>
+            <div class="date-quick-chips" style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+              <button type="button" class="btn-chip" id="chipToday">Today</button>
+              <button type="button" class="btn-chip" id="chipYesterday">Yesterday</button>
+              <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-14'">Aug 14</button>
+              <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-10'">Aug 10</button>
+              <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-05'">Aug 05</button>
+              <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-03'">Aug 03</button>
+              <button type="button" class="btn-chip" onclick="const p = document.getElementById('workDate'); p.showPicker ? p.showPicker() : p.focus()">ðŸ“… Pick Any Date</button>
             </div>
             <input type="date" id="workDate" class="form-input" required style="margin-top: 0.5rem;">
           </div>
 
-          <!-- Project Name Autocomplete -->
+          <!-- Simulation / Project Selection with Dropdown -->
+          <div class="form-group">
+            <label for="modalProjectSelect" class="form-label required">Select Simulation Project</label>
+            <select id="modalProjectSelect" class="form-select" onchange="document.getElementById('projectNameInput').value = this.value">
+              <option value="">-- Choose Simulation --</option>
+            </select>
+          </div>
+
+          <!-- Project Name Autocomplete & Manual Edit -->
           <div class="form-group autocomplete-wrapper">
-            <label for="projectNameInput" class="form-label required">Project Name / Client</label>
-            <input type="text" id="projectNameInput" class="form-input" placeholder="e.g. MDI_LineClearance or Parisson Area" required autocomplete="off">
+            <label for="projectNameInput" class="form-label required">Simulation Project Name (or custom)</label>
+            <input type="text" id="projectNameInput" class="form-input" placeholder="e.g. MDI â€“ Manufacturing / Manual Cleaning of Ethanol" required autocomplete="off">
             <div id="projectSuggestions" class="autocomplete-suggestions hidden"></div>
           </div>
 
@@ -2785,18 +3020,47 @@ class AuthManager {
 window.authManager = new AuthManager();
 
 /**
- * Actual Office Daily Worksheet Data (August 2026)
- * Assigned directly to user: kavin@8chili.com (Kavin)
+ * Master Simulation Project Catalogs & Actual Worksheet Records
+ * User: kavin@8chili.com (Kavin)
  */
 
+// 1. 12 Master Simulations Worked On (Development / Setup / Implementation)
+const SIMULATIONS_WORKED_ON = [
+  "MDI â€“ Manufacturing / Manual Cleaning of Ethanol",
+  "FFS â€“ Cleaning of Parisson Area",
+  "MDI â€“ Cleaning of Purified Water",
+  "MDI â€“ Setup and Operations",
+  "Lupin Ophthalmic (including Jammed / Toppled Bottle)",
+  "Lighting in Gowning",
+  "Operation of Filling Machine â€“ FFS",
+  "Cleaning Nozzle Shroud â€“ FFS",
+  "Jammed / Toppled Nozzles",
+  "SVP2 Intervention",
+  "Ophtha 3 Assembly",
+  "Ophtha 3 Intervention"
+];
+
+// 2. 7 Master Simulations Tested (QA / Verification / Review)
+const SIMULATIONS_TESTED = [
+  "MDI â€“ Cleaning of Purified Water",
+  "MDI â€“ Cleaning of Ethanol",
+  "MDI â€“ Line Clearance",
+  "MDI â€“ Setup and Operation",
+  "MDI â€“ Parital Cleaning",
+  "FFS â€“ Cleaning of Nozzle Shrouds",
+  "FFS â€“ Cleaning of Parisson Area"
+];
+
+// 3. Complete Initial Worksheet Records for Kavin (kavin@8chili.com)
 const SAMPLE_WORKSHEET_DATA = [
   {
-    id: "task-aug-03",
+    id: "task-01",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-03",
-    projectName: "MDI_Manu_CleaningEthanol",
-    work: "â€¢ Updated Grab Pose\nâ€¢ Implemented audio changes",
+    projectName: "MDI â€“ Manufacturing / Manual Cleaning of Ethanol",
+    workType: "Worked",
+    work: "â€¢ Updated Grab Pose in VR\nâ€¢ Implemented audio trigger changes",
     status: "Completed",
     hoursWorked: 8.0,
     priority: "High",
@@ -2805,12 +3069,13 @@ const SAMPLE_WORKSHEET_DATA = [
     updatedAt: "2026-08-03T18:00:00Z"
   },
   {
-    id: "task-aug-04",
+    id: "task-02",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-04",
-    projectName: "MDI_Manu_CleaningEthanol",
-    work: "â€¢ Tested 4 simulations in MDI environment",
+    projectName: "MDI â€“ Cleaning of Ethanol",
+    workType: "Tested",
+    work: "â€¢ Tested 4 simulations in MDI environment\nâ€¢ Verified controller interaction limits",
     status: "Completed",
     hoursWorked: 8.0,
     priority: "High",
@@ -2819,39 +3084,42 @@ const SAMPLE_WORKSHEET_DATA = [
     updatedAt: "2026-08-04T18:00:00Z"
   },
   {
-    id: "task-aug-05-1",
+    id: "task-03",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-05",
-    projectName: "Cleaning-of-Parisson-Area",
+    projectName: "FFS â€“ Cleaning of Parisson Area",
+    workType: "Worked",
     work: "Storyboard explanation and process walkthrough with team",
-    status: "Pending",
+    status: "Completed",
     hoursWorked: 4.0,
     priority: "Medium",
-    remarks: "Parisson flow alignment.",
+    remarks: "Parisson flow alignment approved.",
     createdAt: "2026-08-05T09:30:00Z",
     updatedAt: "2026-08-05T13:30:00Z"
   },
   {
-    id: "task-aug-05-2",
+    id: "task-04",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-05",
-    projectName: "MDI_Manu_CleaningEthanol",
+    projectName: "MDI â€“ Manufacturing / Manual Cleaning of Ethanol",
+    workType: "Worked",
     work: "Updated the simulation package and asset references",
-    status: "Pending",
+    status: "Completed",
     hoursWorked: 4.0,
     priority: "Medium",
-    remarks: "Awaiting final review.",
+    remarks: "Asset shaders and LODs updated.",
     createdAt: "2026-08-05T14:00:00Z",
     updatedAt: "2026-08-05T18:00:00Z"
   },
   {
-    id: "task-aug-06-1",
+    id: "task-05",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-06",
-    projectName: "MDI_Parisson Area Cleaning",
+    projectName: "FFS â€“ Cleaning of Parisson Area",
+    workType: "Worked",
     work: "Step Wizard â€” worked on 10 sequential simulation steps",
     status: "In Progress",
     hoursWorked: 3.5,
@@ -2861,11 +3129,12 @@ const SAMPLE_WORKSHEET_DATA = [
     updatedAt: "2026-08-06T13:00:00Z"
   },
   {
-    id: "task-aug-06-2",
+    id: "task-06",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-06",
-    projectName: "MDI_Cleaning of Ethanol",
+    projectName: "MDI â€“ Cleaning of Purified Water",
+    workType: "Worked",
     work: "Grab Pose correction and hand interaction refinement",
     status: "In Progress",
     hoursWorked: 2.5,
@@ -2875,110 +3144,73 @@ const SAMPLE_WORKSHEET_DATA = [
     updatedAt: "2026-08-06T16:00:00Z"
   },
   {
-    id: "task-aug-06-3",
+    id: "task-07",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-06",
-    projectName: "MDI_Cleaning",
-    work: "MDI Parisson Area Cleaning audio sync integration",
-    status: "In Progress",
+    projectName: "MDI â€“ Cleaning of Purified Water",
+    workType: "Tested",
+    work: "Fixed Audio triggers, Detect Visual markers and tested Grab Pose in headset",
+    status: "Completed",
     hoursWorked: 2.0,
     priority: "Medium",
-    remarks: "Audio clips connected to event triggers.",
+    remarks: "Audio cues and visual targets aligned.",
     createdAt: "2026-08-06T16:00:00Z",
     updatedAt: "2026-08-06T18:00:00Z"
   },
   {
-    id: "task-aug-06-4",
-    userId: "user_8chili_kavin",
-    userName: "Kavin (8chili)",
-    date: "2026-08-06",
-    projectName: "MDI_Cleaning of Purified Water",
-    work: "Fixed Audio triggers, Detect Visual markers and Grab Pose",
-    status: "In Progress",
-    hoursWorked: 2.0,
-    priority: "Medium",
-    remarks: "Audio cue alignment completed.",
-    createdAt: "2026-08-06T16:00:00Z",
-    updatedAt: "2026-08-06T18:00:00Z"
-  },
-  {
-    id: "task-aug-07-1",
+    id: "task-08",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-07",
-    projectName: "Line clearance Checklist",
-    work: "Line clearance initial storyboard development & process review",
-    status: "In Progress",
-    hoursWorked: 4.0,
-    priority: "High",
-    remarks: "Flowchart approved by QA.",
-    createdAt: "2026-08-07T09:30:00Z",
-    updatedAt: "2026-08-07T13:30:00Z"
-  },
-  {
-    id: "task-aug-07-2",
-    userId: "user_8chili_kavin",
-    userName: "Kavin (8chili)",
-    date: "2026-08-07",
-    projectName: "MDI_Line Clearance",
-    work: "Model setup and interactive asset placements for clearance module",
-    status: "In Progress",
-    hoursWorked: 4.0,
-    priority: "Medium",
-    remarks: "Environment layout finalized.",
-    createdAt: "2026-08-07T14:00:00Z",
-    updatedAt: "2026-08-07T18:00:00Z"
-  },
-  {
-    id: "task-aug-07-3",
-    userId: "user_8chili_kavin",
-    userName: "Kavin (8chili)",
-    date: "2026-08-07",
-    projectName: "MDI_Manu_Ethanol",
+    projectName: "MDI â€“ Setup and Operations",
+    workType: "Worked",
     work: "Updating VIVE package and VR SDK dependencies",
     status: "In Progress",
     hoursWorked: 3.0,
     priority: "High",
-    remarks: "VIVE SDK upgrade in progress.",
-    createdAt: "2026-08-07T14:00:00Z",
-    updatedAt: "2026-08-07T17:00:00Z"
+    remarks: "Upgraded OpenXR and runtime bindings.",
+    createdAt: "2026-08-07T09:30:00Z",
+    updatedAt: "2026-08-07T12:30:00Z"
   },
   {
-    id: "task-aug-07-4",
+    id: "task-09",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-07",
-    projectName: "MDI_Setup and Ops",
-    work: "Updating VIVE package configuration and build settings",
+    projectName: "MDI â€“ Setup and Operation",
+    workType: "Tested",
+    work: "Testing headset tracking and operator ergonomics in virtual cleanroom",
     status: "In Progress",
     hoursWorked: 2.5,
     priority: "Medium",
-    remarks: "Testing headset tracking.",
-    createdAt: "2026-08-07T14:00:00Z",
-    updatedAt: "2026-08-07T16:30:00Z"
+    remarks: "Headset telemetry logged.",
+    createdAt: "2026-08-07T13:00:00Z",
+    updatedAt: "2026-08-07T15:30:00Z"
   },
   {
-    id: "task-aug-07-5",
+    id: "task-10",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-07",
-    projectName: "FFS - Cleaning of Parisson Area",
-    work: "Step Wizard setup and flow integration",
+    projectName: "FFS â€“ Cleaning of Parisson Area",
+    workType: "Tested",
+    work: "Testing step wizard sequence and error highlighting",
     status: "In Progress",
     hoursWorked: 2.5,
     priority: "Medium",
-    remarks: "Initial step sequence mapped.",
-    createdAt: "2026-08-07T14:00:00Z",
-    updatedAt: "2026-08-07T16:30:00Z"
+    remarks: "Step progression verified.",
+    createdAt: "2026-08-07T15:30:00Z",
+    updatedAt: "2026-08-07T18:00:00Z"
   },
   {
-    id: "task-aug-08-1",
+    id: "task-11",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-08",
-    projectName: "MDI-LineClearance",
-    work: "Step Wizard implementation for sequential line clearance verification",
+    projectName: "MDI â€“ Line Clearance",
+    workType: "Tested",
+    work: "Step Wizard testing for sequential line clearance verification",
     status: "In Progress",
     hoursWorked: 4.0,
     priority: "High",
@@ -2987,53 +3219,27 @@ const SAMPLE_WORKSHEET_DATA = [
     updatedAt: "2026-08-08T13:30:00Z"
   },
   {
-    id: "task-aug-08-2",
+    id: "task-12",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-08",
-    projectName: "MDI-LineClearance",
-    work: "Updated simulation package with new assets and animation clips",
+    projectName: "MDI â€“ Parital Cleaning",
+    workType: "Tested",
+    work: "Verification testing for partial cleaning protocols",
     status: "In Progress",
     hoursWorked: 4.0,
     priority: "Medium",
-    remarks: "Package built and deployed to test environment.",
+    remarks: "Test pass completed.",
     createdAt: "2026-08-08T14:00:00Z",
     updatedAt: "2026-08-08T18:00:00Z"
   },
   {
-    id: "task-aug-08-3",
-    userId: "user_8chili_kavin",
-    userName: "Kavin (8chili)",
-    date: "2026-08-08",
-    projectName: "Leave / Weekend",
-    work: "Weekend / Off",
-    status: "Leave",
-    hoursWorked: 0,
-    priority: "Low",
-    remarks: "Weekend",
-    createdAt: "2026-08-08T00:00:00Z",
-    updatedAt: "2026-08-08T00:00:00Z"
-  },
-  {
-    id: "task-aug-09",
-    userId: "user_8chili_kavin",
-    userName: "Kavin (8chili)",
-    date: "2026-08-09",
-    projectName: "Leave / Weekend",
-    work: "Weekend / Off",
-    status: "Leave",
-    hoursWorked: 0,
-    priority: "Low",
-    remarks: "Weekend",
-    createdAt: "2026-08-09T00:00:00Z",
-    updatedAt: "2026-08-09T00:00:00Z"
-  },
-  {
-    id: "task-aug-10",
+    id: "task-13",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-10",
-    projectName: "FFS_Cleaning Of Parisson Area",
+    projectName: "FFS â€“ Cleaning of Parisson Area",
+    workType: "Worked",
     work: "â€¢ Completed the Step Wizard for all steps\nâ€¢ Fixed Detect Visual functionality for all steps",
     status: "Completed",
     hoursWorked: 8.0,
@@ -3043,25 +3249,27 @@ const SAMPLE_WORKSHEET_DATA = [
     updatedAt: "2026-08-10T18:00:00Z"
   },
   {
-    id: "task-aug-11-1",
+    id: "task-14",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-11",
-    projectName: "MDI-LineClearance",
-    work: "Simulation step update â€” corrected order of operation for steps 4 & 5",
-    status: "In Progress",
+    projectName: "FFS â€“ Cleaning of Nozzle Shrouds",
+    workType: "Tested",
+    work: "Tested Nozzle Shroud disinfection steps and tool snap interactions",
+    status: "Completed",
     hoursWorked: 4.0,
     priority: "Medium",
-    remarks: "Step sequence aligned with SOP document.",
+    remarks: "Nozzle shroud clean test passed.",
     createdAt: "2026-08-11T09:30:00Z",
     updatedAt: "2026-08-11T13:30:00Z"
   },
   {
-    id: "task-aug-11-2",
+    id: "task-15",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-11",
-    projectName: "MDI-LineClearance",
+    projectName: "Cleaning Nozzle Shroud â€“ FFS",
+    workType: "Worked",
     work: "Model updates & asset reference corrections across scene nodes",
     status: "In Progress",
     hoursWorked: 4.0,
@@ -3071,120 +3279,115 @@ const SAMPLE_WORKSHEET_DATA = [
     updatedAt: "2026-08-11T18:00:00Z"
   },
   {
-    id: "task-aug-11-3",
-    userId: "user_8chili_kavin",
-    userName: "Kavin (8chili)",
-    date: "2026-08-11",
-    projectName: "FFS - Cleaning of Parisson Area",
-    work: "â€¢ Worked on the Step Events\nâ€¢ Configured and updated event behavior for the simulation steps",
-    status: "In Progress",
-    hoursWorked: 8.0,
-    priority: "High",
-    remarks: "Event triggers connected to state machine.",
-    createdAt: "2026-08-11T09:30:00Z",
-    updatedAt: "2026-08-11T18:00:00Z"
-  },
-  {
-    id: "task-aug-12-1",
+    id: "task-16",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-12",
-    projectName: "MDI_Parisson Area Cleaning",
-    work: "Step Wizard animation trigger fixes and interactive highlight shaders",
+    projectName: "Lupin Ophthalmic (including Jammed / Toppled Bottle)",
+    workType: "Worked",
+    work: "Physics simulation setup for bottle toppling and conveyor belt jams",
     status: "In Progress",
-    hoursWorked: 3.5,
+    hoursWorked: 5.0,
+    priority: "High",
+    remarks: "Rigid body colliders tuned.",
+    createdAt: "2026-08-12T09:30:00Z",
+    updatedAt: "2026-08-12T14:30:00Z"
+  },
+  {
+    id: "task-17",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-12",
+    projectName: "Lighting in Gowning",
+    workType: "Worked",
+    work: "Light fixture shader configuration and lux level adjustments",
+    status: "Completed",
+    hoursWorked: 3.0,
     priority: "Medium",
-    remarks: "Highlight shader tested on target meshes.",
-    createdAt: "2026-08-12T09:30:00Z",
-    updatedAt: "2026-08-12T13:00:00Z"
-  },
-  {
-    id: "task-aug-12-2",
-    userId: "user_8chili_kavin",
-    userName: "Kavin (8chili)",
-    date: "2026-08-12",
-    projectName: "MDI_Parisson Area Cleaning",
-    work: "Audio changes & voiceover cue timing adjustments for training module",
-    status: "In Progress",
-    hoursWorked: 2.5,
-    priority: "Low",
-    remarks: "All 12 voiceover cues matched to visual actions.",
-    createdAt: "2026-08-12T13:30:00Z",
-    updatedAt: "2026-08-12T16:00:00Z"
-  },
-  {
-    id: "task-aug-12-3",
-    userId: "user_8chili_kavin",
-    userName: "Kavin (8chili)",
-    date: "2026-08-12",
-    projectName: "MDI_Manu_Ethanol",
-    work: "â€¢ Correction work on simulation models\nâ€¢ Testing on the VR platform",
-    status: "In Progress",
-    hoursWorked: 8.0,
-    priority: "High",
-    remarks: "Performance testing on target hardware.",
-    createdAt: "2026-08-12T09:30:00Z",
+    remarks: "Cleanroom lighting calibrated.",
+    createdAt: "2026-08-12T15:00:00Z",
     updatedAt: "2026-08-12T18:00:00Z"
   },
   {
-    id: "task-aug-13-1",
+    id: "task-18",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-13",
-    projectName: "MDI_LineClearance",
-    work: "Grab Pose refinement and controller haptic feedback implementation",
+    projectName: "Operation of Filling Machine â€“ FFS",
+    workType: "Worked",
+    work: "Rotary dial and HMI control panel scripting",
     status: "In Progress",
     hoursWorked: 4.0,
     priority: "High",
-    remarks: "Haptic feedback curve tuned for realistic tactile feel.",
+    remarks: "HMI animation curves mapped.",
     createdAt: "2026-08-13T09:30:00Z",
     updatedAt: "2026-08-13T13:30:00Z"
   },
   {
-    id: "task-aug-13-2",
-    userId: "user_8chili_kavin",
-    userName: "Kavin (8chili)",
-    date: "2026-08-13",
-    projectName: "Leave / Off",
-    work: "Official Leave",
-    status: "Leave",
-    hoursWorked: 0,
-    priority: "Low",
-    remarks: "Approved Leave",
-    createdAt: "2026-08-13T00:00:00Z",
-    updatedAt: "2026-08-13T00:00:00Z"
-  },
-  {
-    id: "task-aug-14-1",
+    id: "task-19",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
     date: "2026-08-14",
-    projectName: "MDI_LineClearance",
-    work: "Step Wizard UI integration and full end-to-end simulation testing",
+    projectName: "Jammed / Toppled Nozzles",
+    workType: "Worked",
+    work: "Nozzle jam detection and operator intervention scenario scripting",
     status: "Completed",
     hoursWorked: 4.0,
     priority: "High",
-    remarks: "Completed line clearance run-through with 0 errors.",
+    remarks: "Intervention scenario logic verified.",
     createdAt: "2026-08-14T09:30:00Z",
     updatedAt: "2026-08-14T13:30:00Z"
   },
   {
-    id: "task-aug-14-2",
+    id: "task-20",
     userId: "user_8chili_kavin",
     userName: "Kavin (8chili)",
-    date: "2026-08-14",
-    projectName: "Leave / Off",
-    work: "Official Leave",
-    status: "Leave",
-    hoursWorked: 0,
-    priority: "Low",
-    remarks: "Approved Leave",
-    createdAt: "2026-08-14T00:00:00Z",
-    updatedAt: "2026-08-14T00:00:00Z"
+    date: "2026-08-17",
+    projectName: "SVP2 Intervention",
+    workType: "Worked",
+    work: "SVP2 glove port insertion animations and sterile boundary collision triggers",
+    status: "In Progress",
+    hoursWorked: 5.0,
+    priority: "High",
+    remarks: "Glove port physics active.",
+    createdAt: "2026-08-17T09:30:00Z",
+    updatedAt: "2026-08-17T14:30:00Z"
+  },
+  {
+    id: "task-21",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-18",
+    projectName: "Ophtha 3 Assembly",
+    workType: "Worked",
+    work: "Component assembly hierarchy setup and magnetic snap anchors",
+    status: "In Progress",
+    hoursWorked: 5.0,
+    priority: "High",
+    remarks: "Snap anchors connected.",
+    createdAt: "2026-08-18T09:30:00Z",
+    updatedAt: "2026-08-18T14:30:00Z"
+  },
+  {
+    id: "task-22",
+    userId: "user_8chili_kavin",
+    userName: "Kavin (8chili)",
+    date: "2026-08-19",
+    projectName: "Ophtha 3 Intervention",
+    workType: "Worked",
+    work: "Emergency stop protocol and maintenance checklist walkthrough",
+    status: "In Progress",
+    hoursWorked: 4.0,
+    priority: "Medium",
+    remarks: "E-stop sequence tested.",
+    createdAt: "2026-08-19T09:30:00Z",
+    updatedAt: "2026-08-19T13:30:00Z"
   }
 ];
 
-// Export to window
+// Export catalogs & dataset
+window.SIMULATIONS_WORKED_ON = SIMULATIONS_WORKED_ON;
+window.SIMULATIONS_TESTED = SIMULATIONS_TESTED;
 window.SAMPLE_WORKSHEET_DATA = SAMPLE_WORKSHEET_DATA;
 /**
  * Google Apps Script Cloud Storage Engine (WorkPulse)
@@ -3643,7 +3846,7 @@ window.cloudStorage = new CloudStorageService();
 
 /**
  * Worksheet State & Business Logic Manager (WorkPulse)
- * Handles multi-user data segregation, filtering, sorting, stats, and pending task carry-forward.
+ * Handles multi-user data segregation, simulation matrix tracking, filtering, sorting, stats, and pending task carry-forward.
  */
 
 class WorksheetManager {
@@ -3651,12 +3854,13 @@ class WorksheetManager {
     this.storage = cloudService;
     this.entries = [];
     this.filters = {
-      dateRange: 'this-month', // 'today' | 'yesterday' | 'this-week' | 'this-month' | 'all' | 'custom'
+      dateRange: 'all', // Default to 'all' so historical simulation records are always visible
       customStartDate: null,
       customEndDate: null,
       project: 'all',
       status: 'all',
       search: '',
+      workType: 'all', // 'all' | 'Worked' | 'Tested'
       userScope: 'me' // 'me' (current user) | 'all' (all team members) | specific userId
     };
     this.sort = {
@@ -3674,7 +3878,7 @@ class WorksheetManager {
         await this.storage.batchImport(list);
       }
     } else {
-      // Automatically migrate all work data to kavin@8chili.com and normalize dates
+      // Automatically migrate all work data to kavin@8chili.com and normalize dates & workTypes
       let migrated = false;
       list.forEach(e => {
         if (!e.userId || e.userId === 'user_kavin' || e.userId === 'user_admin_mnkavin' || e.userName === 'Kavin' || e.userName === 'Kavin M' || !e.userName) {
@@ -3682,6 +3886,19 @@ class WorksheetManager {
           e.userName = 'Kavin (8chili)';
           migrated = true;
         }
+
+        // Tag workType if missing
+        if (!e.workType) {
+          if (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(e.projectName)) {
+            e.workType = 'Tested';
+            migrated = true;
+          } else {
+            e.workType = 'Worked';
+            migrated = true;
+          }
+        }
+
+        // Normalize date
         if (e.date && this.storage && typeof this.storage.normalizeDate === 'function') {
           const nd = this.storage.normalizeDate(e.date);
           if (nd !== e.date) {
@@ -3690,6 +3907,7 @@ class WorksheetManager {
           }
         }
       });
+
       if (migrated) {
         await this.storage.batchImport(list);
       }
@@ -3723,17 +3941,30 @@ class WorksheetManager {
     return WorksheetManager.formatDateIso(d);
   }
 
-  // Add new worksheet entry (tagged with active user)
+  // Add new worksheet entry (tagged with active user and workType)
   async addEntry(data) {
     const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
     const is8chili = currentUser && (currentUser.email === 'kavin@8chili.com' || currentUser.id === 'user_8chili_kavin');
+
+    const projName = (data.projectName || 'General').trim();
+    let determinedType = data.workType;
+    if (!determinedType) {
+      if (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(projName)) {
+        determinedType = 'Tested';
+      } else if (window.SIMULATIONS_WORKED_ON && window.SIMULATIONS_WORKED_ON.includes(projName)) {
+        determinedType = 'Worked';
+      } else {
+        determinedType = 'Worked';
+      }
+    }
 
     const newEntry = {
       id: this.generateId(),
       userId: currentUser ? (is8chili ? 'user_8chili_kavin' : currentUser.id) : 'user_8chili_kavin',
       userName: currentUser ? (is8chili ? 'Kavin (8chili)' : currentUser.name) : 'Kavin (8chili)',
       date: data.date || WorksheetManager.getTodayStr(),
-      projectName: (data.projectName || 'General').trim(),
+      projectName: projName,
+      workType: determinedType,
       work: (data.work || '').trim(),
       status: data.status || 'In Progress',
       hoursWorked: parseFloat(data.hoursWorked) || 0,
@@ -3789,9 +4020,10 @@ class WorksheetManager {
     const cloned = {
       ...source,
       id: this.generateId(),
-      userId: currentUser ? currentUser.id : (source.userId || 'user_kavin'),
-      userName: currentUser ? currentUser.name : (source.userName || 'Kavin'),
       date: WorksheetManager.getTodayStr(),
+      status: 'In Progress',
+      userId: currentUser ? currentUser.id : source.userId,
+      userName: currentUser ? currentUser.name : source.userName,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -3801,47 +4033,63 @@ class WorksheetManager {
     return cloned;
   }
 
-  // Carry Forward all unfinished tasks from yesterday to today
+  // Carry Forward Unfinished (Pending / In Progress / Blocked) Tasks
   async carryForwardPendingTasks() {
-    const yesterdayStr = WorksheetManager.getYesterdayStr();
     const todayStr = WorksheetManager.getTodayStr();
+    const unfinishedStatuses = ['In Progress', 'Pending', 'Blocked', 'Under Review'];
     const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
-    // Find incomplete tasks
-    const incompleteYesterday = this.entries.filter(e => {
-      const isYesterday = e.date === yesterdayStr;
-      const isIncomplete = e.status === 'In Progress' || e.status === 'Pending' || e.status === 'Blocked';
-      const isUserMatch = !currentUser || this.isEntryBelongsToUser(e, currentUser);
-      return isYesterday && isIncomplete && isUserMatch;
+    const sourceTasks = this.entries.filter(e => {
+      if (e.date >= todayStr) return false;
+      if (!unfinishedStatuses.includes(e.status)) return false;
+      if (this.filters.userScope === 'me' && currentUser) {
+        return this.isEntryBelongsToUser(e, currentUser);
+      }
+      return true;
     });
 
-    if (incompleteYesterday.length === 0) {
-      return { count: 0, message: "No unfinished tasks found from yesterday." };
+    if (sourceTasks.length === 0) {
+      return { count: 0, message: 'No unfinished past tasks to carry forward.' };
     }
 
-    let addedCount = 0;
-    for (const task of incompleteYesterday) {
-      // Check if already logged today
-      const alreadyLogged = this.entries.some(e => 
-        e.date === todayStr && 
-        e.projectName === task.projectName && 
-        e.work === task.work &&
-        (!currentUser || this.isEntryBelongsToUser(e, currentUser))
-      );
+    const todayTaskSignatures = new Set(
+      this.entries
+        .filter(e => e.date === todayStr)
+        .map(e => `${(e.projectName||'').toLowerCase()}__${(e.work||'').toLowerCase()}`)
+    );
 
-      if (!alreadyLogged) {
-        await this.addEntry({
+    let addedCount = 0;
+    const newItems = [];
+
+    for (const task of sourceTasks) {
+      const sig = `${(task.projectName||'').toLowerCase()}__${(task.work||'').toLowerCase()}`;
+      if (!todayTaskSignatures.has(sig)) {
+        const clonedTask = {
+          id: this.generateId(),
+          userId: task.userId,
+          userName: task.userName,
           date: todayStr,
-          userId: currentUser ? currentUser.id : task.userId,
-          userName: currentUser ? currentUser.name : task.userName,
           projectName: task.projectName,
+          workType: task.workType || 'Worked',
           work: task.work,
           status: 'In Progress',
           hoursWorked: 0,
           priority: task.priority || 'Medium',
-          remarks: `Carried forward from yesterday`
-        });
+          remarks: `[Carried from ${task.date}] ${task.remarks || ''}`.trim(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+
+        newItems.push(clonedTask);
+        todayTaskSignatures.add(sig);
         addedCount++;
+      }
+    }
+
+    if (newItems.length > 0) {
+      this.entries.unshift(...newItems);
+      for (const item of newItems) {
+        await this.storage.saveEntry(item);
       }
     }
 
@@ -3892,7 +4140,9 @@ class WorksheetManager {
 
   // Get distinct list of project names for filter dropdown & auto-suggestions
   getUniqueProjects() {
-    const set = new Set();
+    const workedSet = new Set(window.SIMULATIONS_WORKED_ON || []);
+    const testedSet = new Set(window.SIMULATIONS_TESTED || []);
+    const customSet = new Set();
     const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
     this.entries.forEach(e => {
@@ -3900,10 +4150,18 @@ class WorksheetManager {
         return;
       }
       if (e.projectName && e.projectName.trim()) {
-        set.add(e.projectName.trim());
+        const p = e.projectName.trim();
+        if (!workedSet.has(p) && !testedSet.has(p)) {
+          customSet.add(p);
+        }
       }
     });
-    return Array.from(set).sort();
+
+    return {
+      worked: Array.from(workedSet),
+      tested: Array.from(testedSet),
+      custom: Array.from(customSet).sort()
+    };
   }
 
   // Get distinct list of all dates in records
@@ -3953,7 +4211,7 @@ class WorksheetManager {
       startDate = WorksheetManager.formatDateIso(firstDay);
       endDate = WorksheetManager.formatDateIso(lastDay);
 
-      // Fallback: If device date differs from worksheet data month, show August 2026
+      // Fallback: If device date differs from worksheet data month, ensure August 2026 is visible
       const hasMonthRecords = this.entries.some(e => e.date && e.date >= startDate && e.date <= endDate);
       if (!hasMonthRecords && this.entries.some(e => e.date && e.date.startsWith('2026-08'))) {
         startDate = '2026-08-01';
@@ -3989,23 +4247,17 @@ class WorksheetManager {
         return false;
       }
 
-      // 5. Search keyword
-      if (this.filters.search) {
-        const q = this.filters.search.toLowerCase().trim();
-        // If search query is an email or matches current user name/username/email, ignore or match user
-        const isEmailOrUser = q.includes('@') || (currentUser && (
-          (currentUser.email && currentUser.email.toLowerCase().includes(q)) ||
-          (currentUser.name && currentUser.name.toLowerCase().includes(q))
-        ));
+      // 5. WorkType filter ('Worked' vs 'Tested')
+      if (this.filters.workType && this.filters.workType !== 'all') {
+        const eType = entry.workType || 'Worked';
+        if (eType.toLowerCase() !== this.filters.workType.toLowerCase()) return false;
+      }
 
-        if (!isEmailOrUser) {
-          const inProject = (entry.projectName || '').toLowerCase().includes(q);
-          const inWork = (entry.work || '').toLowerCase().includes(q);
-          const inRemarks = (entry.remarks || '').toLowerCase().includes(q);
-          const inUser = (entry.userName || '').toLowerCase().includes(q);
-          const inDate = (entry.date || '').toLowerCase().includes(q);
-          if (!inProject && !inWork && !inRemarks && !inUser && !inDate) return false;
-        }
+      // 6. Search query
+      if (this.filters.search && this.filters.search.trim()) {
+        const q = this.filters.search.toLowerCase().trim();
+        const textToSearch = `${entry.projectName || ''} ${entry.work || ''} ${entry.remarks || ''} ${entry.status || ''} ${entry.userName || ''}`.toLowerCase();
+        if (!textToSearch.includes(q)) return false;
       }
 
       return true;
@@ -4084,6 +4336,8 @@ class WorksheetManager {
     
     let totalHours = 0;
     let completedCount = 0;
+    let pendingCount = 0;
+    let totalTasks = 0;
     let leaveDaysCount = 0;
     let workingDaysSet = new Set();
 
@@ -4093,9 +4347,11 @@ class WorksheetManager {
       let dayIsLeave = false;
 
       dayTasks.forEach(task => {
+        totalTasks++;
         const hrs = parseFloat(task.hoursWorked) || 0;
         totalHours += hrs;
         if (task.status === 'Completed') completedCount++;
+        else if (task.status !== 'Leave') pendingCount++;
         if (task.status === 'Leave') dayIsLeave = true;
         if (task.status !== 'Leave') dayHasWork = true;
       });
@@ -4107,6 +4363,8 @@ class WorksheetManager {
     return {
       workingDaysCount: workingDaysSet.size,
       completedCount,
+      pendingCount,
+      totalTasks,
       totalHours: totalHours.toFixed(1),
       leaveDaysCount
     };
@@ -4120,11 +4378,24 @@ class WorksheetManager {
     let pending = 0;
     let blocked = 0;
     let leave = 0;
+    let totalWorkedHours = 0;
+    let totalTestedHours = 0;
+    let totalWorkedTasks = 0;
+    let totalTestedTasks = 0;
     const projectHours = {};
 
     entries.forEach(e => {
       const hours = parseFloat(e.hoursWorked) || 0;
       totalHours += hours;
+
+      const isTest = (e.workType === 'Tested') || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(e.projectName));
+      if (isTest) {
+        totalTestedHours += hours;
+        totalTestedTasks++;
+      } else {
+        totalWorkedHours += hours;
+        totalWorkedTasks++;
+      }
 
       if (e.status === 'Completed') completed++;
       else if (e.status === 'In Progress') inProgress++;
@@ -4142,6 +4413,10 @@ class WorksheetManager {
     return {
       totalTasks,
       totalHours: totalHours.toFixed(1),
+      totalWorkedHours: totalWorkedHours.toFixed(1),
+      totalTestedHours: totalTestedHours.toFixed(1),
+      totalWorkedTasks,
+      totalTestedTasks,
       completed,
       inProgress,
       pending,
@@ -4151,13 +4426,67 @@ class WorksheetManager {
       projectHours
     };
   }
+
+  // Comprehensive Simulation Matrix Tracker (12 Worked On + 7 Tested)
+  getSimulationMatrix() {
+    const workedCatalogs = window.SIMULATIONS_WORKED_ON || [];
+    const testedCatalogs = window.SIMULATIONS_TESTED || [];
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+
+    const userEntries = this.entries.filter(e => {
+      if (this.filters.userScope === 'me' && currentUser) {
+        return this.isEntryBelongsToUser(e, currentUser);
+      }
+      return true;
+    });
+
+    const matrixWorked = workedCatalogs.map((name, index) => {
+      const matched = userEntries.filter(e => e.projectName === name && (e.workType !== 'Tested'));
+      const hours = matched.reduce((acc, cur) => acc + (parseFloat(cur.hoursWorked) || 0), 0);
+      const completed = matched.filter(e => e.status === 'Completed').length;
+      return {
+        num: index + 1,
+        name,
+        type: 'Worked',
+        totalTasks: matched.length,
+        completedTasks: completed,
+        totalHours: hours.toFixed(1),
+        progress: matched.length > 0 ? Math.round((completed / matched.length) * 100) : 0
+      };
+    });
+
+    const matrixTested = testedCatalogs.map((name, index) => {
+      const matched = userEntries.filter(e => e.projectName === name && (e.workType === 'Tested' || !e.workType));
+      const hours = matched.reduce((acc, cur) => acc + (parseFloat(cur.hoursWorked) || 0), 0);
+      const completed = matched.filter(e => e.status === 'Completed').length;
+      return {
+        num: index + 1,
+        name,
+        type: 'Tested',
+        totalTasks: matched.length,
+        completedTasks: completed,
+        totalHours: hours.toFixed(1),
+        progress: matched.length > 0 ? Math.round((completed / matched.length) * 100) : 0
+      };
+    });
+
+    return {
+      worked: matrixWorked,
+      tested: matrixTested,
+      summary: {
+        totalWorkedCount: workedCatalogs.length,
+        activeWorkedCount: matrixWorked.filter(m => m.totalTasks > 0).length,
+        totalTestedCount: testedCatalogs.length,
+        activeTestedCount: matrixTested.filter(m => m.totalTasks > 0).length
+      }
+    };
+  }
 }
 
 window.WorksheetManager = WorksheetManager;
-
 /**
- * UI Renderer Module
- * Handles DOM rendering for table, mobile cards, metric cards, charts, and notifications.
+ * UI Renderer Module (WorkPulse)
+ * Handles DOM rendering for table, cards, metric cards, simulation matrix, calendar, charts, and notifications.
  */
 
 class UIRenderer {
@@ -4205,12 +4534,12 @@ class UIRenderer {
 
   static getStatusOptionsHtml(currentStatus) {
     const statuses = [
-      { val: 'Completed', label: '\u2705 Completed' },
-      { val: 'In Progress', label: '\uD83D\uDD04 In Progress' },
-      { val: 'Pending', label: '\u23F3 Pending' },
-      { val: 'Blocked', label: '\uD83D\uDED1 Blocked' },
-      { val: 'Under Review', label: '\uD83D\uDD0D Under Review' },
-      { val: 'Leave', label: '\uD83C\uDFD6 Leave / Off' }
+      { val: 'Completed', label: 'âœ… Completed' },
+      { val: 'In Progress', label: 'ðŸ”„ In Progress' },
+      { val: 'Pending', label: 'â³ Pending' },
+      { val: 'Blocked', label: 'ðŸ›‘ Blocked' },
+      { val: 'Under Review', label: 'ðŸ” Under Review' },
+      { val: 'Leave', label: 'ðŸ–ï¸ Leave / Off' }
     ];
     return statuses.map(s => `<option value="${s.val}" ${currentStatus === s.val ? 'selected' : ''}>${s.label}</option>`).join('');
   }
@@ -4235,6 +4564,9 @@ class UIRenderer {
     const hoursEl = document.getElementById('metricTotalHours');
     const ctxEl = document.getElementById('metricFilterContext');
 
+    const workedHoursEl = document.getElementById('metricWorkedHours');
+    const testedHoursEl = document.getElementById('metricTestedHours');
+
     const completed = metrics.completed || 0;
     const inProgress = metrics.inProgress || 0;
     const pending = metrics.pending || 0;
@@ -4251,95 +4583,31 @@ class UIRenderer {
     if (hoursEl) hoursEl.textContent = typeof totalHours === 'number' ? totalHours.toFixed(1) : parseFloat(totalHours || 0).toFixed(1);
     if (ctxEl) ctxEl.textContent = dateContext;
 
-    // OS Workspace Dashboard Metrics Card
-    const totalHoursDisplay = document.getElementById('metricTotalHoursDisplay');
-    const statusSummary = document.getElementById('metricStatusSummary');
-    const progressBarFill = document.getElementById('metricProgressBarFill');
-    const completedCountDisplay = document.getElementById('metricCompletedCountDisplay');
-    const pendingCountDisplay = document.getElementById('metricPendingCountDisplay');
-
-    if (totalHoursDisplay) totalHoursDisplay.textContent = `${totalHours.toFixed(1)} hrs`;
-    if (statusSummary) statusSummary.textContent = `${totalTasks} Tasks • ${rate}% Rate`;
-    if (progressBarFill) progressBarFill.style.width = `${Math.min(100, rate)}%`;
-    if (completedCountDisplay) completedCountDisplay.textContent = completed;
-    if (pendingCountDisplay) pendingCountDisplay.textContent = pending + inProgress;
-  }
-
-  // Render Dashboard Hub Task List (Image 2 My Tasks Widget)
-  renderDashboardTasks(entries, onStatusChange, onEdit, onDuplicate, onDelete) {
-    const listEl = document.getElementById('dashboardTaskList');
-    if (!listEl) return;
-    listEl.innerHTML = '';
-
-    if (entries.length === 0) {
-      listEl.innerHTML = `
-        <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem;">
-          <i data-lucide="check-circle" style="width: 28px; height: 28px; margin: 0 auto 0.5rem auto; display: block; opacity: 0.5;"></i>
-          No tasks recorded for this filter. Click <strong>+ Add Task</strong> above to log work.
-        </div>
-      `;
-      if (window.lucide) window.lucide.createIcons();
-      return;
-    }
-
-    entries.forEach(entry => {
-      const row = document.createElement('div');
-      row.className = 'task-item-row';
-      const isDone = entry.status === 'Completed';
-
-      row.innerHTML = `
-        <div class="task-item-left">
-          <div class="task-check-circle ${isDone ? 'completed' : ''}" data-id="${entry.id}" title="${isDone ? 'Mark as In Progress' : 'Mark as Completed'}">
-            ${isDone ? '<i data-lucide="check" style="width: 12px; height: 12px;"></i>' : ''}
-          </div>
-          <div style="flex: 1; min-width: 0;">
-            <div class="task-item-title ${isDone ? 'completed' : ''}">${this.escapeHtml(entry.work.split('\n')[0])}</div>
-            <div style="display: flex; align-items: center; gap: 0.4rem; margin-top: 0.2rem;">
-              <span class="project-pill" style="font-size: 0.68rem; padding: 0.1rem 0.4rem;">${this.escapeHtml(entry.projectName)}</span>
-              ${entry.hoursWorked ? `<span style="font-size: 0.7rem; color: #c4b5fd; font-weight: 600;">${entry.hoursWorked}h</span>` : ''}
-            </div>
-          </div>
-        </div>
-        <div class="task-item-right">
-          <span class="task-item-date">${UIRenderer.formatDisplayDate(entry.date)}</span>
-          <button class="btn-action edit" title="Edit task" data-id="${entry.id}"><i data-lucide="edit-2" class="icon-xs"></i></button>
-          <button class="btn-action delete" title="Delete task" data-id="${entry.id}"><i data-lucide="trash-2" class="icon-xs"></i></button>
-        </div>
-      `;
-
-      // Checkbox click event
-      const checkBtn = row.querySelector('.task-check-circle');
-      if (checkBtn) {
-        checkBtn.addEventListener('click', () => {
-          const nextStatus = isDone ? 'In Progress' : 'Completed';
-          onStatusChange(entry.id, nextStatus);
-          if (nextStatus === 'Completed' && window.confetti) window.confetti();
-        });
-      }
-
-      const editBtn = row.querySelector('.btn-action.edit');
-      if (editBtn) editBtn.addEventListener('click', () => onEdit(entry));
-      
-      const delBtn = row.querySelector('.btn-action.delete');
-      if (delBtn) delBtn.addEventListener('click', () => onDelete(entry.id));
-
-      listEl.appendChild(row);
-    });
-
-    if (window.lucide) window.lucide.createIcons();
+    if (workedHoursEl) workedHoursEl.textContent = `${metrics.totalWorkedHours || 0}h (${metrics.totalWorkedTasks || 0} dev)`;
+    if (testedHoursEl) testedHoursEl.textContent = `${metrics.totalTestedHours || 0}h (${metrics.totalTestedTasks || 0} QA)`;
   }
 
   // Render Table View (Desktop & Tablet)
   renderTable(entries, onStatusChange, onEdit, onDuplicate, onDelete, showUserBadge = false) {
     const tbody = document.getElementById('worksheetTableBody');
-    const emptyState = document.getElementById('emptyState');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     if (entries.length === 0) {
-      emptyState.classList.remove('hidden');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+            <div style="max-width: 320px; margin: 0 auto;">
+              <i data-lucide="inbox" style="width: 38px; height: 38px; opacity: 0.4; margin: 0 auto 0.75rem auto; display: block;"></i>
+              <strong style="color: #ffffff; display: block; margin-bottom: 0.35rem;">No tasks found</strong>
+              <p style="font-size: 0.82rem; margin: 0;">Try adjusting your filters or click <strong>+ Log Work</strong> to add a new task.</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      if (window.lucide) window.lucide.createIcons();
       return;
     }
-    emptyState.classList.add('hidden');
 
     entries.forEach(entry => {
       const tr = document.createElement('tr');
@@ -4348,6 +4616,7 @@ class UIRenderer {
       const statusMeta = UIRenderer.getStatusMeta(entry.status);
       const priorityCls = UIRenderer.getPriorityClass(entry.priority);
       const formattedDate = UIRenderer.formatDisplayDate(entry.date);
+      const isTest = (entry.workType === 'Tested') || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(entry.projectName));
 
       tr.innerHTML = `
         <td class="col-date" title="${entry.date}">
@@ -4355,7 +4624,10 @@ class UIRenderer {
         </td>
         <td class="col-project">
           ${(showUserBadge && entry.userName) ? `<span class="user-badge-pill" style="background-color: ${this.getUserColor(entry.userName)};"><i data-lucide="user" class="icon-xs"></i> ${this.escapeHtml(entry.userName)}</span>` : ''}
-          <span class="project-pill">${this.escapeHtml(entry.projectName)}</span>
+          <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
+            <span class="worktype-badge ${isTest ? 'tested' : 'worked'}">${isTest ? 'ðŸ§ª Tested' : 'ðŸ› ï¸ Worked'}</span>
+            <span class="project-pill">${this.escapeHtml(entry.projectName)}</span>
+          </div>
         </td>
         <td class="col-work">
           <div class="work-text">${this.escapeHtml(entry.work).replace(/\n/g, '<br>')}</div>
@@ -4411,6 +4683,7 @@ class UIRenderer {
   // Render Mobile Cards View (Phones)
   renderCards(entries, onStatusChange, onEdit, onDuplicate, onDelete, showUserBadge = false) {
     const grid = document.getElementById('worksheetCardsGrid');
+    if (!grid) return;
     grid.innerHTML = '';
 
     entries.forEach(entry => {
@@ -4421,11 +4694,15 @@ class UIRenderer {
       const statusMeta = UIRenderer.getStatusMeta(entry.status);
       const priorityCls = UIRenderer.getPriorityClass(entry.priority);
       const formattedDate = UIRenderer.formatDisplayDate(entry.date);
+      const isTest = (entry.workType === 'Tested') || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(entry.projectName));
 
       card.innerHTML = `
         <div class="card-top-row">
           <span class="card-date"><i data-lucide="calendar" class="icon-xs"></i> ${formattedDate}</span>
-          <span class="priority-pill ${priorityCls}">${entry.priority || 'Medium'}</span>
+          <div style="display: flex; gap: 0.35rem; align-items: center;">
+            <span class="worktype-badge ${isTest ? 'tested' : 'worked'}">${isTest ? 'ðŸ§ª Tested' : 'ðŸ› ï¸ Worked'}</span>
+            <span class="priority-pill ${priorityCls}">${entry.priority || 'Medium'}</span>
+          </div>
         </div>
 
         <div class="card-project-title">
@@ -4483,7 +4760,6 @@ class UIRenderer {
     const dropAvatar = document.getElementById('dropdownUserAvatar');
     const dropName = document.getElementById('dropdownUserName');
     const dropRole = document.getElementById('dropdownUserRole');
-    const myLabel = document.getElementById('labelMyWorksheet');
 
     const initial = (user.name || 'U').charAt(0).toUpperCase();
     const color = user.color || this.getUserColor(user.name);
@@ -4499,8 +4775,7 @@ class UIRenderer {
       dropAvatar.style.backgroundColor = color;
     }
     if (dropName) dropName.textContent = user.name;
-    if (dropRole) dropRole.textContent = isAdminUser ? '👑 Supervisor & Admin' : (user.role || 'Team Member');
-    if (myLabel) myLabel.textContent = isAdminUser ? '👑 Team Master View' : `${user.name}'s Worksheet`;
+    if (dropRole) dropRole.textContent = isAdminUser ? 'ðŸ‘‘ Supervisor & Admin' : (user.role || 'Team Member');
 
     const dropAdminLink = document.getElementById('btnDropdownAdmin');
     if (dropAdminLink) {
@@ -4515,80 +4790,173 @@ class UIRenderer {
     }
   }
 
-  // Render User Accounts List in Modal
-  renderUserSwitcher(users, activeUserId, onSelectUser, onDeleteUser) {
-    const container = document.getElementById('usersListContainer');
-    if (!container) return;
+  // Populate Project Filter dropdown with clean Grouped Options
+  populateProjectFilters(projects, currentFilter = 'all') {
+    const select = document.getElementById('filterProject');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="all">All Simulation Projects</option>';
 
-    container.innerHTML = '';
-    if (!users || users.length === 0) {
-      container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; padding: 1rem 0;">No user profiles found.</p>';
-      return;
+    let workedList = [];
+    let testedList = [];
+    let customList = [];
+
+    if (typeof projects === 'object' && projects.worked) {
+      workedList = projects.worked;
+      testedList = projects.tested;
+      customList = projects.custom || [];
+    } else if (Array.isArray(projects)) {
+      workedList = window.SIMULATIONS_WORKED_ON || [];
+      testedList = window.SIMULATIONS_TESTED || [];
+      customList = projects.filter(p => !workedList.includes(p) && !testedList.includes(p));
     }
 
-    users.forEach(user => {
-      const card = document.createElement('div');
-      card.className = `user-profile-card ${user.id === activeUserId ? 'active' : ''}`;
-      const initial = (user.name || 'U').charAt(0).toUpperCase();
-      const color = user.color || this.getUserColor(user.name);
-
-      card.innerHTML = `
-        <div class="user-card-info">
-          <div class="user-avatar-large" style="background-color: ${color}; width: 34px; height: 34px; font-size: 0.85rem;">${initial}</div>
-          <div>
-            <div class="user-card-name">${this.escapeHtml(user.name)} ${user.id === activeUserId ? '<span style="font-size: 0.72rem; color: var(--brand-primary); font-weight: normal;">(Active)</span>' : ''}</div>
-            <div class="user-card-role">@${this.escapeHtml(user.username)} • ${this.escapeHtml(user.role || 'Member')}</div>
-          </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <button class="btn btn-xs ${user.id === activeUserId ? 'btn-primary' : 'btn-outline'} btn-select-user">
-            ${user.id === activeUserId ? '✓ Selected' : 'Switch'}
-          </button>
-        </div>
-      `;
-
-      card.querySelector('.btn-select-user').addEventListener('click', (e) => {
-        e.stopPropagation();
-        onSelectUser(user.id);
+    // 1. Group: Simulations Worked On (12)
+    if (workedList.length > 0) {
+      const grpWorked = document.createElement('optgroup');
+      grpWorked.label = 'ðŸ› ï¸ Simulations Worked On (12)';
+      workedList.forEach(pName => {
+        const opt = document.createElement('option');
+        opt.value = pName;
+        opt.textContent = pName;
+        if (pName === currentFilter) opt.selected = true;
+        grpWorked.appendChild(opt);
       });
+      select.appendChild(grpWorked);
+    }
 
-      card.addEventListener('click', () => {
-        onSelectUser(user.id);
+    // 2. Group: Simulations Tested (7)
+    if (testedList.length > 0) {
+      const grpTested = document.createElement('optgroup');
+      grpTested.label = 'ðŸ§ª Simulations Tested (7)';
+      testedList.forEach(pName => {
+        const opt = document.createElement('option');
+        opt.value = pName;
+        opt.textContent = pName;
+        if (pName === currentFilter) opt.selected = true;
+        grpTested.appendChild(opt);
       });
+      select.appendChild(grpTested);
+    }
 
-      container.appendChild(card);
+    // 3. Group: Other Projects
+    if (customList.length > 0) {
+      const grpCustom = document.createElement('optgroup');
+      grpCustom.label = 'ðŸ“‚ Other / General Projects';
+      customList.forEach(pName => {
+        const opt = document.createElement('option');
+        opt.value = pName;
+        opt.textContent = pName;
+        if (pName === currentFilter) opt.selected = true;
+        grpCustom.appendChild(opt);
+      });
+      select.appendChild(grpCustom);
+    }
+  }
+
+  // Render Dedicated Simulation Matrix Tracker (12 Worked + 7 Tested)
+  renderSimulationMatrix(matrix, onFilterProject, onLogForProject) {
+    const workedTbody = document.getElementById('matrixWorkedTableBody');
+    const testedTbody = document.getElementById('matrixTestedTableBody');
+    const workedCountBadge = document.getElementById('matrixWorkedCountBadge');
+    const testedCountBadge = document.getElementById('matrixTestedCountBadge');
+
+    if (workedCountBadge) workedCountBadge.textContent = `${matrix.summary.activeWorkedCount} / ${matrix.summary.totalWorkedCount} Active`;
+    if (testedCountBadge) testedCountBadge.textContent = `${matrix.summary.activeTestedCount} / ${matrix.summary.totalTestedCount} Active`;
+
+    if (workedTbody) {
+      workedTbody.innerHTML = matrix.worked.map(item => `
+        <tr>
+          <td style="font-weight: 800; color: #a78bfa; width: 40px; text-align: center;">${item.num}</td>
+          <td>
+            <strong style="color: #ffffff; font-size: 0.88rem;">${this.escapeHtml(item.name)}</strong>
+          </td>
+          <td>
+            <span class="badge ${item.totalTasks > 0 ? 'badge-primary' : 'badge-neutral'}" style="font-size: 0.72rem;">
+              ${item.totalTasks > 0 ? (item.progress === 100 ? 'âœ… Completed' : 'ðŸ”„ In Progress') : 'â³ Not Started'}
+            </span>
+          </td>
+          <td style="text-align: center;">
+            <strong>${item.totalTasks}</strong> tasks (${item.completedTasks} done)
+          </td>
+          <td style="text-align: center;">
+            <span style="font-weight: 700; color: #34d399;">${item.totalHours}h</span>
+          </td>
+          <td style="width: 140px;">
+            <div style="background: rgba(255,255,255,0.08); border-radius: 999px; height: 7px; overflow: hidden; margin-bottom: 3px;">
+              <div style="background: linear-gradient(90deg, #8b5cf6, #10b981); height: 100%; width: ${item.progress}%;"></div>
+            </div>
+            <span style="font-size: 0.68rem; color: var(--text-muted);">${item.progress}% Complete</span>
+          </td>
+          <td style="text-align: right; width: 140px;">
+            <div style="display: flex; gap: 0.35rem; justify-content: flex-end;">
+              <button class="btn btn-outline btn-xs btn-matrix-filter" data-project="${this.escapeHtml(item.name)}" title="View Tasks">
+                <i data-lucide="filter" class="icon-xs"></i> View
+              </button>
+              <button class="btn btn-primary btn-xs btn-matrix-add" data-project="${this.escapeHtml(item.name)}" data-type="Worked" title="Log Work for this simulation">
+                <i data-lucide="plus" class="icon-xs"></i> Log
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    if (testedTbody) {
+      testedTbody.innerHTML = matrix.tested.map(item => `
+        <tr>
+          <td style="font-weight: 800; color: #38bdf8; width: 40px; text-align: center;">${item.num}</td>
+          <td>
+            <strong style="color: #ffffff; font-size: 0.88rem;">${this.escapeHtml(item.name)}</strong>
+          </td>
+          <td>
+            <span class="badge ${item.totalTasks > 0 ? 'badge-primary' : 'badge-neutral'}" style="font-size: 0.72rem; background: rgba(6, 182, 212, 0.18); color: #38bdf8; border-color: rgba(6, 182, 212, 0.4);">
+              ${item.totalTasks > 0 ? (item.progress === 100 ? 'âœ… QA Passed' : 'ðŸ§ª In Testing') : 'â³ Pending QA'}
+            </span>
+          </td>
+          <td style="text-align: center;">
+            <strong>${item.totalTasks}</strong> tests (${item.completedTasks} passed)
+          </td>
+          <td style="text-align: center;">
+            <span style="font-weight: 700; color: #38bdf8;">${item.totalHours}h</span>
+          </td>
+          <td style="width: 140px;">
+            <div style="background: rgba(255,255,255,0.08); border-radius: 999px; height: 7px; overflow: hidden; margin-bottom: 3px;">
+              <div style="background: linear-gradient(90deg, #06b6d4, #3b82f6); height: 100%; width: ${item.progress}%;"></div>
+            </div>
+            <span style="font-size: 0.68rem; color: var(--text-muted);">${item.progress}% Passed</span>
+          </td>
+          <td style="text-align: right; width: 140px;">
+            <div style="display: flex; gap: 0.35rem; justify-content: flex-end;">
+              <button class="btn btn-outline btn-xs btn-matrix-filter" data-project="${this.escapeHtml(item.name)}" title="View Tests">
+                <i data-lucide="filter" class="icon-xs"></i> View
+              </button>
+              <button class="btn btn-primary btn-xs btn-matrix-add" data-project="${this.escapeHtml(item.name)}" data-type="Tested" style="background: #06b6d4; border-color: #06b6d4;" title="Log QA Test">
+                <i data-lucide="plus" class="icon-xs"></i> Log
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Attach button listeners
+    document.querySelectorAll('.btn-matrix-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const proj = btn.dataset.project;
+        if (onFilterProject) onFilterProject(proj);
+      });
+    });
+
+    document.querySelectorAll('.btn-matrix-add').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const proj = btn.dataset.project;
+        const type = btn.dataset.type;
+        if (onLogForProject) onLogForProject(proj, type);
+      });
     });
 
     if (window.lucide) window.lucide.createIcons();
-  }
-
-  // Populate Project Filter dropdown & Modal quick tags
-  populateProjectFilters(projects, currentFilter = 'all') {
-    const select = document.getElementById('filterProject');
-    const quickTagsContainer = document.getElementById('projectQuickTags');
-    
-    select.innerHTML = '<option value="all">All Projects</option>';
-    if (quickTagsContainer) quickTagsContainer.innerHTML = '';
-
-    projects.forEach(pName => {
-      const opt = document.createElement('option');
-      opt.value = pName;
-      opt.textContent = pName;
-      if (pName === currentFilter) opt.selected = true;
-      select.appendChild(opt);
-
-      // Quick Tag in modal
-      if (quickTagsContainer) {
-        const tag = document.createElement('button');
-        tag.type = 'button';
-        tag.className = 'project-tag-pill';
-        tag.textContent = pName;
-        tag.addEventListener('click', () => {
-          document.getElementById('projectNameInput').value = pName;
-        });
-        quickTagsContainer.appendChild(tag);
-      }
-    });
   }
 
   // Render Analytics Charts (Chart.js)
@@ -4697,6 +5065,8 @@ class UIRenderer {
   // Toast Notification System
   showToast(message, type = 'info') {
     const container = document.getElementById('toastContainer');
+    if (!container) return;
+
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
 
@@ -4804,15 +5174,19 @@ class UIRenderer {
       let tasksHtml = '';
       const visibleTasks = dayEntries.slice(0, 3);
       visibleTasks.forEach(task => {
-        let statusStyle = 'background: rgba(139, 92, 246, 0.22); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.35);';
+        const isTest = (task.workType === 'Tested') || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(task.projectName));
+        let statusStyle = isTest
+          ? 'background: rgba(6, 182, 212, 0.22); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.4);'
+          : 'background: rgba(139, 92, 246, 0.22); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.35);';
+
         if (task.status === 'Completed') statusStyle = 'background: rgba(16, 185, 129, 0.22); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35);';
         else if (task.status === 'Pending') statusStyle = 'background: rgba(245, 158, 11, 0.22); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35);';
         else if (task.status === 'Blocked') statusStyle = 'background: rgba(244, 63, 94, 0.22); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.35);';
         else if (task.status === 'Leave') statusStyle = 'background: rgba(217, 70, 239, 0.22); color: #e879f9; border: 1px solid rgba(217, 70, 239, 0.35);';
 
         tasksHtml += `
-          <div class="cal-task-pill" style="${statusStyle} font-size: 0.68rem; font-weight: 600; padding: 0.1rem 0.35rem; border-radius: 4px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${this.escapeHtml(task.projectName)}: ${this.escapeHtml(task.work)}">
-            <span>${this.escapeHtml(task.projectName)}</span>
+          <div class="cal-task-pill" style="${statusStyle} font-size: 0.68rem; font-weight: 600; padding: 0.1rem 0.35rem; border-radius: 4px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${isTest ? '[Tested]' : '[Worked]'} ${this.escapeHtml(task.projectName)}: ${this.escapeHtml(task.work)}">
+            <span>${isTest ? 'ðŸ§ª' : 'ðŸ› ï¸'} ${this.escapeHtml(task.projectName)}</span>
           </div>
         `;
       });
@@ -4875,11 +5249,11 @@ class UIRenderer {
 
     const entries = manager.getEntriesForDate(dateStr);
     inspector.classList.remove('hidden');
-    title.textContent = `Tasks for ${UIRenderer.formatDisplayDate(dateStr)}`;
+    if (title) title.textContent = `Tasks for ${UIRenderer.formatDisplayDate(dateStr)}`;
 
     // Add button handler
-    addBtn.onclick = () => onAddForDate(dateStr);
-    closeBtn.onclick = () => inspector.classList.add('hidden');
+    if (addBtn) addBtn.onclick = () => onAddForDate(dateStr);
+    if (closeBtn) closeBtn.onclick = () => inspector.classList.add('hidden');
 
     if (entries.length === 0) {
       list.innerHTML = `
@@ -4895,10 +5269,14 @@ class UIRenderer {
       const item = document.createElement('div');
       item.className = 'inspector-task-item';
       const statusMeta = UIRenderer.getStatusMeta(entry.status);
+      const isTest = (entry.workType === 'Tested') || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(entry.projectName));
 
       item.innerHTML = `
         <div class="inspector-task-main">
-          <div class="inspector-project">${this.escapeHtml(entry.projectName)}</div>
+          <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 4px;">
+            <span class="worktype-badge ${isTest ? 'tested' : 'worked'}">${isTest ? 'ðŸ§ª Tested' : 'ðŸ› ï¸ Worked'}</span>
+            <div class="inspector-project">${this.escapeHtml(entry.projectName)}</div>
+          </div>
           <div class="inspector-work">${this.escapeHtml(entry.work).replace(/\n/g, '<br>')}</div>
           ${entry.remarks ? `<div class="work-remarks" style="margin-top: 4px;"><i data-lucide="info" class="icon-xs"></i> ${this.escapeHtml(entry.remarks)}</div>` : ''}
         </div>
@@ -4925,7 +5303,6 @@ class UIRenderer {
 }
 
 window.uiRenderer = new UIRenderer();
-
 /**
  * Import & Export Management Module (WorkPulse)
  * High-compatibility Excel (.xlsx, .xls), CSV, JSON, and Direct Copy-Paste Importer
@@ -4984,6 +5361,73 @@ class ImportExportManager {
     const fileName = `Worksheet_${WorksheetManager.getTodayStr()}.xlsx`;
     XLSX.writeFile(workbook, fileName);
     this.ui.showToast(`Exported ${entries.length} rows to ${fileName}`, 'success');
+  }
+
+  // Export Master Simulation Matrix Sheet (3 Sheets: All Logs, 12 Worked On, 7 Tested)
+  exportSimulationSummaryExcel() {
+    if (!window.XLSX) {
+      this.ui.showToast('Excel exporter library loading...', 'info');
+      return;
+    }
+
+    const matrix = this.manager.getSimulationMatrix();
+    const allEntries = this.manager.getFilteredEntries();
+
+    const workbook = XLSX.utils.book_new();
+
+    // Sheet 1: Master All Logs
+    const rowsLogs = allEntries.map(e => ({
+      'Date': e.date,
+      'User': e.userName || 'Kavin (8chili)',
+      'Simulation Type': e.workType || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(e.projectName) ? 'Tested' : 'Worked'),
+      'Simulation / Project Name': e.projectName,
+      'Work Description': e.work,
+      'Status': e.status,
+      'Hours Worked': e.hoursWorked || 0,
+      'Priority': e.priority || 'Medium',
+      'Remarks': e.remarks || ''
+    }));
+    const wsLogs = XLSX.utils.json_to_sheet(rowsLogs);
+    wsLogs['!cols'] = [
+      { wch: 12 }, { wch: 16 }, { wch: 16 }, { wch: 45 }, { wch: 45 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 30 }
+    ];
+    XLSX.utils.book_append_sheet(workbook, wsLogs, 'Daily Worksheet Logs');
+
+    // Sheet 2: 12 Simulations Worked On
+    const rowsWorked = matrix.worked.map(m => ({
+      '#': m.num,
+      'Simulation Project (Development)': m.name,
+      'Status': m.totalTasks > 0 ? (m.progress === 100 ? 'Completed' : 'In Progress') : 'Not Started',
+      'Total Tasks Logged': m.totalTasks,
+      'Completed Tasks': m.completedTasks,
+      'Total Hours Logged': parseFloat(m.totalHours) || 0,
+      'Progress %': `${m.progress}%`
+    }));
+    const wsWorked = XLSX.utils.json_to_sheet(rowsWorked);
+    wsWorked['!cols'] = [
+      { wch: 5 }, { wch: 55 }, { wch: 16 }, { wch: 18 }, { wch: 16 }, { wch: 18 }, { wch: 14 }
+    ];
+    XLSX.utils.book_append_sheet(workbook, wsWorked, '12 Simulations Worked On');
+
+    // Sheet 3: 7 Simulations Tested
+    const rowsTested = matrix.tested.map(m => ({
+      '#': m.num,
+      'Simulation Tested (QA / Verification)': m.name,
+      'Status': m.totalTasks > 0 ? (m.progress === 100 ? 'QA Passed' : 'In Testing') : 'Pending QA',
+      'Total Tests Logged': m.totalTasks,
+      'Passed Tests': m.completedTasks,
+      'Total Hours Logged': parseFloat(m.totalHours) || 0,
+      'Pass Rate %': `${m.progress}%`
+    }));
+    const wsTested = XLSX.utils.json_to_sheet(rowsTested);
+    wsTested['!cols'] = [
+      { wch: 5 }, { wch: 50 }, { wch: 16 }, { wch: 18 }, { wch: 16 }, { wch: 18 }, { wch: 14 }
+    ];
+    XLSX.utils.book_append_sheet(workbook, wsTested, '7 Simulations Tested');
+
+    const fileName = `Simulation_Master_Worksheet_${WorksheetManager.getTodayStr()}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+    this.ui.showToast(`Exported Full Simulation Workbook: ${fileName}`, 'success');
   }
 
   // Export to CSV
@@ -5819,6 +6263,8 @@ async function initWorkPulseApp() {
   window.workPulseApp = {
     openWorkModal: (existing, defDate) => openWorkModal(existing, defDate),
     closeWorkModal: () => closeWorkModal(),
+    switchModalWorkType: (type) => switchModalWorkType(type),
+    exportSimulationExcel: () => ie.exportSimulationSummaryExcel(),
     openReport: () => openDailyReportModal(),
     closeReport: () => closeDailyReportModal(),
     openImportExport: () => openImportExportModal(),
@@ -5826,6 +6272,11 @@ async function initWorkPulseApp() {
     openCloud: () => openCloudModal(),
     closeCloud: () => closeCloudModal(),
     switchView: (v) => switchView(v),
+    handleFilterChange: () => {
+      const wt = document.getElementById('filterWorkType');
+      if (wt) manager.setFilter('workType', wt.value);
+      renderApp();
+    },
     setDateFilter: (filterType) => {
       if (filterType === 'custom') {
         const c = document.getElementById('customDateContainer');
@@ -6040,6 +6491,11 @@ async function initWorkPulseApp() {
     // Render Calendar View
     if (currentView === 'calendar') {
       renderCalendarView();
+    }
+
+    // Render Matrix
+    if (currentView === 'matrix') {
+      renderMatrixView();
     }
 
     // Render Charts
@@ -6294,22 +6750,52 @@ async function initWorkPulseApp() {
     });
 
     const tableEl = document.getElementById('tableViewContainer');
+    const matrixEl = document.getElementById('matrixViewContainer');
     const cardsEl = document.getElementById('cardsViewContainer');
     const calEl = document.getElementById('calendarViewContainer');
     const chartEl = document.getElementById('analyticsViewContainer');
 
     if (tableEl) tableEl.classList.toggle('hidden', viewName !== 'table');
+    if (matrixEl) matrixEl.classList.toggle('hidden', viewName !== 'matrix');
     if (cardsEl) cardsEl.classList.toggle('hidden', viewName !== 'cards');
     if (calEl) calEl.classList.toggle('hidden', viewName !== 'calendar');
     if (chartEl) chartEl.classList.toggle('hidden', viewName !== 'analytics');
 
-    if (viewName === 'calendar') {
+    if (viewName === 'matrix') {
+      renderMatrixView();
+    } else if (viewName === 'calendar') {
       renderCalendarView();
     } else if (viewName === 'analytics') {
       const entries = manager.getFilteredEntries();
       const metrics = manager.getMetrics(entries);
       ui.renderCharts(metrics);
     }
+  }
+
+  function renderMatrixView() {
+    const matrix = manager.getSimulationMatrix();
+    ui.renderSimulationMatrix(
+      matrix,
+      (filteredProj) => {
+        manager.setFilter('project', filteredProj);
+        const filterProjSelect = document.getElementById('filterProject');
+        if (filterProjSelect) filterProjSelect.value = filteredProj;
+        switchView('table');
+        renderApp();
+      },
+      (projectToLog, type) => {
+        openWorkModal({
+          projectName: projectToLog,
+          workType: type,
+          date: WorksheetManager.getTodayStr(),
+          status: 'In Progress',
+          hoursWorked: 4,
+          priority: 'High',
+          work: '',
+          remarks: ''
+        });
+      }
+    );
   }
 
   function bindCalendarEvents() {

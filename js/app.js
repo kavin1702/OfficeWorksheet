@@ -25,6 +25,8 @@ async function initWorkPulseApp() {
   window.workPulseApp = {
     openWorkModal: (existing, defDate) => openWorkModal(existing, defDate),
     closeWorkModal: () => closeWorkModal(),
+    switchModalWorkType: (type) => switchModalWorkType(type),
+    exportSimulationExcel: () => ie.exportSimulationSummaryExcel(),
     openReport: () => openDailyReportModal(),
     closeReport: () => closeDailyReportModal(),
     openImportExport: () => openImportExportModal(),
@@ -32,6 +34,11 @@ async function initWorkPulseApp() {
     openCloud: () => openCloudModal(),
     closeCloud: () => closeCloudModal(),
     switchView: (v) => switchView(v),
+    handleFilterChange: () => {
+      const wt = document.getElementById('filterWorkType');
+      if (wt) manager.setFilter('workType', wt.value);
+      renderApp();
+    },
     setDateFilter: (filterType) => {
       if (filterType === 'custom') {
         const c = document.getElementById('customDateContainer');
@@ -246,6 +253,11 @@ async function initWorkPulseApp() {
     // Render Calendar View
     if (currentView === 'calendar') {
       renderCalendarView();
+    }
+
+    // Render Matrix
+    if (currentView === 'matrix') {
+      renderMatrixView();
     }
 
     // Render Charts
@@ -500,22 +512,52 @@ async function initWorkPulseApp() {
     });
 
     const tableEl = document.getElementById('tableViewContainer');
+    const matrixEl = document.getElementById('matrixViewContainer');
     const cardsEl = document.getElementById('cardsViewContainer');
     const calEl = document.getElementById('calendarViewContainer');
     const chartEl = document.getElementById('analyticsViewContainer');
 
     if (tableEl) tableEl.classList.toggle('hidden', viewName !== 'table');
+    if (matrixEl) matrixEl.classList.toggle('hidden', viewName !== 'matrix');
     if (cardsEl) cardsEl.classList.toggle('hidden', viewName !== 'cards');
     if (calEl) calEl.classList.toggle('hidden', viewName !== 'calendar');
     if (chartEl) chartEl.classList.toggle('hidden', viewName !== 'analytics');
 
-    if (viewName === 'calendar') {
+    if (viewName === 'matrix') {
+      renderMatrixView();
+    } else if (viewName === 'calendar') {
       renderCalendarView();
     } else if (viewName === 'analytics') {
       const entries = manager.getFilteredEntries();
       const metrics = manager.getMetrics(entries);
       ui.renderCharts(metrics);
     }
+  }
+
+  function renderMatrixView() {
+    const matrix = manager.getSimulationMatrix();
+    ui.renderSimulationMatrix(
+      matrix,
+      (filteredProj) => {
+        manager.setFilter('project', filteredProj);
+        const filterProjSelect = document.getElementById('filterProject');
+        if (filterProjSelect) filterProjSelect.value = filteredProj;
+        switchView('table');
+        renderApp();
+      },
+      (projectToLog, type) => {
+        openWorkModal({
+          projectName: projectToLog,
+          workType: type,
+          date: WorksheetManager.getTodayStr(),
+          status: 'In Progress',
+          hoursWorked: 4,
+          priority: 'High',
+          work: '',
+          remarks: ''
+        });
+      }
+    );
   }
 
   function bindCalendarEvents() {

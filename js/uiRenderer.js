@@ -1,6 +1,6 @@
-/**
- * UI Renderer Module
- * Handles DOM rendering for table, mobile cards, metric cards, charts, and notifications.
+﻿/**
+ * UI Renderer Module (WorkPulse)
+ * Handles DOM rendering for table, cards, metric cards, simulation matrix, calendar, charts, and notifications.
  */
 
 class UIRenderer {
@@ -48,12 +48,12 @@ class UIRenderer {
 
   static getStatusOptionsHtml(currentStatus) {
     const statuses = [
-      { val: 'Completed', label: '\u2705 Completed' },
-      { val: 'In Progress', label: '\uD83D\uDD04 In Progress' },
-      { val: 'Pending', label: '\u23F3 Pending' },
-      { val: 'Blocked', label: '\uD83D\uDED1 Blocked' },
-      { val: 'Under Review', label: '\uD83D\uDD0D Under Review' },
-      { val: 'Leave', label: '\uD83C\uDFD6 Leave / Off' }
+      { val: 'Completed', label: 'âœ… Completed' },
+      { val: 'In Progress', label: 'ðŸ”„ In Progress' },
+      { val: 'Pending', label: 'â³ Pending' },
+      { val: 'Blocked', label: 'ðŸ›‘ Blocked' },
+      { val: 'Under Review', label: 'ðŸ” Under Review' },
+      { val: 'Leave', label: 'ðŸ–ï¸ Leave / Off' }
     ];
     return statuses.map(s => `<option value="${s.val}" ${currentStatus === s.val ? 'selected' : ''}>${s.label}</option>`).join('');
   }
@@ -78,6 +78,9 @@ class UIRenderer {
     const hoursEl = document.getElementById('metricTotalHours');
     const ctxEl = document.getElementById('metricFilterContext');
 
+    const workedHoursEl = document.getElementById('metricWorkedHours');
+    const testedHoursEl = document.getElementById('metricTestedHours');
+
     const completed = metrics.completed || 0;
     const inProgress = metrics.inProgress || 0;
     const pending = metrics.pending || 0;
@@ -94,95 +97,31 @@ class UIRenderer {
     if (hoursEl) hoursEl.textContent = typeof totalHours === 'number' ? totalHours.toFixed(1) : parseFloat(totalHours || 0).toFixed(1);
     if (ctxEl) ctxEl.textContent = dateContext;
 
-    // OS Workspace Dashboard Metrics Card
-    const totalHoursDisplay = document.getElementById('metricTotalHoursDisplay');
-    const statusSummary = document.getElementById('metricStatusSummary');
-    const progressBarFill = document.getElementById('metricProgressBarFill');
-    const completedCountDisplay = document.getElementById('metricCompletedCountDisplay');
-    const pendingCountDisplay = document.getElementById('metricPendingCountDisplay');
-
-    if (totalHoursDisplay) totalHoursDisplay.textContent = `${totalHours.toFixed(1)} hrs`;
-    if (statusSummary) statusSummary.textContent = `${totalTasks} Tasks • ${rate}% Rate`;
-    if (progressBarFill) progressBarFill.style.width = `${Math.min(100, rate)}%`;
-    if (completedCountDisplay) completedCountDisplay.textContent = completed;
-    if (pendingCountDisplay) pendingCountDisplay.textContent = pending + inProgress;
-  }
-
-  // Render Dashboard Hub Task List (Image 2 My Tasks Widget)
-  renderDashboardTasks(entries, onStatusChange, onEdit, onDuplicate, onDelete) {
-    const listEl = document.getElementById('dashboardTaskList');
-    if (!listEl) return;
-    listEl.innerHTML = '';
-
-    if (entries.length === 0) {
-      listEl.innerHTML = `
-        <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.85rem;">
-          <i data-lucide="check-circle" style="width: 28px; height: 28px; margin: 0 auto 0.5rem auto; display: block; opacity: 0.5;"></i>
-          No tasks recorded for this filter. Click <strong>+ Add Task</strong> above to log work.
-        </div>
-      `;
-      if (window.lucide) window.lucide.createIcons();
-      return;
-    }
-
-    entries.forEach(entry => {
-      const row = document.createElement('div');
-      row.className = 'task-item-row';
-      const isDone = entry.status === 'Completed';
-
-      row.innerHTML = `
-        <div class="task-item-left">
-          <div class="task-check-circle ${isDone ? 'completed' : ''}" data-id="${entry.id}" title="${isDone ? 'Mark as In Progress' : 'Mark as Completed'}">
-            ${isDone ? '<i data-lucide="check" style="width: 12px; height: 12px;"></i>' : ''}
-          </div>
-          <div style="flex: 1; min-width: 0;">
-            <div class="task-item-title ${isDone ? 'completed' : ''}">${this.escapeHtml(entry.work.split('\n')[0])}</div>
-            <div style="display: flex; align-items: center; gap: 0.4rem; margin-top: 0.2rem;">
-              <span class="project-pill" style="font-size: 0.68rem; padding: 0.1rem 0.4rem;">${this.escapeHtml(entry.projectName)}</span>
-              ${entry.hoursWorked ? `<span style="font-size: 0.7rem; color: #c4b5fd; font-weight: 600;">${entry.hoursWorked}h</span>` : ''}
-            </div>
-          </div>
-        </div>
-        <div class="task-item-right">
-          <span class="task-item-date">${UIRenderer.formatDisplayDate(entry.date)}</span>
-          <button class="btn-action edit" title="Edit task" data-id="${entry.id}"><i data-lucide="edit-2" class="icon-xs"></i></button>
-          <button class="btn-action delete" title="Delete task" data-id="${entry.id}"><i data-lucide="trash-2" class="icon-xs"></i></button>
-        </div>
-      `;
-
-      // Checkbox click event
-      const checkBtn = row.querySelector('.task-check-circle');
-      if (checkBtn) {
-        checkBtn.addEventListener('click', () => {
-          const nextStatus = isDone ? 'In Progress' : 'Completed';
-          onStatusChange(entry.id, nextStatus);
-          if (nextStatus === 'Completed' && window.confetti) window.confetti();
-        });
-      }
-
-      const editBtn = row.querySelector('.btn-action.edit');
-      if (editBtn) editBtn.addEventListener('click', () => onEdit(entry));
-      
-      const delBtn = row.querySelector('.btn-action.delete');
-      if (delBtn) delBtn.addEventListener('click', () => onDelete(entry.id));
-
-      listEl.appendChild(row);
-    });
-
-    if (window.lucide) window.lucide.createIcons();
+    if (workedHoursEl) workedHoursEl.textContent = `${metrics.totalWorkedHours || 0}h (${metrics.totalWorkedTasks || 0} dev)`;
+    if (testedHoursEl) testedHoursEl.textContent = `${metrics.totalTestedHours || 0}h (${metrics.totalTestedTasks || 0} QA)`;
   }
 
   // Render Table View (Desktop & Tablet)
   renderTable(entries, onStatusChange, onEdit, onDuplicate, onDelete, showUserBadge = false) {
     const tbody = document.getElementById('worksheetTableBody');
-    const emptyState = document.getElementById('emptyState');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     if (entries.length === 0) {
-      emptyState.classList.remove('hidden');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+            <div style="max-width: 320px; margin: 0 auto;">
+              <i data-lucide="inbox" style="width: 38px; height: 38px; opacity: 0.4; margin: 0 auto 0.75rem auto; display: block;"></i>
+              <strong style="color: #ffffff; display: block; margin-bottom: 0.35rem;">No tasks found</strong>
+              <p style="font-size: 0.82rem; margin: 0;">Try adjusting your filters or click <strong>+ Log Work</strong> to add a new task.</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      if (window.lucide) window.lucide.createIcons();
       return;
     }
-    emptyState.classList.add('hidden');
 
     entries.forEach(entry => {
       const tr = document.createElement('tr');
@@ -191,6 +130,7 @@ class UIRenderer {
       const statusMeta = UIRenderer.getStatusMeta(entry.status);
       const priorityCls = UIRenderer.getPriorityClass(entry.priority);
       const formattedDate = UIRenderer.formatDisplayDate(entry.date);
+      const isTest = (entry.workType === 'Tested') || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(entry.projectName));
 
       tr.innerHTML = `
         <td class="col-date" title="${entry.date}">
@@ -198,7 +138,10 @@ class UIRenderer {
         </td>
         <td class="col-project">
           ${(showUserBadge && entry.userName) ? `<span class="user-badge-pill" style="background-color: ${this.getUserColor(entry.userName)};"><i data-lucide="user" class="icon-xs"></i> ${this.escapeHtml(entry.userName)}</span>` : ''}
-          <span class="project-pill">${this.escapeHtml(entry.projectName)}</span>
+          <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap;">
+            <span class="worktype-badge ${isTest ? 'tested' : 'worked'}">${isTest ? 'ðŸ§ª Tested' : 'ðŸ› ï¸ Worked'}</span>
+            <span class="project-pill">${this.escapeHtml(entry.projectName)}</span>
+          </div>
         </td>
         <td class="col-work">
           <div class="work-text">${this.escapeHtml(entry.work).replace(/\n/g, '<br>')}</div>
@@ -254,6 +197,7 @@ class UIRenderer {
   // Render Mobile Cards View (Phones)
   renderCards(entries, onStatusChange, onEdit, onDuplicate, onDelete, showUserBadge = false) {
     const grid = document.getElementById('worksheetCardsGrid');
+    if (!grid) return;
     grid.innerHTML = '';
 
     entries.forEach(entry => {
@@ -264,11 +208,15 @@ class UIRenderer {
       const statusMeta = UIRenderer.getStatusMeta(entry.status);
       const priorityCls = UIRenderer.getPriorityClass(entry.priority);
       const formattedDate = UIRenderer.formatDisplayDate(entry.date);
+      const isTest = (entry.workType === 'Tested') || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(entry.projectName));
 
       card.innerHTML = `
         <div class="card-top-row">
           <span class="card-date"><i data-lucide="calendar" class="icon-xs"></i> ${formattedDate}</span>
-          <span class="priority-pill ${priorityCls}">${entry.priority || 'Medium'}</span>
+          <div style="display: flex; gap: 0.35rem; align-items: center;">
+            <span class="worktype-badge ${isTest ? 'tested' : 'worked'}">${isTest ? 'ðŸ§ª Tested' : 'ðŸ› ï¸ Worked'}</span>
+            <span class="priority-pill ${priorityCls}">${entry.priority || 'Medium'}</span>
+          </div>
         </div>
 
         <div class="card-project-title">
@@ -326,7 +274,6 @@ class UIRenderer {
     const dropAvatar = document.getElementById('dropdownUserAvatar');
     const dropName = document.getElementById('dropdownUserName');
     const dropRole = document.getElementById('dropdownUserRole');
-    const myLabel = document.getElementById('labelMyWorksheet');
 
     const initial = (user.name || 'U').charAt(0).toUpperCase();
     const color = user.color || this.getUserColor(user.name);
@@ -342,8 +289,7 @@ class UIRenderer {
       dropAvatar.style.backgroundColor = color;
     }
     if (dropName) dropName.textContent = user.name;
-    if (dropRole) dropRole.textContent = isAdminUser ? '👑 Supervisor & Admin' : (user.role || 'Team Member');
-    if (myLabel) myLabel.textContent = isAdminUser ? '👑 Team Master View' : `${user.name}'s Worksheet`;
+    if (dropRole) dropRole.textContent = isAdminUser ? 'ðŸ‘‘ Supervisor & Admin' : (user.role || 'Team Member');
 
     const dropAdminLink = document.getElementById('btnDropdownAdmin');
     if (dropAdminLink) {
@@ -358,80 +304,173 @@ class UIRenderer {
     }
   }
 
-  // Render User Accounts List in Modal
-  renderUserSwitcher(users, activeUserId, onSelectUser, onDeleteUser) {
-    const container = document.getElementById('usersListContainer');
-    if (!container) return;
+  // Populate Project Filter dropdown with clean Grouped Options
+  populateProjectFilters(projects, currentFilter = 'all') {
+    const select = document.getElementById('filterProject');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="all">All Simulation Projects</option>';
 
-    container.innerHTML = '';
-    if (!users || users.length === 0) {
-      container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; padding: 1rem 0;">No user profiles found.</p>';
-      return;
+    let workedList = [];
+    let testedList = [];
+    let customList = [];
+
+    if (typeof projects === 'object' && projects.worked) {
+      workedList = projects.worked;
+      testedList = projects.tested;
+      customList = projects.custom || [];
+    } else if (Array.isArray(projects)) {
+      workedList = window.SIMULATIONS_WORKED_ON || [];
+      testedList = window.SIMULATIONS_TESTED || [];
+      customList = projects.filter(p => !workedList.includes(p) && !testedList.includes(p));
     }
 
-    users.forEach(user => {
-      const card = document.createElement('div');
-      card.className = `user-profile-card ${user.id === activeUserId ? 'active' : ''}`;
-      const initial = (user.name || 'U').charAt(0).toUpperCase();
-      const color = user.color || this.getUserColor(user.name);
-
-      card.innerHTML = `
-        <div class="user-card-info">
-          <div class="user-avatar-large" style="background-color: ${color}; width: 34px; height: 34px; font-size: 0.85rem;">${initial}</div>
-          <div>
-            <div class="user-card-name">${this.escapeHtml(user.name)} ${user.id === activeUserId ? '<span style="font-size: 0.72rem; color: var(--brand-primary); font-weight: normal;">(Active)</span>' : ''}</div>
-            <div class="user-card-role">@${this.escapeHtml(user.username)} • ${this.escapeHtml(user.role || 'Member')}</div>
-          </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <button class="btn btn-xs ${user.id === activeUserId ? 'btn-primary' : 'btn-outline'} btn-select-user">
-            ${user.id === activeUserId ? '✓ Selected' : 'Switch'}
-          </button>
-        </div>
-      `;
-
-      card.querySelector('.btn-select-user').addEventListener('click', (e) => {
-        e.stopPropagation();
-        onSelectUser(user.id);
+    // 1. Group: Simulations Worked On (12)
+    if (workedList.length > 0) {
+      const grpWorked = document.createElement('optgroup');
+      grpWorked.label = 'ðŸ› ï¸ Simulations Worked On (12)';
+      workedList.forEach(pName => {
+        const opt = document.createElement('option');
+        opt.value = pName;
+        opt.textContent = pName;
+        if (pName === currentFilter) opt.selected = true;
+        grpWorked.appendChild(opt);
       });
+      select.appendChild(grpWorked);
+    }
 
-      card.addEventListener('click', () => {
-        onSelectUser(user.id);
+    // 2. Group: Simulations Tested (7)
+    if (testedList.length > 0) {
+      const grpTested = document.createElement('optgroup');
+      grpTested.label = 'ðŸ§ª Simulations Tested (7)';
+      testedList.forEach(pName => {
+        const opt = document.createElement('option');
+        opt.value = pName;
+        opt.textContent = pName;
+        if (pName === currentFilter) opt.selected = true;
+        grpTested.appendChild(opt);
       });
+      select.appendChild(grpTested);
+    }
 
-      container.appendChild(card);
+    // 3. Group: Other Projects
+    if (customList.length > 0) {
+      const grpCustom = document.createElement('optgroup');
+      grpCustom.label = 'ðŸ“‚ Other / General Projects';
+      customList.forEach(pName => {
+        const opt = document.createElement('option');
+        opt.value = pName;
+        opt.textContent = pName;
+        if (pName === currentFilter) opt.selected = true;
+        grpCustom.appendChild(opt);
+      });
+      select.appendChild(grpCustom);
+    }
+  }
+
+  // Render Dedicated Simulation Matrix Tracker (12 Worked + 7 Tested)
+  renderSimulationMatrix(matrix, onFilterProject, onLogForProject) {
+    const workedTbody = document.getElementById('matrixWorkedTableBody');
+    const testedTbody = document.getElementById('matrixTestedTableBody');
+    const workedCountBadge = document.getElementById('matrixWorkedCountBadge');
+    const testedCountBadge = document.getElementById('matrixTestedCountBadge');
+
+    if (workedCountBadge) workedCountBadge.textContent = `${matrix.summary.activeWorkedCount} / ${matrix.summary.totalWorkedCount} Active`;
+    if (testedCountBadge) testedCountBadge.textContent = `${matrix.summary.activeTestedCount} / ${matrix.summary.totalTestedCount} Active`;
+
+    if (workedTbody) {
+      workedTbody.innerHTML = matrix.worked.map(item => `
+        <tr>
+          <td style="font-weight: 800; color: #a78bfa; width: 40px; text-align: center;">${item.num}</td>
+          <td>
+            <strong style="color: #ffffff; font-size: 0.88rem;">${this.escapeHtml(item.name)}</strong>
+          </td>
+          <td>
+            <span class="badge ${item.totalTasks > 0 ? 'badge-primary' : 'badge-neutral'}" style="font-size: 0.72rem;">
+              ${item.totalTasks > 0 ? (item.progress === 100 ? 'âœ… Completed' : 'ðŸ”„ In Progress') : 'â³ Not Started'}
+            </span>
+          </td>
+          <td style="text-align: center;">
+            <strong>${item.totalTasks}</strong> tasks (${item.completedTasks} done)
+          </td>
+          <td style="text-align: center;">
+            <span style="font-weight: 700; color: #34d399;">${item.totalHours}h</span>
+          </td>
+          <td style="width: 140px;">
+            <div style="background: rgba(255,255,255,0.08); border-radius: 999px; height: 7px; overflow: hidden; margin-bottom: 3px;">
+              <div style="background: linear-gradient(90deg, #8b5cf6, #10b981); height: 100%; width: ${item.progress}%;"></div>
+            </div>
+            <span style="font-size: 0.68rem; color: var(--text-muted);">${item.progress}% Complete</span>
+          </td>
+          <td style="text-align: right; width: 140px;">
+            <div style="display: flex; gap: 0.35rem; justify-content: flex-end;">
+              <button class="btn btn-outline btn-xs btn-matrix-filter" data-project="${this.escapeHtml(item.name)}" title="View Tasks">
+                <i data-lucide="filter" class="icon-xs"></i> View
+              </button>
+              <button class="btn btn-primary btn-xs btn-matrix-add" data-project="${this.escapeHtml(item.name)}" data-type="Worked" title="Log Work for this simulation">
+                <i data-lucide="plus" class="icon-xs"></i> Log
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    if (testedTbody) {
+      testedTbody.innerHTML = matrix.tested.map(item => `
+        <tr>
+          <td style="font-weight: 800; color: #38bdf8; width: 40px; text-align: center;">${item.num}</td>
+          <td>
+            <strong style="color: #ffffff; font-size: 0.88rem;">${this.escapeHtml(item.name)}</strong>
+          </td>
+          <td>
+            <span class="badge ${item.totalTasks > 0 ? 'badge-primary' : 'badge-neutral'}" style="font-size: 0.72rem; background: rgba(6, 182, 212, 0.18); color: #38bdf8; border-color: rgba(6, 182, 212, 0.4);">
+              ${item.totalTasks > 0 ? (item.progress === 100 ? 'âœ… QA Passed' : 'ðŸ§ª In Testing') : 'â³ Pending QA'}
+            </span>
+          </td>
+          <td style="text-align: center;">
+            <strong>${item.totalTasks}</strong> tests (${item.completedTasks} passed)
+          </td>
+          <td style="text-align: center;">
+            <span style="font-weight: 700; color: #38bdf8;">${item.totalHours}h</span>
+          </td>
+          <td style="width: 140px;">
+            <div style="background: rgba(255,255,255,0.08); border-radius: 999px; height: 7px; overflow: hidden; margin-bottom: 3px;">
+              <div style="background: linear-gradient(90deg, #06b6d4, #3b82f6); height: 100%; width: ${item.progress}%;"></div>
+            </div>
+            <span style="font-size: 0.68rem; color: var(--text-muted);">${item.progress}% Passed</span>
+          </td>
+          <td style="text-align: right; width: 140px;">
+            <div style="display: flex; gap: 0.35rem; justify-content: flex-end;">
+              <button class="btn btn-outline btn-xs btn-matrix-filter" data-project="${this.escapeHtml(item.name)}" title="View Tests">
+                <i data-lucide="filter" class="icon-xs"></i> View
+              </button>
+              <button class="btn btn-primary btn-xs btn-matrix-add" data-project="${this.escapeHtml(item.name)}" data-type="Tested" style="background: #06b6d4; border-color: #06b6d4;" title="Log QA Test">
+                <i data-lucide="plus" class="icon-xs"></i> Log
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Attach button listeners
+    document.querySelectorAll('.btn-matrix-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const proj = btn.dataset.project;
+        if (onFilterProject) onFilterProject(proj);
+      });
+    });
+
+    document.querySelectorAll('.btn-matrix-add').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const proj = btn.dataset.project;
+        const type = btn.dataset.type;
+        if (onLogForProject) onLogForProject(proj, type);
+      });
     });
 
     if (window.lucide) window.lucide.createIcons();
-  }
-
-  // Populate Project Filter dropdown & Modal quick tags
-  populateProjectFilters(projects, currentFilter = 'all') {
-    const select = document.getElementById('filterProject');
-    const quickTagsContainer = document.getElementById('projectQuickTags');
-    
-    select.innerHTML = '<option value="all">All Projects</option>';
-    if (quickTagsContainer) quickTagsContainer.innerHTML = '';
-
-    projects.forEach(pName => {
-      const opt = document.createElement('option');
-      opt.value = pName;
-      opt.textContent = pName;
-      if (pName === currentFilter) opt.selected = true;
-      select.appendChild(opt);
-
-      // Quick Tag in modal
-      if (quickTagsContainer) {
-        const tag = document.createElement('button');
-        tag.type = 'button';
-        tag.className = 'project-tag-pill';
-        tag.textContent = pName;
-        tag.addEventListener('click', () => {
-          document.getElementById('projectNameInput').value = pName;
-        });
-        quickTagsContainer.appendChild(tag);
-      }
-    });
   }
 
   // Render Analytics Charts (Chart.js)
@@ -540,6 +579,8 @@ class UIRenderer {
   // Toast Notification System
   showToast(message, type = 'info') {
     const container = document.getElementById('toastContainer');
+    if (!container) return;
+
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
 
@@ -647,15 +688,19 @@ class UIRenderer {
       let tasksHtml = '';
       const visibleTasks = dayEntries.slice(0, 3);
       visibleTasks.forEach(task => {
-        let statusStyle = 'background: rgba(139, 92, 246, 0.22); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.35);';
+        const isTest = (task.workType === 'Tested') || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(task.projectName));
+        let statusStyle = isTest
+          ? 'background: rgba(6, 182, 212, 0.22); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.4);'
+          : 'background: rgba(139, 92, 246, 0.22); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.35);';
+
         if (task.status === 'Completed') statusStyle = 'background: rgba(16, 185, 129, 0.22); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35);';
         else if (task.status === 'Pending') statusStyle = 'background: rgba(245, 158, 11, 0.22); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35);';
         else if (task.status === 'Blocked') statusStyle = 'background: rgba(244, 63, 94, 0.22); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.35);';
         else if (task.status === 'Leave') statusStyle = 'background: rgba(217, 70, 239, 0.22); color: #e879f9; border: 1px solid rgba(217, 70, 239, 0.35);';
 
         tasksHtml += `
-          <div class="cal-task-pill" style="${statusStyle} font-size: 0.68rem; font-weight: 600; padding: 0.1rem 0.35rem; border-radius: 4px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${this.escapeHtml(task.projectName)}: ${this.escapeHtml(task.work)}">
-            <span>${this.escapeHtml(task.projectName)}</span>
+          <div class="cal-task-pill" style="${statusStyle} font-size: 0.68rem; font-weight: 600; padding: 0.1rem 0.35rem; border-radius: 4px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${isTest ? '[Tested]' : '[Worked]'} ${this.escapeHtml(task.projectName)}: ${this.escapeHtml(task.work)}">
+            <span>${isTest ? 'ðŸ§ª' : 'ðŸ› ï¸'} ${this.escapeHtml(task.projectName)}</span>
           </div>
         `;
       });
@@ -718,11 +763,11 @@ class UIRenderer {
 
     const entries = manager.getEntriesForDate(dateStr);
     inspector.classList.remove('hidden');
-    title.textContent = `Tasks for ${UIRenderer.formatDisplayDate(dateStr)}`;
+    if (title) title.textContent = `Tasks for ${UIRenderer.formatDisplayDate(dateStr)}`;
 
     // Add button handler
-    addBtn.onclick = () => onAddForDate(dateStr);
-    closeBtn.onclick = () => inspector.classList.add('hidden');
+    if (addBtn) addBtn.onclick = () => onAddForDate(dateStr);
+    if (closeBtn) closeBtn.onclick = () => inspector.classList.add('hidden');
 
     if (entries.length === 0) {
       list.innerHTML = `
@@ -738,10 +783,14 @@ class UIRenderer {
       const item = document.createElement('div');
       item.className = 'inspector-task-item';
       const statusMeta = UIRenderer.getStatusMeta(entry.status);
+      const isTest = (entry.workType === 'Tested') || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(entry.projectName));
 
       item.innerHTML = `
         <div class="inspector-task-main">
-          <div class="inspector-project">${this.escapeHtml(entry.projectName)}</div>
+          <div style="display: flex; align-items: center; gap: 0.4rem; margin-bottom: 4px;">
+            <span class="worktype-badge ${isTest ? 'tested' : 'worked'}">${isTest ? 'ðŸ§ª Tested' : 'ðŸ› ï¸ Worked'}</span>
+            <div class="inspector-project">${this.escapeHtml(entry.projectName)}</div>
+          </div>
           <div class="inspector-work">${this.escapeHtml(entry.work).replace(/\n/g, '<br>')}</div>
           ${entry.remarks ? `<div class="work-remarks" style="margin-top: 4px;"><i data-lucide="info" class="icon-xs"></i> ${this.escapeHtml(entry.remarks)}</div>` : ''}
         </div>

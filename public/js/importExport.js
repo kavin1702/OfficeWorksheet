@@ -58,6 +58,73 @@ class ImportExportManager {
     this.ui.showToast(`Exported ${entries.length} rows to ${fileName}`, 'success');
   }
 
+  // Export Master Simulation Matrix Sheet (3 Sheets: All Logs, 12 Worked On, 7 Tested)
+  exportSimulationSummaryExcel() {
+    if (!window.XLSX) {
+      this.ui.showToast('Excel exporter library loading...', 'info');
+      return;
+    }
+
+    const matrix = this.manager.getSimulationMatrix();
+    const allEntries = this.manager.getFilteredEntries();
+
+    const workbook = XLSX.utils.book_new();
+
+    // Sheet 1: Master All Logs
+    const rowsLogs = allEntries.map(e => ({
+      'Date': e.date,
+      'User': e.userName || 'Kavin (8chili)',
+      'Simulation Type': e.workType || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(e.projectName) ? 'Tested' : 'Worked'),
+      'Simulation / Project Name': e.projectName,
+      'Work Description': e.work,
+      'Status': e.status,
+      'Hours Worked': e.hoursWorked || 0,
+      'Priority': e.priority || 'Medium',
+      'Remarks': e.remarks || ''
+    }));
+    const wsLogs = XLSX.utils.json_to_sheet(rowsLogs);
+    wsLogs['!cols'] = [
+      { wch: 12 }, { wch: 16 }, { wch: 16 }, { wch: 45 }, { wch: 45 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 30 }
+    ];
+    XLSX.utils.book_append_sheet(workbook, wsLogs, 'Daily Worksheet Logs');
+
+    // Sheet 2: 12 Simulations Worked On
+    const rowsWorked = matrix.worked.map(m => ({
+      '#': m.num,
+      'Simulation Project (Development)': m.name,
+      'Status': m.totalTasks > 0 ? (m.progress === 100 ? 'Completed' : 'In Progress') : 'Not Started',
+      'Total Tasks Logged': m.totalTasks,
+      'Completed Tasks': m.completedTasks,
+      'Total Hours Logged': parseFloat(m.totalHours) || 0,
+      'Progress %': `${m.progress}%`
+    }));
+    const wsWorked = XLSX.utils.json_to_sheet(rowsWorked);
+    wsWorked['!cols'] = [
+      { wch: 5 }, { wch: 55 }, { wch: 16 }, { wch: 18 }, { wch: 16 }, { wch: 18 }, { wch: 14 }
+    ];
+    XLSX.utils.book_append_sheet(workbook, wsWorked, '12 Simulations Worked On');
+
+    // Sheet 3: 7 Simulations Tested
+    const rowsTested = matrix.tested.map(m => ({
+      '#': m.num,
+      'Simulation Tested (QA / Verification)': m.name,
+      'Status': m.totalTasks > 0 ? (m.progress === 100 ? 'QA Passed' : 'In Testing') : 'Pending QA',
+      'Total Tests Logged': m.totalTasks,
+      'Passed Tests': m.completedTasks,
+      'Total Hours Logged': parseFloat(m.totalHours) || 0,
+      'Pass Rate %': `${m.progress}%`
+    }));
+    const wsTested = XLSX.utils.json_to_sheet(rowsTested);
+    wsTested['!cols'] = [
+      { wch: 5 }, { wch: 50 }, { wch: 16 }, { wch: 18 }, { wch: 16 }, { wch: 18 }, { wch: 14 }
+    ];
+    XLSX.utils.book_append_sheet(workbook, wsTested, '7 Simulations Tested');
+
+    const fileName = `Simulation_Master_Worksheet_${WorksheetManager.getTodayStr()}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+    this.ui.showToast(`Exported Full Simulation Workbook: ${fileName}`, 'success');
+  }
+
   // Export to CSV
   exportToCsv(entries = this.manager.getFilteredEntries()) {
     if (!entries || entries.length === 0) {

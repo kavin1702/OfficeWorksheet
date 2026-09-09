@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -497,10 +497,22 @@
             </select>
           </div>
 
+          <!-- Work Type Filter Dropdown -->
+          <div class="select-wrap">
+            <select id="filterWorkType" class="form-select-sm" onchange="window.workPulseApp && window.workPulseApp.handleFilterChange()">
+              <option value="all">All Types (Worked & Tested)</option>
+              <option value="Worked">ðŸ› ï¸ Simulations Worked On</option>
+              <option value="Tested">ðŸ§ª Simulations Tested</option>
+            </select>
+          </div>
+
           <!-- View Mode Switcher -->
           <div class="view-switcher" role="tablist">
             <button class="view-btn active" data-view="table" title="Table View" onclick="window.workPulseApp && window.workPulseApp.switchView('table')">
               <i data-lucide="table"></i>
+            </button>
+            <button class="view-btn" data-view="matrix" title="Simulation Matrix Tracker (12 Worked + 7 Tested)" onclick="window.workPulseApp && window.workPulseApp.switchView('matrix')">
+              <i data-lucide="flask-conical"></i>
             </button>
             <button class="view-btn" data-view="cards" title="Mobile / Card View" onclick="window.workPulseApp && window.workPulseApp.switchView('cards')">
               <i data-lucide="layout-grid"></i>
@@ -611,7 +623,90 @@
           </div>
         </div>
 
-        <!-- 4. Analytics & Charts View (FIXED: Working Donut & Bar Charts) -->
+        <!-- 4. Simulation Matrix View (12 Worked On + 7 Tested) -->
+        <div id="matrixViewContainer" class="view-panel hidden">
+          <div class="matrix-grid">
+            
+            <!-- Master Action Bar for Simulations -->
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; background: rgba(18, 22, 44, 0.75); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: var(--radius-lg); padding: 1rem 1.35rem;">
+              <div>
+                <h2 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0 0 0.2rem 0;">Simulation Project Master Tracking</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Comprehensive breakdown for <strong>Kavin (8chili)</strong> across development and QA verification.</p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <button class="btn btn-outline btn-sm" onclick="window.workPulseApp && window.workPulseApp.exportSimulationExcel()">
+                  <i data-lucide="file-spreadsheet" class="icon-xs text-emerald"></i>
+                  <span>Export Master Sheet (.xlsx)</span>
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="window.workPulseApp && window.workPulseApp.openWorkModal()">
+                  <i data-lucide="plus" class="icon-xs"></i>
+                  <span>+ Log Work</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Table 1: 12 Simulations Worked On -->
+            <div class="matrix-card">
+              <div class="matrix-card-header">
+                <div class="matrix-title">
+                  <i data-lucide="hammer" class="text-purple"></i>
+                  <span>12 Simulations Worked On (Development & Implementation)</span>
+                </div>
+                <span class="badge badge-primary" id="matrixWorkedCountBadge">0 / 12 Active</span>
+              </div>
+              <div class="table-responsive-card">
+                <table class="worksheet-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 40px; text-align: center;">#</th>
+                      <th>Simulation Project</th>
+                      <th style="width: 130px;">Status</th>
+                      <th style="width: 140px; text-align: center;">Tasks Logged</th>
+                      <th style="width: 110px; text-align: center;">Hours Spent</th>
+                      <th style="width: 150px;">Progress</th>
+                      <th style="width: 140px; text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="matrixWorkedTableBody">
+                    <!-- Populated via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Table 2: 7 Simulations Tested -->
+            <div class="matrix-card">
+              <div class="matrix-card-header">
+                <div class="matrix-title">
+                  <i data-lucide="flask-conical" class="text-blue"></i>
+                  <span>7 Simulations Tested (QA & Verification)</span>
+                </div>
+                <span class="badge badge-primary" id="matrixTestedCountBadge" style="background: rgba(6, 182, 212, 0.18); color: #38bdf8; border-color: rgba(6, 182, 212, 0.4);">0 / 7 Active</span>
+              </div>
+              <div class="table-responsive-card">
+                <table class="worksheet-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 40px; text-align: center;">#</th>
+                      <th>Simulation Tested</th>
+                      <th style="width: 130px;">Status</th>
+                      <th style="width: 140px; text-align: center;">Tests Logged</th>
+                      <th style="width: 110px; text-align: center;">Hours Spent</th>
+                      <th style="width: 150px;">Pass Rate</th>
+                      <th style="width: 140px; text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="matrixTestedTableBody">
+                    <!-- Populated via JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 5. Analytics & Charts View (FIXED: Working Donut & Bar Charts) -->
         <div id="analyticsViewContainer" class="view-panel hidden">
           <div class="analytics-grid">
             <div class="chart-card">
@@ -652,25 +747,48 @@
         <input type="hidden" id="workEntryId">
         <div class="modal-body">
           
-          <!-- Work Date Selection -->
+          <!-- Work Type Toggle (Worked vs Tested) -->
+          <div class="form-group">
+            <label class="form-label required">Simulation Type</label>
+            <div class="worktype-toggle-group">
+              <label class="worktype-radio-label active" id="labelTypeWorked">
+                <input type="radio" name="workTypeRadio" id="radioTypeWorked" value="Worked" checked onchange="window.workPulseApp && window.workPulseApp.switchModalWorkType('Worked')">
+                <span>ðŸ› ï¸ Simulation Worked On (Dev)</span>
+              </label>
+              <label class="worktype-radio-label" id="labelTypeTested">
+                <input type="radio" name="workTypeRadio" id="radioTypeTested" value="Tested" onchange="window.workPulseApp && window.workPulseApp.switchModalWorkType('Tested')">
+                <span>ðŸ§ª Simulation Tested (QA)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Work Date Selection (Supports any past date seamlessly) -->
           <div class="form-group">
             <label for="workDate" class="form-label required">Work Date</label>
-            <div class="date-quick-chips">
-              <button type="button" class="chip-btn" id="chipToday">Today</button>
-              <button type="button" class="chip-btn" id="chipYesterday">Yesterday</button>
-              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-21">Aug 21</button>
-              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-20">Aug 20</button>
-              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-19">Aug 19</button>
-              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-18">Aug 18</button>
-              <button type="button" class="chip-btn chip-past-date" data-date="2026-08-15">Aug 15</button>
+            <div class="date-quick-chips" style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+              <button type="button" class="btn-chip" id="chipToday">Today</button>
+              <button type="button" class="btn-chip" id="chipYesterday">Yesterday</button>
+              <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-14'">Aug 14</button>
+              <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-10'">Aug 10</button>
+              <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-05'">Aug 05</button>
+              <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-03'">Aug 03</button>
+              <button type="button" class="btn-chip" onclick="const p = document.getElementById('workDate'); p.showPicker ? p.showPicker() : p.focus()">ðŸ“… Pick Any Date</button>
             </div>
             <input type="date" id="workDate" class="form-input" required style="margin-top: 0.5rem;">
           </div>
 
-          <!-- Project Name Autocomplete -->
+          <!-- Simulation / Project Selection with Dropdown -->
+          <div class="form-group">
+            <label for="modalProjectSelect" class="form-label required">Select Simulation Project</label>
+            <select id="modalProjectSelect" class="form-select" onchange="document.getElementById('projectNameInput').value = this.value">
+              <option value="">-- Choose Simulation --</option>
+            </select>
+          </div>
+
+          <!-- Project Name Autocomplete & Manual Edit -->
           <div class="form-group autocomplete-wrapper">
-            <label for="projectNameInput" class="form-label required">Project Name / Client</label>
-            <input type="text" id="projectNameInput" class="form-input" placeholder="e.g. MDI_LineClearance or Parisson Area" required autocomplete="off">
+            <label for="projectNameInput" class="form-label required">Simulation Project Name (or custom)</label>
+            <input type="text" id="projectNameInput" class="form-input" placeholder="e.g. MDI â€“ Manufacturing / Manual Cleaning of Ethanol" required autocomplete="off">
             <div id="projectSuggestions" class="autocomplete-suggestions hidden"></div>
           </div>
 

@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Worksheet State & Business Logic Manager (WorkPulse)
- * Handles multi-user data segregation, filtering, sorting, stats, and pending task carry-forward.
+ * Handles multi-user data segregation, simulation matrix tracking, filtering, sorting, stats, and pending task carry-forward.
  */
 
 class WorksheetManager {
@@ -8,12 +8,13 @@ class WorksheetManager {
     this.storage = cloudService;
     this.entries = [];
     this.filters = {
-      dateRange: 'this-month', // 'today' | 'yesterday' | 'this-week' | 'this-month' | 'all' | 'custom'
+      dateRange: 'all', // Default to 'all' so historical simulation records are always visible
       customStartDate: null,
       customEndDate: null,
       project: 'all',
       status: 'all',
       search: '',
+      workType: 'all', // 'all' | 'Worked' | 'Tested'
       userScope: 'me' // 'me' (current user) | 'all' (all team members) | specific userId
     };
     this.sort = {
@@ -31,7 +32,7 @@ class WorksheetManager {
         await this.storage.batchImport(list);
       }
     } else {
-      // Automatically migrate all work data to kavin@8chili.com and normalize dates
+      // Automatically migrate all work data to kavin@8chili.com and normalize dates & workTypes
       let migrated = false;
       list.forEach(e => {
         if (!e.userId || e.userId === 'user_kavin' || e.userId === 'user_admin_mnkavin' || e.userName === 'Kavin' || e.userName === 'Kavin M' || !e.userName) {
@@ -39,6 +40,19 @@ class WorksheetManager {
           e.userName = 'Kavin (8chili)';
           migrated = true;
         }
+
+        // Tag workType if missing
+        if (!e.workType) {
+          if (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(e.projectName)) {
+            e.workType = 'Tested';
+            migrated = true;
+          } else {
+            e.workType = 'Worked';
+            migrated = true;
+          }
+        }
+
+        // Normalize date
         if (e.date && this.storage && typeof this.storage.normalizeDate === 'function') {
           const nd = this.storage.normalizeDate(e.date);
           if (nd !== e.date) {
@@ -47,6 +61,7 @@ class WorksheetManager {
           }
         }
       });
+
       if (migrated) {
         await this.storage.batchImport(list);
       }
@@ -80,17 +95,30 @@ class WorksheetManager {
     return WorksheetManager.formatDateIso(d);
   }
 
-  // Add new worksheet entry (tagged with active user)
+  // Add new worksheet entry (tagged with active user and workType)
   async addEntry(data) {
     const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
     const is8chili = currentUser && (currentUser.email === 'kavin@8chili.com' || currentUser.id === 'user_8chili_kavin');
+
+    const projName = (data.projectName || 'General').trim();
+    let determinedType = data.workType;
+    if (!determinedType) {
+      if (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(projName)) {
+        determinedType = 'Tested';
+      } else if (window.SIMULATIONS_WORKED_ON && window.SIMULATIONS_WORKED_ON.includes(projName)) {
+        determinedType = 'Worked';
+      } else {
+        determinedType = 'Worked';
+      }
+    }
 
     const newEntry = {
       id: this.generateId(),
       userId: currentUser ? (is8chili ? 'user_8chili_kavin' : currentUser.id) : 'user_8chili_kavin',
       userName: currentUser ? (is8chili ? 'Kavin (8chili)' : currentUser.name) : 'Kavin (8chili)',
       date: data.date || WorksheetManager.getTodayStr(),
-      projectName: (data.projectName || 'General').trim(),
+      projectName: projName,
+      workType: determinedType,
       work: (data.work || '').trim(),
       status: data.status || 'In Progress',
       hoursWorked: parseFloat(data.hoursWorked) || 0,
@@ -146,9 +174,10 @@ class WorksheetManager {
     const cloned = {
       ...source,
       id: this.generateId(),
-      userId: currentUser ? currentUser.id : (source.userId || 'user_kavin'),
-      userName: currentUser ? currentUser.name : (source.userName || 'Kavin'),
       date: WorksheetManager.getTodayStr(),
+      status: 'In Progress',
+      userId: currentUser ? currentUser.id : source.userId,
+      userName: currentUser ? currentUser.name : source.userName,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -158,47 +187,63 @@ class WorksheetManager {
     return cloned;
   }
 
-  // Carry Forward all unfinished tasks from yesterday to today
+  // Carry Forward Unfinished (Pending / In Progress / Blocked) Tasks
   async carryForwardPendingTasks() {
-    const yesterdayStr = WorksheetManager.getYesterdayStr();
     const todayStr = WorksheetManager.getTodayStr();
+    const unfinishedStatuses = ['In Progress', 'Pending', 'Blocked', 'Under Review'];
     const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
-    // Find incomplete tasks
-    const incompleteYesterday = this.entries.filter(e => {
-      const isYesterday = e.date === yesterdayStr;
-      const isIncomplete = e.status === 'In Progress' || e.status === 'Pending' || e.status === 'Blocked';
-      const isUserMatch = !currentUser || this.isEntryBelongsToUser(e, currentUser);
-      return isYesterday && isIncomplete && isUserMatch;
+    const sourceTasks = this.entries.filter(e => {
+      if (e.date >= todayStr) return false;
+      if (!unfinishedStatuses.includes(e.status)) return false;
+      if (this.filters.userScope === 'me' && currentUser) {
+        return this.isEntryBelongsToUser(e, currentUser);
+      }
+      return true;
     });
 
-    if (incompleteYesterday.length === 0) {
-      return { count: 0, message: "No unfinished tasks found from yesterday." };
+    if (sourceTasks.length === 0) {
+      return { count: 0, message: 'No unfinished past tasks to carry forward.' };
     }
 
-    let addedCount = 0;
-    for (const task of incompleteYesterday) {
-      // Check if already logged today
-      const alreadyLogged = this.entries.some(e => 
-        e.date === todayStr && 
-        e.projectName === task.projectName && 
-        e.work === task.work &&
-        (!currentUser || this.isEntryBelongsToUser(e, currentUser))
-      );
+    const todayTaskSignatures = new Set(
+      this.entries
+        .filter(e => e.date === todayStr)
+        .map(e => `${(e.projectName||'').toLowerCase()}__${(e.work||'').toLowerCase()}`)
+    );
 
-      if (!alreadyLogged) {
-        await this.addEntry({
+    let addedCount = 0;
+    const newItems = [];
+
+    for (const task of sourceTasks) {
+      const sig = `${(task.projectName||'').toLowerCase()}__${(task.work||'').toLowerCase()}`;
+      if (!todayTaskSignatures.has(sig)) {
+        const clonedTask = {
+          id: this.generateId(),
+          userId: task.userId,
+          userName: task.userName,
           date: todayStr,
-          userId: currentUser ? currentUser.id : task.userId,
-          userName: currentUser ? currentUser.name : task.userName,
           projectName: task.projectName,
+          workType: task.workType || 'Worked',
           work: task.work,
           status: 'In Progress',
           hoursWorked: 0,
           priority: task.priority || 'Medium',
-          remarks: `Carried forward from yesterday`
-        });
+          remarks: `[Carried from ${task.date}] ${task.remarks || ''}`.trim(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+
+        newItems.push(clonedTask);
+        todayTaskSignatures.add(sig);
         addedCount++;
+      }
+    }
+
+    if (newItems.length > 0) {
+      this.entries.unshift(...newItems);
+      for (const item of newItems) {
+        await this.storage.saveEntry(item);
       }
     }
 
@@ -249,7 +294,9 @@ class WorksheetManager {
 
   // Get distinct list of project names for filter dropdown & auto-suggestions
   getUniqueProjects() {
-    const set = new Set();
+    const workedSet = new Set(window.SIMULATIONS_WORKED_ON || []);
+    const testedSet = new Set(window.SIMULATIONS_TESTED || []);
+    const customSet = new Set();
     const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
 
     this.entries.forEach(e => {
@@ -257,10 +304,18 @@ class WorksheetManager {
         return;
       }
       if (e.projectName && e.projectName.trim()) {
-        set.add(e.projectName.trim());
+        const p = e.projectName.trim();
+        if (!workedSet.has(p) && !testedSet.has(p)) {
+          customSet.add(p);
+        }
       }
     });
-    return Array.from(set).sort();
+
+    return {
+      worked: Array.from(workedSet),
+      tested: Array.from(testedSet),
+      custom: Array.from(customSet).sort()
+    };
   }
 
   // Get distinct list of all dates in records
@@ -310,7 +365,7 @@ class WorksheetManager {
       startDate = WorksheetManager.formatDateIso(firstDay);
       endDate = WorksheetManager.formatDateIso(lastDay);
 
-      // Fallback: If device date differs from worksheet data month, show August 2026
+      // Fallback: If device date differs from worksheet data month, ensure August 2026 is visible
       const hasMonthRecords = this.entries.some(e => e.date && e.date >= startDate && e.date <= endDate);
       if (!hasMonthRecords && this.entries.some(e => e.date && e.date.startsWith('2026-08'))) {
         startDate = '2026-08-01';
@@ -346,23 +401,17 @@ class WorksheetManager {
         return false;
       }
 
-      // 5. Search keyword
-      if (this.filters.search) {
-        const q = this.filters.search.toLowerCase().trim();
-        // If search query is an email or matches current user name/username/email, ignore or match user
-        const isEmailOrUser = q.includes('@') || (currentUser && (
-          (currentUser.email && currentUser.email.toLowerCase().includes(q)) ||
-          (currentUser.name && currentUser.name.toLowerCase().includes(q))
-        ));
+      // 5. WorkType filter ('Worked' vs 'Tested')
+      if (this.filters.workType && this.filters.workType !== 'all') {
+        const eType = entry.workType || 'Worked';
+        if (eType.toLowerCase() !== this.filters.workType.toLowerCase()) return false;
+      }
 
-        if (!isEmailOrUser) {
-          const inProject = (entry.projectName || '').toLowerCase().includes(q);
-          const inWork = (entry.work || '').toLowerCase().includes(q);
-          const inRemarks = (entry.remarks || '').toLowerCase().includes(q);
-          const inUser = (entry.userName || '').toLowerCase().includes(q);
-          const inDate = (entry.date || '').toLowerCase().includes(q);
-          if (!inProject && !inWork && !inRemarks && !inUser && !inDate) return false;
-        }
+      // 6. Search query
+      if (this.filters.search && this.filters.search.trim()) {
+        const q = this.filters.search.toLowerCase().trim();
+        const textToSearch = `${entry.projectName || ''} ${entry.work || ''} ${entry.remarks || ''} ${entry.status || ''} ${entry.userName || ''}`.toLowerCase();
+        if (!textToSearch.includes(q)) return false;
       }
 
       return true;
@@ -441,6 +490,8 @@ class WorksheetManager {
     
     let totalHours = 0;
     let completedCount = 0;
+    let pendingCount = 0;
+    let totalTasks = 0;
     let leaveDaysCount = 0;
     let workingDaysSet = new Set();
 
@@ -450,9 +501,11 @@ class WorksheetManager {
       let dayIsLeave = false;
 
       dayTasks.forEach(task => {
+        totalTasks++;
         const hrs = parseFloat(task.hoursWorked) || 0;
         totalHours += hrs;
         if (task.status === 'Completed') completedCount++;
+        else if (task.status !== 'Leave') pendingCount++;
         if (task.status === 'Leave') dayIsLeave = true;
         if (task.status !== 'Leave') dayHasWork = true;
       });
@@ -464,6 +517,8 @@ class WorksheetManager {
     return {
       workingDaysCount: workingDaysSet.size,
       completedCount,
+      pendingCount,
+      totalTasks,
       totalHours: totalHours.toFixed(1),
       leaveDaysCount
     };
@@ -477,11 +532,24 @@ class WorksheetManager {
     let pending = 0;
     let blocked = 0;
     let leave = 0;
+    let totalWorkedHours = 0;
+    let totalTestedHours = 0;
+    let totalWorkedTasks = 0;
+    let totalTestedTasks = 0;
     const projectHours = {};
 
     entries.forEach(e => {
       const hours = parseFloat(e.hoursWorked) || 0;
       totalHours += hours;
+
+      const isTest = (e.workType === 'Tested') || (window.SIMULATIONS_TESTED && window.SIMULATIONS_TESTED.includes(e.projectName));
+      if (isTest) {
+        totalTestedHours += hours;
+        totalTestedTasks++;
+      } else {
+        totalWorkedHours += hours;
+        totalWorkedTasks++;
+      }
 
       if (e.status === 'Completed') completed++;
       else if (e.status === 'In Progress') inProgress++;
@@ -499,6 +567,10 @@ class WorksheetManager {
     return {
       totalTasks,
       totalHours: totalHours.toFixed(1),
+      totalWorkedHours: totalWorkedHours.toFixed(1),
+      totalTestedHours: totalTestedHours.toFixed(1),
+      totalWorkedTasks,
+      totalTestedTasks,
       completed,
       inProgress,
       pending,
@@ -506,6 +578,61 @@ class WorksheetManager {
       leave,
       completionRate,
       projectHours
+    };
+  }
+
+  // Comprehensive Simulation Matrix Tracker (12 Worked On + 7 Tested)
+  getSimulationMatrix() {
+    const workedCatalogs = window.SIMULATIONS_WORKED_ON || [];
+    const testedCatalogs = window.SIMULATIONS_TESTED || [];
+    const currentUser = window.authManager ? window.authManager.getCurrentUser() : null;
+
+    const userEntries = this.entries.filter(e => {
+      if (this.filters.userScope === 'me' && currentUser) {
+        return this.isEntryBelongsToUser(e, currentUser);
+      }
+      return true;
+    });
+
+    const matrixWorked = workedCatalogs.map((name, index) => {
+      const matched = userEntries.filter(e => e.projectName === name && (e.workType !== 'Tested'));
+      const hours = matched.reduce((acc, cur) => acc + (parseFloat(cur.hoursWorked) || 0), 0);
+      const completed = matched.filter(e => e.status === 'Completed').length;
+      return {
+        num: index + 1,
+        name,
+        type: 'Worked',
+        totalTasks: matched.length,
+        completedTasks: completed,
+        totalHours: hours.toFixed(1),
+        progress: matched.length > 0 ? Math.round((completed / matched.length) * 100) : 0
+      };
+    });
+
+    const matrixTested = testedCatalogs.map((name, index) => {
+      const matched = userEntries.filter(e => e.projectName === name && (e.workType === 'Tested' || !e.workType));
+      const hours = matched.reduce((acc, cur) => acc + (parseFloat(cur.hoursWorked) || 0), 0);
+      const completed = matched.filter(e => e.status === 'Completed').length;
+      return {
+        num: index + 1,
+        name,
+        type: 'Tested',
+        totalTasks: matched.length,
+        completedTasks: completed,
+        totalHours: hours.toFixed(1),
+        progress: matched.length > 0 ? Math.round((completed / matched.length) * 100) : 0
+      };
+    });
+
+    return {
+      worked: matrixWorked,
+      tested: matrixTested,
+      summary: {
+        totalWorkedCount: workedCatalogs.length,
+        activeWorkedCount: matrixWorked.filter(m => m.totalTasks > 0).length,
+        totalTestedCount: testedCatalogs.length,
+        activeTestedCount: matrixTested.filter(m => m.totalTasks > 0).length
+      }
     };
   }
 }
