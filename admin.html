@@ -1,14 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <title>WorkPulse - Admin Governance & Team Dashboard</title>
   
   <!-- SEO & Mobile -->
   <meta name="description" content="WorkPulse Admin Portal - Multi-User Governance, Team Worksheet Inspection, and Dual-Sync Cloud Database Management.">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#0f172a">`n  <meta name="mobile-web-app-capable" content="yes">`n  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  
 
   <!-- Google Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -149,7 +154,7 @@
         <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08);">
           <button type="button" class="btn btn-outline btn-block btn-sm" id="btnQuickAdminLogin" style="border-color: rgba(245,158,11,0.5); color: #f59e0b; justify-content: center; font-size: 0.8rem;">
             <i data-lucide="crown" class="icon-xs"></i>
-            <span>âš¡ 1-Click Sign In as Admin (mnkavin2006@gmail.com)</span>
+            <span>1-Click Sign In as Admin (mnkavin2006@gmail.com)</span>
           </button>
         </div>
 
@@ -229,7 +234,7 @@
       <div class="admin-kpi-card">
         <div class="admin-kpi-icon bg-amber-light text-amber"><i data-lucide="database"></i></div>
         <div class="admin-kpi-info">
-          <span class="admin-kpi-val" id="kpiCloudStatus" style="font-size: 0.95rem; font-weight: 700; color: #10b981;">âš¡ Dual-Sync Ready</span>
+          <span class="admin-kpi-val" id="kpiCloudStatus" style="font-size: 0.95rem; font-weight: 700; color: #10b981;">Dual-Sync Ready</span>
           <span class="admin-kpi-label">Cloud Status</span>
         </div>
       </div>
@@ -239,7 +244,7 @@
     <div class="admin-card">
       <div class="admin-card-header">
         <div>
-          <h2 style="font-size: 1.15rem; font-weight: 700; margin: 0;">ðŸ‘¥ Team Members Directory</h2>
+          <h2 style="font-size: 1.15rem; font-weight: 700; margin: 0;">Team Members Directory</h2>
           <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0.25rem 0 0 0;">Inspect individual member daily worksheets and audit hours</p>
         </div>
         <div style="display: flex; gap: 0.5rem;">
@@ -298,7 +303,7 @@
     <div class="admin-card">
       <div class="admin-card-header">
         <div>
-          <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0;">â˜ï¸ Google Sheets Cloud Pipeline</h3>
+          <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0;">Google Sheets Cloud Pipeline</h3>
           <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0.2rem 0 0 0;">Dedicated single source of truth powered by Google Apps Script Web App</p>
         </div>
       </div>
@@ -427,7 +432,7 @@
             <td><code style="font-size: 0.78rem;">${u.email}</code></td>
             <td>
               <span class="badge ${u.role === 'Admin' ? 'badge-primary' : 'badge-neutral'}" style="font-size: 0.72rem;">
-                ${u.role === 'Admin' ? 'ðŸ‘‘ Admin' : 'ðŸ‘¤ ' + (u.role || 'Member')}
+                ${u.role === 'Admin' ? 'Admin' : (u.role || 'Member')}
               </span>
             </td>
             <td><strong>${u.totalTasks}</strong> tasks</td>
@@ -464,7 +469,7 @@
         inspAvatar.style.backgroundColor = user.color || '#3b82f6';
         inspAvatar.textContent = user.avatar || user.name.charAt(0).toUpperCase();
         inspName.textContent = `${user.name}'s Worksheet (${user.entries.length} tasks)`;
-        inspEmail.textContent = `${user.email} â€¢ Role: ${user.role} â€¢ Total: ${user.totalHours} hours`;
+        inspEmail.textContent = `${user.email} • Role: ${user.role} • Total: ${user.totalHours} hours`;
 
         if (user.entries.length === 0) {
           container.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No worksheet entries recorded yet for this member.</div>`;

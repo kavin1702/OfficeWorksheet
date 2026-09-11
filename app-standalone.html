@@ -10,6 +10,9 @@
   <meta name="keywords" content="Office Daily Worksheet, WorkPulse, Office Worksheet, Task Tracker, Daily Work Log, Google Sheets Sync, Excel Sync, Daily Status Report, Multi-user Worksheet">
   <meta name="author" content="Kavin">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="canonical" href="https://office-worksheet.vercel.app/">
 
   <!-- Open Graph / Facebook / WhatsApp SEO -->
@@ -39,7 +42,7 @@
   <!-- PWA & Mobile Meta Tags -->
     <meta name="theme-color" content="#080a14">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="WorkPulse">
   <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
@@ -1470,6 +1473,117 @@ code {
 .row-highlight-pulse {
   animation: rowHighlightPulse 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* --- Precision Alignment & Sizing Utilities --- */
+.th-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sort-icon {
+  width: 13px;
+  height: 13px;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+.th-content:hover .sort-icon {
+  opacity: 1;
+  color: var(--brand-primary);
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.worksheet-table th.col-date { width: 120px; text-align: left; }
+.worksheet-table th.col-project { min-width: 180px; text-align: left; }
+.worksheet-table th.col-work { min-width: 240px; text-align: left; }
+.worksheet-table th.col-status { width: 140px; text-align: left; }
+.worksheet-table th.col-hours { width: 85px; text-align: center; }
+.worksheet-table th.col-priority { width: 95px; text-align: center; }
+.worksheet-table th.col-actions { width: 115px; text-align: center; }
+
+.worksheet-table td.col-hours { text-align: center; }
+.worksheet-table td.col-priority { text-align: center; }
+.worksheet-table td.col-actions { text-align: center; }
+
+.worksheet-table td.col-actions .row-actions {
+  justify-content: center;
+}
+
+.search-and-view-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.search-input-wrap {
+  flex: 1 1 240px;
+  min-width: 200px;
+  height: 38px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  height: 38px;
+  padding: 0.45rem 1rem 0.45rem 2.35rem;
+  border-radius: var(--radius-full);
+}
+
+.select-wrap {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+}
+
+.select-wrap select, .form-select-sm {
+  height: 38px;
+  padding: 0.45rem 1.85rem 0.45rem 0.85rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
+}
+
+.view-switcher {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  gap: 2px;
+}
+
+.view-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.header-actions .btn,
+.header-actions .btn-icon,
+.user-profile-btn {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+}
 /* =========================================================
    WorkPulse - Responsive Styles (Classic Layout)
    ========================================================= */
@@ -1503,7 +1617,7 @@ code {
     width: 100%;
     justify-content: space-between;
     padding-top: 0.4rem;
-    border-top: 1px dashed rgba(139, 92, 246, 0.2);
+    border-top: 1px dashed var(--border-color);
   }
 
   .hero-quote-bar {
@@ -1789,7 +1903,7 @@ code {
               <div class="dropdown-divider"></div>
               <a href="admin.html" class="dropdown-item hidden" id="btnDropdownAdmin" style="color: #fbbf24; text-decoration: none; display: none !important;">
                 <i data-lucide="shield-check" class="icon-sm text-amber"></i>
-                <span>ðŸ‘‘ Admin Portal</span>
+                <span>Admin Portal</span>
               </a>
               <button class="dropdown-item" id="btnDropdownSwitchUser">
                 <i data-lucide="users" class="icon-sm"></i>
@@ -1845,7 +1959,7 @@ code {
       <!-- Hero Motivational Quote & Digital Clock Strip -->
       <section class="hero-quote-bar">
         <div class="hero-quote-left">
-          <div class="hero-quote-greeting" id="heroGreetingText">Good Evening, Kavin ðŸ‘‹</div>
+          <div class="hero-quote-greeting" id="heroGreetingText">Good Evening, Kavin</div>
           <div class="hero-quote-text"><i data-lucide="sparkles" class="icon-xs text-purple"></i> Focus &bull; Plan &bull; Execute &bull; Succeed</div>
         </div>
         <div class="hero-clock-wrap">
@@ -2227,11 +2341,11 @@ code {
             <div class="worktype-toggle-group">
               <label class="worktype-radio-label active" id="labelTypeWorked">
                 <input type="radio" name="workTypeRadio" id="radioTypeWorked" value="Worked" checked onchange="window.workPulseApp && window.workPulseApp.switchModalWorkType('Worked')">
-                <span>ðŸ› ï¸ Simulation Worked On (Dev)</span>
+                <span>Simulation Worked On (Dev)</span>
               </label>
               <label class="worktype-radio-label" id="labelTypeTested">
                 <input type="radio" name="workTypeRadio" id="radioTypeTested" value="Tested" onchange="window.workPulseApp && window.workPulseApp.switchModalWorkType('Tested')">
-                <span>ðŸ§ª Simulation Tested (QA)</span>
+                <span>Simulation Tested (QA)</span>
               </label>
             </div>
           </div>
@@ -2246,7 +2360,7 @@ code {
               <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-10'">Aug 10</button>
               <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-05'">Aug 05</button>
               <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-03'">Aug 03</button>
-              <button type="button" class="btn-chip" onclick="const p = document.getElementById('workDate'); p.showPicker ? p.showPicker() : p.focus()">ðŸ“… Pick Any Date</button>
+              <button type="button" class="btn-chip" onclick="const p = document.getElementById('workDate'); p.showPicker ? p.showPicker() : p.focus()">Pick Any Date</button>
             </div>
             <input type="date" id="workDate" class="form-input" required style="margin-top: 0.5rem;">
           </div>
@@ -2262,7 +2376,7 @@ code {
           <!-- Project Name Autocomplete & Manual Edit -->
           <div class="form-group autocomplete-wrapper">
             <label for="projectNameInput" class="form-label required">Simulation Project Name (or custom)</label>
-            <input type="text" id="projectNameInput" class="form-input" placeholder="e.g. MDI â€“ Manufacturing / Manual Cleaning of Ethanol" required autocomplete="off">
+            <input type="text" id="projectNameInput" class="form-input" placeholder="e.g. MDI - Manufacturing / Manual Cleaning of Ethanol" required autocomplete="off">
             <div id="projectSuggestions" class="autocomplete-suggestions hidden"></div>
           </div>
 

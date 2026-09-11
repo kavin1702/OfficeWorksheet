@@ -31,7 +31,7 @@
     width: 100%;
     justify-content: space-between;
     padding-top: 0.4rem;
-    border-top: 1px dashed rgba(139, 92, 246, 0.2);
+    border-top: 1px dashed var(--border-color);
   }
 
   .hero-quote-bar {

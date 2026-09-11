@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -10,6 +10,9 @@
   <meta name="keywords" content="Office Daily Worksheet, WorkPulse, Office Worksheet, Task Tracker, Daily Work Log, Google Sheets Sync, Excel Sync, Daily Status Report, Multi-user Worksheet">
   <meta name="author" content="Kavin">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="canonical" href="https://office-worksheet.vercel.app/">
 
   <!-- Open Graph / Facebook / WhatsApp SEO -->
@@ -39,7 +42,7 @@
   <!-- PWA & Mobile Meta Tags -->
     <meta name="theme-color" content="#080a14">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="WorkPulse">
   <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
@@ -347,7 +350,7 @@
               <div class="dropdown-divider"></div>
               <a href="admin.html" class="dropdown-item hidden" id="btnDropdownAdmin" style="color: #fbbf24; text-decoration: none; display: none !important;">
                 <i data-lucide="shield-check" class="icon-sm text-amber"></i>
-                <span>ðŸ‘‘ Admin Portal</span>
+                <span>Admin Portal</span>
               </a>
               <button class="dropdown-item" id="btnDropdownSwitchUser">
                 <i data-lucide="users" class="icon-sm"></i>
@@ -403,7 +406,7 @@
       <!-- Hero Motivational Quote & Digital Clock Strip -->
       <section class="hero-quote-bar">
         <div class="hero-quote-left">
-          <div class="hero-quote-greeting" id="heroGreetingText">Good Evening, Kavin ðŸ‘‹</div>
+          <div class="hero-quote-greeting" id="heroGreetingText">Good Evening, Kavin</div>
           <div class="hero-quote-text"><i data-lucide="sparkles" class="icon-xs text-purple"></i> Focus &bull; Plan &bull; Execute &bull; Succeed</div>
         </div>
         <div class="hero-clock-wrap">
@@ -785,11 +788,11 @@
             <div class="worktype-toggle-group">
               <label class="worktype-radio-label active" id="labelTypeWorked">
                 <input type="radio" name="workTypeRadio" id="radioTypeWorked" value="Worked" checked onchange="window.workPulseApp && window.workPulseApp.switchModalWorkType('Worked')">
-                <span>ðŸ› ï¸ Simulation Worked On (Dev)</span>
+                <span>Simulation Worked On (Dev)</span>
               </label>
               <label class="worktype-radio-label" id="labelTypeTested">
                 <input type="radio" name="workTypeRadio" id="radioTypeTested" value="Tested" onchange="window.workPulseApp && window.workPulseApp.switchModalWorkType('Tested')">
-                <span>ðŸ§ª Simulation Tested (QA)</span>
+                <span>Simulation Tested (QA)</span>
               </label>
             </div>
           </div>
@@ -804,7 +807,7 @@
               <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-10'">Aug 10</button>
               <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-05'">Aug 05</button>
               <button type="button" class="btn-chip" onclick="document.getElementById('workDate').value = '2026-08-03'">Aug 03</button>
-              <button type="button" class="btn-chip" onclick="const p = document.getElementById('workDate'); p.showPicker ? p.showPicker() : p.focus()">ðŸ“… Pick Any Date</button>
+              <button type="button" class="btn-chip" onclick="const p = document.getElementById('workDate'); p.showPicker ? p.showPicker() : p.focus()">Pick Any Date</button>
             </div>
             <input type="date" id="workDate" class="form-input" required style="margin-top: 0.5rem;">
           </div>
@@ -820,7 +823,7 @@
           <!-- Project Name Autocomplete & Manual Edit -->
           <div class="form-group autocomplete-wrapper">
             <label for="projectNameInput" class="form-label required">Simulation Project Name (or custom)</label>
-            <input type="text" id="projectNameInput" class="form-input" placeholder="e.g. MDI â€“ Manufacturing / Manual Cleaning of Ethanol" required autocomplete="off">
+            <input type="text" id="projectNameInput" class="form-input" placeholder="e.g. MDI - Manufacturing / Manual Cleaning of Ethanol" required autocomplete="off">
             <div id="projectSuggestions" class="autocomplete-suggestions hidden"></div>
           </div>
 
