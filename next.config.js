@@ -18,26 +18,11 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/manifest.json',
+        source: '/:path*',
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS' },
-          { key: 'Access-Control-Allow-Headers', value: '*' },
-          { key: 'Content-Type', value: 'application/manifest+json; charset=utf-8' }
-        ]
-      },
-      {
-        source: '/sw.js',
-        headers: [
-          { key: 'Service-Worker-Allowed', value: '/' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Content-Type', value: 'application/javascript; charset=utf-8' }
-        ]
-      },
-      {
-        source: '/(.*)',
-        headers: [
-          { key: 'Access-Control-Allow-Origin', value: '*' }
+          { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
+          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version' }
         ]
       }
     ];
