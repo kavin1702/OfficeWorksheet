@@ -37,11 +37,43 @@
   </script>
   
   <!-- PWA & Mobile Meta Tags -->
-  <meta name="theme-color" content="#080a14">
+    <meta name="theme-color" content="#080a14">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="WorkPulse">
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+  <script>
+    // Self-healing inlined PWA manifest for zero-CORS / Vercel Preview compatibility
+    (function() {
+      try {
+        const manifestData = {
+          "name": "WorkPulse - Office Daily Worksheet",
+          "short_name": "WorkPulse",
+          "description": "Daily Office Worksheet & Task Status Tracker with Cloud Sync",
+          "start_url": "./",
+          "display": "standalone",
+          "background_color": "#080a14",
+          "theme_color": "#2563eb",
+          "orientation": "portrait-primary",
+          "icons": [
+            {
+              "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='128' fill='%232563eb'/%3E%3Cpath d='M160 160h192v192H160z' fill='%23ffffff'/%3E%3C/svg%3E",
+              "sizes": "192x192 512x512",
+              "type": "image/svg+xml",
+              "purpose": "any maskable"
+            }
+          ]
+        };
+        const blob = new Blob([JSON.stringify(manifestData)], { type: 'application/manifest+json' });
+        const manifestURL = URL.createObjectURL(blob);
+        const link = document.querySelector('link[rel="manifest"]');
+        if (link) {
+          link.setAttribute('href', manifestURL);
+        }
+      } catch (e) {}
+    })();
+  </script>
 
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
