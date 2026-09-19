@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Authentication & User Management Service (WorkPulse)
  * Handles Email/Password authentication, user session persistence,
  * strict Admin (mnkavin2006@gmail.com) vs Team Member (kavin@8chili.com) role enforcement,
@@ -293,3 +293,4 @@ class AuthManager {
 }
 
 window.authManager = new AuthManager();
+

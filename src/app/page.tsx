@@ -12,8 +12,6 @@ import { CalendarMonthView } from '@/modules/calendar/components/CalendarMonthVi
 import { DayInspector } from '@/modules/calendar/components/DayInspector';
 import { AnalyticsDashboardView } from '@/modules/analytics/components/AnalyticsDashboardView';
 import { WorkEntryModal } from '@/modules/worksheet/components/WorkEntryModal';
-import { AuthPortalModal } from '@/modules/auth/components/AuthPortalModal';
-import { UserProfileDropdown } from '@/modules/auth/components/UserProfileDropdown';
 import { DailyReportModal } from '@/modules/reporting/components/DailyReportModal';
 import { CloudSyncModal } from '@/modules/cloud-sync/components/CloudSyncModal';
 import { ImportExportModal } from '@/modules/import-export/components/ImportExportModal';
@@ -28,14 +26,24 @@ import {
   Moon,
   Sun,
   ShieldCheck,
-  RefreshCw,
-  Sparkles,
-  ExternalLink
+  UserCheck,
+  CheckCircle2,
+  Database
 } from 'lucide-react';
-import Link from 'next/link';
 
 export default function DashboardPage() {
-  const [currentUser, setCurrentUser] = useState<User>(AuthService.getCurrentUser());
+  // Always active user: Kavin (Lead / Admin) with zero login friction
+  const [currentUser] = useState<User>({
+    id: 'user-kavin-main',
+    email: 'kavin@8chili.com',
+    name: 'M.N. Kavin',
+    role: 'ADMIN',
+    avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=kavin&backgroundColor=3b82f6',
+    department: 'VR Simulations & Engineering',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z'
+  });
+
   const [entries, setEntries] = useState<WorkEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>('TABLE');
@@ -51,10 +59,9 @@ export default function DashboardPage() {
     userEmail: 'ALL'
   });
 
-  // Modals state
+  // Modals state (Auth modal removed completely)
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<WorkEntry | null>(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -79,16 +86,10 @@ export default function DashboardPage() {
       if (e.detail) setEntries(e.detail);
     };
 
-    const handleAuthUpdate = (e: any) => {
-      if (e.detail) setCurrentUser(e.detail);
-    };
-
     window.addEventListener('workpulse:entries-updated', handleEntriesUpdate);
-    window.addEventListener('workpulse:auth-change', handleAuthUpdate);
 
     return () => {
       window.removeEventListener('workpulse:entries-updated', handleEntriesUpdate);
-      window.removeEventListener('workpulse:auth-change', handleAuthUpdate);
     };
   }, []);
 
@@ -184,7 +185,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-100 flex flex-col">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80">
+      <header className="sticky top-0 z-40 bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Brand */}
           <div className="flex items-center space-x-3">
@@ -197,11 +198,11 @@ export default function DashboardPage() {
                   WorkPulse
                 </span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                  v2.0 Modular
+                  Simulation Hub
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                Office Daily Worksheet & Simulation Hub
+                12 Worked + 7 Tested Master Matrix Tracking
               </p>
             </div>
           </div>
@@ -232,22 +233,11 @@ export default function DashboardPage() {
             <button
               onClick={() => setIsImportModalOpen(true)}
               className="p-2 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-all flex items-center gap-1.5 shadow-sm"
-              title="Import & Export"
+              title="Import & Export (Excel/JSON)"
             >
               <FileSpreadsheet className="w-4 h-4 text-amber-500" />
-              <span className="hidden md:inline">Export</span>
+              <span className="hidden md:inline">Export Excel</span>
             </button>
-
-            {/* Admin Link if admin */}
-            {currentUser.role === 'ADMIN' && (
-              <Link
-                href="/admin"
-                className="p-2 sm:px-3 sm:py-1.5 rounded-xl border border-purple-200 dark:border-purple-900/50 bg-purple-50/50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 text-xs font-semibold flex items-center gap-1.5"
-              >
-                <ShieldCheck className="w-4 h-4" />
-                <span className="hidden md:inline">Admin</span>
-              </Link>
-            )}
 
             {/* Theme toggle */}
             <button
@@ -258,12 +248,11 @@ export default function DashboardPage() {
               {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
             </button>
 
-            {/* User Profile */}
-            <UserProfileDropdown
-              user={currentUser}
-              onOpenAuthModal={() => setIsAuthModalOpen(true)}
-              onUserChanged={(u) => setCurrentUser(u)}
-            />
+            {/* User Profile Badge (Static, no login friction) */}
+            <div className="flex items-center space-x-2 px-3 py-1.5 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-950/30 text-xs font-bold text-blue-700 dark:text-blue-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>{currentUser.name}</span>
+            </div>
           </div>
         </div>
       </header>
@@ -355,12 +344,12 @@ export default function DashboardPage() {
       <footer className="border-t border-slate-200 dark:border-slate-800/80 py-4 bg-white dark:bg-slate-900/60 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
           <div>
-            WorkPulse Modular Monolith â€¢ Next.js 14, Tailwind CSS, Neon DB, Prisma
+            WorkPulse Modular Monolith â€¢ Direct Workbench Mode
           </div>
           <div className="flex items-center space-x-4 font-medium">
             <span>12 Master Worked + 7 Master Tested Matrices</span>
             <span>â€¢</span>
-            <span>All Data Autosaved</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold">â— Storage Auto-Saved</span>
           </div>
         </div>
       </footer>
@@ -375,13 +364,6 @@ export default function DashboardPage() {
         initialSimulationTitle={simPrefill.title}
         initialCategory={simPrefill.category}
         initialSimNumber={simPrefill.number}
-      />
-
-      <AuthPortalModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onUserChanged={(u) => setCurrentUser(u)}
-        currentUser={currentUser}
       />
 
       <DailyReportModal
