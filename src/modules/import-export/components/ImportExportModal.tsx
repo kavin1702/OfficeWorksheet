@@ -1,89 +1,107 @@
-﻿'use client';
+'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { WorkEntry } from '@/shared/types';
 import { Modal } from '@/shared/components/ui/Modal';
 import { Button } from '@/shared/components/ui/Button';
 import { ExportService } from '../export.service';
-import { WorksheetService, INITIAL_SAMPLE_ENTRIES } from '@/modules/worksheet/worksheet.service';
-import { Download, Upload, FileSpreadsheet, RotateCcw, FileJson, CheckCircle2 } from 'lucide-react';
+import { INITIAL_SAMPLE_ENTRIES } from '@/modules/worksheet/worksheet.service';
+import { parseImportedEntry } from '@/shared/validation';
+import { Upload, FileSpreadsheet, RotateCcw, FileJson } from 'lucide-react';
 import { useToast } from '@/shared/components/ui/ToastProvider';
 
 interface ImportExportModalProps {
   isOpen: boolean;
   onClose: () => void;
   entries: WorkEntry[];
-  onDataImported: (entries: WorkEntry[]) => void;
+  storageMode: 'sheets' | 'local' | null;
+  onImport: (
+    entries: WorkEntry[],
+    mode: 'append' | 'replace'
+  ) => Promise<{ added: number; updated: number; total: number }>;
 }
 
 export const ImportExportModal: React.FC<ImportExportModalProps> = ({
   isOpen,
   onClose,
   entries,
-  onDataImported
+  storageMode,
+  onImport
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const importModeRef = useRef<'append' | 'replace'>('append');
   const { addToast } = useToast();
+  const target = storageMode === 'sheets' ? 'Google Sheets' : 'this browser';
 
   const handleExportExcel = () => {
-    ExportService.exportToExcel(entries);
-    addToast({
-      title: 'Excel Export Complete',
-      message: 'Downloaded multi-tab workbook with 12 Worked & 7 Tested simulation matrices!',
-      type: 'success'
-    });
+    try {
+      ExportService.exportToExcel(entries);
+      addToast({ title: 'Excel exported', message: 'Workbook with logs and both simulation matrices downloaded.', type: 'success' });
+    } catch (e) {
+      addToast({ title: 'Export failed', message: (e as Error).message, type: 'error' });
+    }
   };
 
   const handleExportJson = () => {
     ExportService.exportToJson(entries);
-    addToast({
-      title: 'JSON Backup Created',
-      message: 'Full workspace snapshot downloaded successfully.',
-      type: 'success'
-    });
+    addToast({ title: 'JSON backup created', message: `${entries.length} entries downloaded.`, type: 'success' });
+  };
+
+  const runImport = async (list: WorkEntry[], mode: 'append' | 'replace', label: string) => {
+    setBusy(true);
+    try {
+      const result = await onImport(list, mode);
+      addToast({
+        title: `${label} complete`,
+        message: `${result.added} added, ${result.updated} updated in ${target}. Total: ${result.total}.`,
+        type: 'success'
+      });
+      onClose();
+    } catch (e) {
+      addToast({ title: `${label} failed`, message: (e as Error).message, type: 'error' });
+    } finally {
+      setBusy(false);
+    }
   };
 
   const handleResetSampleData = () => {
-    if (confirm('Reset workspace to initial sample dataset with all 22 historical entries?')) {
-      WorksheetService.saveEntries(INITIAL_SAMPLE_ENTRIES);
-      onDataImported(INITIAL_SAMPLE_ENTRIES);
-      addToast({
-        title: 'Sample Data Restored',
-        message: 'Loaded default simulations and work logs.',
-        type: 'info'
-      });
-      onClose();
+    if (confirm('Replace everything in this browser with the sample data?')) {
+      runImport(INITIAL_SAMPLE_ENTRIES, 'replace', 'Reset');
     }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = ''; // let the same file be chosen again later
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (event) => {
+      let list: WorkEntry[];
       try {
-        const text = event.target?.result as string;
-        const parsed = JSON.parse(text);
-        if (Array.isArray(parsed)) {
-          WorksheetService.saveEntries(parsed);
-          onDataImported(parsed);
-          addToast({
-            title: 'Import Successful',
-            message: `Imported ${parsed.length} entries into workspace!`,
-            type: 'success'
-          });
-          onClose();
-        } else {
-          throw new Error('Invalid array format');
-        }
-      } catch (err) {
-        addToast({
-          title: 'Import Failed',
-          message: 'Invalid JSON file format. Please use a valid WorkPulse backup.',
-          type: 'error'
+        const parsed = JSON.parse(String(event.target?.result || ''));
+        if (!Array.isArray(parsed)) throw new Error('The file must contain a JSON array of entries.');
+        const defaults = { userName: 'Imported', userEmail: 'imported@workpulse.local' };
+        list = parsed.map((raw, i) => {
+          try {
+            return parseImportedEntry(raw, defaults);
+          } catch (err) {
+            throw new Error(`Entry ${i + 1}: ${(err as Error).message}`);
+          }
         });
+      } catch (err) {
+        addToast({ title: 'Import failed', message: (err as Error).message, type: 'error' });
+        return;
       }
+      const mode = importModeRef.current;
+      if (
+        mode === 'replace' &&
+        !confirm(`This DELETES all ${entries.length} current entries in ${target} and keeps only the ${list.length} from the file. Continue?`)
+      ) {
+        return;
+      }
+      runImport(list, mode, 'Import');
     };
     reader.readAsText(file);
   };
@@ -127,26 +145,47 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
             type="file"
             ref={fileInputRef}
             onChange={handleFileUpload}
-            accept=".json"
+            accept=".json,application/json"
             className="hidden"
           />
 
           <div className="grid grid-cols-2 gap-3">
             <Button
               variant="outline"
-              onClick={() => fileInputRef.current?.click()}
+              disabled={busy}
+              onClick={() => {
+                importModeRef.current = 'append';
+                fileInputRef.current?.click();
+              }}
               leftIcon={<Upload className="w-4 h-4" />}
+              title="Adds the file's entries; entries with the same id are updated"
             >
-              Import JSON
+              {busy ? 'Importing…' : 'Import JSON (add)'}
             </Button>
 
             <Button
               variant="outline"
-              onClick={handleResetSampleData}
-              leftIcon={<RotateCcw className="w-4 h-4 text-amber-500" />}
+              disabled={busy}
+              onClick={() => {
+                importModeRef.current = 'replace';
+                fileInputRef.current?.click();
+              }}
+              leftIcon={<Upload className="w-4 h-4 text-rose-500" />}
+              title="Deletes everything and keeps only the file's entries"
             >
-              Reset Samples
+              Import &amp; replace all
             </Button>
+
+            {storageMode !== 'sheets' && (
+              <Button
+                variant="outline"
+                disabled={busy}
+                onClick={handleResetSampleData}
+                leftIcon={<RotateCcw className="w-4 h-4 text-amber-500" />}
+              >
+                Reset Samples
+              </Button>
+            )}
           </div>
         </div>
       </div>

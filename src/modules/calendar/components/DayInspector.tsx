@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import { WorkEntry } from '@/shared/types';
@@ -35,7 +35,7 @@ export const DayInspector: React.FC<DayInspectorProps> = ({
             </h3>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            {dayEntries.length} tasks logged ({totalHours} hrs total)
+            {dayEntries.length} tasks logged ({Math.round(totalHours * 10) / 10} hrs total)
           </p>
         </div>
 

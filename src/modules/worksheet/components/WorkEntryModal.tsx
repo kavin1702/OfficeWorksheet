@@ -1,7 +1,7 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
-import { WorkEntry, WorkStatus, WorkPriority, User } from '@/shared/types';
+import { WorkEntry, WorkEntryInput, WorkStatus, WorkPriority, User, SimulationCategory } from '@/shared/types';
 import { Modal } from '@/shared/components/ui/Modal';
 import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
@@ -13,12 +13,13 @@ import { useToast } from '@/shared/components/ui/ToastProvider';
 interface WorkEntryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (entryData: Omit<WorkEntry, 'id' | 'createdAt' | 'updatedAt'>, id?: string) => void;
+  onSave: (entryData: WorkEntryInput, id?: string) => Promise<void>;
   editingEntry?: WorkEntry | null;
   currentUser: User;
   initialSimulationTitle?: string;
   initialCategory?: 'WORKED' | 'TESTED';
   initialSimNumber?: number;
+  initialDate?: string;
 }
 
 export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
@@ -29,8 +30,10 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
   currentUser,
   initialSimulationTitle,
   initialCategory,
-  initialSimNumber
+  initialSimNumber,
+  initialDate
 }) => {
+  const [isSaving, setIsSaving] = useState(false);
   const { addToast } = useToast();
 
   const [workDate, setWorkDate] = useState(getTodayString());
@@ -40,7 +43,7 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
   const [status, setStatus] = useState<WorkStatus>('COMPLETED');
   const [priority, setPriority] = useState<WorkPriority>('MEDIUM');
   const [remarks, setRemarks] = useState('');
-  const [simulationCategory, setSimulationCategory] = useState<'WORKED' | 'TESTED' | 'GENERAL'>('WORKED');
+  const [simulationCategory, setSimulationCategory] = useState<SimulationCategory>('WORKED');
   const [simulationWorkedNumber, setSimulationWorkedNumber] = useState<number | undefined>(undefined);
   const [simulationTestedNumber, setSimulationTestedNumber] = useState<number | undefined>(undefined);
   const [isCarriedForward, setIsCarriedForward] = useState(false);
@@ -59,7 +62,7 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
       setSimulationTestedNumber(editingEntry.simulationTestedNumber);
       setIsCarriedForward(editingEntry.isCarriedForward || false);
     } else {
-      setWorkDate(getTodayString());
+      setWorkDate(initialDate || getTodayString());
       setProjectName(initialSimulationTitle || MASTER_WORKED_SIMULATIONS[0].title);
       setTaskDescription('');
       setHoursSpent(6.0);
@@ -71,7 +74,7 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
       setSimulationTestedNumber(initialCategory === 'TESTED' ? initialSimNumber || 1 : undefined);
       setIsCarriedForward(false);
     }
-  }, [editingEntry, isOpen, initialSimulationTitle, initialCategory, initialSimNumber]);
+  }, [editingEntry, isOpen, initialSimulationTitle, initialCategory, initialSimNumber, initialDate]);
 
   const handleWorkedSelect = (number: number) => {
     const sim = MASTER_WORKED_SIMULATIONS.find(s => s.number === number);
@@ -95,8 +98,9 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSaving) return;
 
     if (!projectName.trim()) {
       addToast({ title: 'Validation Error', message: 'Project or Simulation name is required.', type: 'error' });
@@ -106,15 +110,17 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
       addToast({ title: 'Validation Error', message: 'Task description cannot be empty.', type: 'error' });
       return;
     }
-    if (hoursSpent <= 0 || isNaN(hoursSpent)) {
-      addToast({ title: 'Validation Error', message: 'Please enter valid hours spent (e.g. 6.5).', type: 'error' });
+    if (isNaN(hoursSpent) || hoursSpent <= 0 || hoursSpent > 24) {
+      addToast({ title: 'Validation Error', message: 'Hours must be more than 0 and at most 24 (e.g. 6.5).', type: 'error' });
       return;
     }
 
-    onSave(
+    setIsSaving(true);
+    try {
+      await onSave(
       {
-        userEmail: currentUser.email,
-        userName: currentUser.name,
+        userEmail: editingEntry?.userEmail || currentUser.email,
+        userName: editingEntry?.userName || currentUser.name,
         workDate,
         projectName: projectName.trim(),
         taskDescription: taskDescription.trim(),
@@ -128,7 +134,13 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
         isCarriedForward
       },
       editingEntry ? editingEntry.id : undefined
-    );
+      );
+    } catch (err) {
+      addToast({ title: 'Save failed', message: (err as Error).message || 'Could not save. Try again.', type: 'error' });
+      setIsSaving(false);
+      return;
+    }
+    setIsSaving(false);
 
     addToast({
       title: editingEntry ? 'Work Log Updated' : 'Work Log Saved',
@@ -206,7 +218,7 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
             <Input
               label="Project / Simulation Name"
               type="text"
-              placeholder="e.g. MDI â€“ Cleaning of Purified Water"
+              placeholder="e.g. MDI – Cleaning of Purified Water"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               required
@@ -217,10 +229,12 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
 
         {/* Task Description */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+          <label htmlFor="entry-task" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
             Tasks Completed / Work Description *
           </label>
           <textarea
+            id="entry-task"
+            maxLength={5000}
             rows={3}
             value={taskDescription}
             onChange={(e) => setTaskDescription(e.target.value)}
@@ -238,17 +252,18 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
             step="0.5"
             min="0.5"
             max="24"
-            value={hoursSpent}
+            value={Number.isNaN(hoursSpent) ? '' : hoursSpent}
             onChange={(e) => setHoursSpent(parseFloat(e.target.value))}
             required
             leftIcon={<Clock className="w-4 h-4 text-slate-400" />}
           />
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="entry-status" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Work Status
             </label>
             <select
+              id="entry-status"
               value={status}
               onChange={(e) => setStatus(e.target.value as WorkStatus)}
               className="w-full h-10 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
@@ -261,18 +276,19 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="entry-priority" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Priority
             </label>
             <select
+              id="entry-priority"
               value={priority}
               onChange={(e) => setPriority(e.target.value as WorkPriority)}
               className="w-full h-10 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
             >
-              <option value="URGENT">ðŸ”´ Urgent</option>
-              <option value="HIGH">ðŸŸ  High</option>
-              <option value="MEDIUM">ðŸ”µ Medium</option>
-              <option value="LOW">âšª Low</option>
+              <option value="URGENT">🔴 Urgent</option>
+              <option value="HIGH">🟠 High</option>
+              <option value="MEDIUM">🔵 Medium</option>
+              <option value="LOW">⚪ Low</option>
             </select>
           </div>
         </div>
@@ -307,8 +323,8 @@ export const WorkEntryModal: React.FC<WorkEntryModalProps> = ({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" variant="primary" leftIcon={<Save className="w-4 h-4" />}>
-            {editingEntry ? 'Save Changes' : 'Save Work Log'}
+          <Button type="submit" variant="primary" disabled={isSaving} leftIcon={<Save className="w-4 h-4" />}>
+            {isSaving ? 'Saving…' : editingEntry ? 'Save Changes' : 'Save Work Log'}
           </Button>
         </div>
       </form>

@@ -1,4 +1,4 @@
-﻿import { SimulationMasterItem, SimulationMatrixItem, WorkEntry } from '@/shared/types';
+import { SimulationMasterItem, SimulationMatrixItem, WorkEntry } from '@/shared/types';
 import { MASTER_WORKED_SIMULATIONS, MASTER_TESTED_SIMULATIONS } from './simulation.constants';
 
 export class SimulationService {
@@ -55,7 +55,7 @@ export class SimulationService {
 
       // Check worked simulations
       MASTER_WORKED_SIMULATIONS.forEach(sim => {
-        const titleWords = sim.title.toLowerCase().split(/[\sâ€“â€”\(\)\/]+/).filter(w => w.length > 3);
+        const titleWords = sim.title.toLowerCase().split(/[\s–—\(\)\/]+/).filter(w => w.length > 3);
         const isMatch =
           entry.simulationWorkedNumber === sim.number ||
           titleWords.some(w => entryText.includes(w)) ||
@@ -81,7 +81,7 @@ export class SimulationService {
 
       // Check tested simulations
       MASTER_TESTED_SIMULATIONS.forEach(sim => {
-        const titleWords = sim.title.toLowerCase().split(/[\sâ€“â€”\(\)\/]+/).filter(w => w.length > 3);
+        const titleWords = sim.title.toLowerCase().split(/[\s–—\(\)\/]+/).filter(w => w.length > 3);
         const isMatch =
           entry.simulationTestedNumber === sim.number ||
           (entry.simulationCategory === 'TESTED' && titleWords.some(w => entryText.includes(w))) ||

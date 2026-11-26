@@ -1,16 +1,21 @@
-﻿import { WorkEntry, WorkStatus, WorkPriority, FilterState, WorksheetMetrics } from '@/shared/types';
+import { WorkEntry, WorkEntryInput, FilterState, WorksheetMetrics } from '@/shared/types';
 import { getTodayString, getYesterdayString, isDateInRange, getStartOfWeek, getEndOfWeek, getStartOfMonth, getEndOfMonth } from '@/shared/utils/date';
 
 const STORAGE_KEY = 'workpulse_work_entries';
 
+function newId(): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
+  return `entry-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
 export const INITIAL_SAMPLE_ENTRIES: WorkEntry[] = [
   {
     id: 'entry-1',
-    userEmail: 'mnkavin2006@gmail.com',
+    userEmail: 'demo@workpulse.local',
     userName: 'M.N. Kavin',
     workDate: '2026-01-02',
-    projectName: 'MDI â€“ Manufacturing / Manual Cleaning of Ethanol',
-    taskDescription: 'MDI â€“ Cleaning of Purified Water, ethanol manual cleaning simulation script setup and component hierarchy.',
+    projectName: 'MDI – Manufacturing / Manual Cleaning of Ethanol',
+    taskDescription: 'MDI – Cleaning of Purified Water, ethanol manual cleaning simulation script setup and component hierarchy.',
     hoursSpent: 6.5,
     status: 'COMPLETED',
     priority: 'HIGH',
@@ -23,10 +28,10 @@ export const INITIAL_SAMPLE_ENTRIES: WorkEntry[] = [
   },
   {
     id: 'entry-2',
-    userEmail: 'mnkavin2006@gmail.com',
+    userEmail: 'demo@workpulse.local',
     userName: 'M.N. Kavin',
     workDate: '2026-01-03',
-    projectName: 'FFS â€“ Cleaning of Parisson Area',
+    projectName: 'FFS – Cleaning of Parisson Area',
     taskDescription: 'Parisson extrusion station cleaning sequence modeling and vacuum sanitization physics trigger.',
     hoursSpent: 6.0,
     status: 'COMPLETED',
@@ -40,10 +45,10 @@ export const INITIAL_SAMPLE_ENTRIES: WorkEntry[] = [
   },
   {
     id: 'entry-3',
-    userEmail: 'kavin@8chili.com',
-    userName: 'Kavin (8chili)',
+    userEmail: 'demo@workpulse.local',
+    userName: 'M.N. Kavin',
     workDate: '2026-01-05',
-    projectName: 'MDI â€“ Cleaning of Purified Water',
+    projectName: 'MDI – Cleaning of Purified Water',
     taskDescription: 'Purified water CIP cycle logic and sampling valve contamination indicators.',
     hoursSpent: 7.0,
     status: 'COMPLETED',
@@ -57,10 +62,10 @@ export const INITIAL_SAMPLE_ENTRIES: WorkEntry[] = [
   },
   {
     id: 'entry-4',
-    userEmail: 'mnkavin2006@gmail.com',
+    userEmail: 'demo@workpulse.local',
     userName: 'M.N. Kavin',
     workDate: '2026-01-06',
-    projectName: 'MDI â€“ Setup and Operations',
+    projectName: 'MDI – Setup and Operations',
     taskDescription: 'Canister crimping mechanism and pressure metering chamber assembly steps.',
     hoursSpent: 8.0,
     status: 'COMPLETED',
@@ -74,7 +79,7 @@ export const INITIAL_SAMPLE_ENTRIES: WorkEntry[] = [
   },
   {
     id: 'entry-5',
-    userEmail: 'mnkavin2006@gmail.com',
+    userEmail: 'demo@workpulse.local',
     userName: 'M.N. Kavin',
     workDate: '2026-01-07',
     projectName: 'Lupin Ophthalmic (including Jammed / Toppled Bottle)',
@@ -91,8 +96,8 @@ export const INITIAL_SAMPLE_ENTRIES: WorkEntry[] = [
   },
   {
     id: 'entry-6',
-    userEmail: 'kavin@8chili.com',
-    userName: 'Kavin (8chili)',
+    userEmail: 'demo@workpulse.local',
+    userName: 'M.N. Kavin',
     workDate: '2026-01-08',
     projectName: 'Lighting in Gowning',
     taskDescription: 'Cleanroom gowning room lux lighting calculation and visual luxmeter HUD.',
@@ -108,7 +113,7 @@ export const INITIAL_SAMPLE_ENTRIES: WorkEntry[] = [
   },
   {
     id: 'entry-7',
-    userEmail: 'mnkavin2006@gmail.com',
+    userEmail: 'demo@workpulse.local',
     userName: 'M.N. Kavin',
     workDate: '2026-01-09',
     projectName: 'Warehouse Operations',
@@ -125,7 +130,7 @@ export const INITIAL_SAMPLE_ENTRIES: WorkEntry[] = [
   },
   {
     id: 'entry-8',
-    userEmail: 'mnkavin2006@gmail.com',
+    userEmail: 'demo@workpulse.local',
     userName: 'M.N. Kavin',
     workDate: '2026-01-10',
     projectName: 'Dispensing of Raw Materials',
@@ -143,17 +148,20 @@ export const INITIAL_SAMPLE_ENTRIES: WorkEntry[] = [
 ];
 
 export class WorksheetService {
+  // ---------- Browser-only storage (used when Google Sheets is not configured) ----------
+
   static getAllEntries(): WorkEntry[] {
-    if (typeof window === 'undefined') return INITIAL_SAMPLE_ENTRIES;
+    if (typeof window === 'undefined') return [];
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
+      if (saved !== null) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {
-      console.warn('Failed to load work entries from localStorage, using fallback', e);
+      console.warn('Failed to load work entries from localStorage', e);
     }
+    // First visit on this device: show the sample data so the app is not empty.
     this.saveEntries(INITIAL_SAMPLE_ENTRIES);
     return INITIAL_SAMPLE_ENTRIES;
   }
@@ -162,34 +170,23 @@ export class WorksheetService {
     if (typeof window === 'undefined') return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-      window.dispatchEvent(new CustomEvent('workpulse:entries-updated', { detail: entries }));
     } catch (e) {
       console.error('Failed to save entries to localStorage', e);
     }
   }
 
-  static addEntry(entry: Omit<WorkEntry, 'id' | 'createdAt' | 'updatedAt'>): WorkEntry {
-    const entries = this.getAllEntries();
-    const newEntry: WorkEntry = {
-      ...entry,
-      id: `entry-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    const updated = [newEntry, ...entries];
-    this.saveEntries(updated);
+  static addEntry(entry: WorkEntryInput): WorkEntry {
+    const now = new Date().toISOString();
+    const newEntry: WorkEntry = { ...entry, id: newId(), createdAt: now, updatedAt: now };
+    this.saveEntries([newEntry, ...this.getAllEntries()]);
     return newEntry;
   }
 
   static updateEntry(id: string, updates: Partial<WorkEntry>): WorkEntry | null {
     const entries = this.getAllEntries();
-    const index = entries.findIndex(e => e.id === id);
+    const index = entries.findIndex((e) => e.id === id);
     if (index === -1) return null;
-    const updatedEntry: WorkEntry = {
-      ...entries[index],
-      ...updates,
-      updatedAt: new Date().toISOString()
-    };
+    const updatedEntry: WorkEntry = { ...entries[index], ...updates, id, updatedAt: new Date().toISOString() };
     entries[index] = updatedEntry;
     this.saveEntries(entries);
     return updatedEntry;
@@ -197,10 +194,17 @@ export class WorksheetService {
 
   static deleteEntry(id: string): boolean {
     const entries = this.getAllEntries();
-    const filtered = entries.filter(e => e.id !== id);
+    const filtered = entries.filter((e) => e.id !== id);
     if (filtered.length === entries.length) return false;
     this.saveEntries(filtered);
     return true;
+  }
+
+  /** Newest work date first, then newest created first. */
+  static sortEntries(entries: WorkEntry[]): WorkEntry[] {
+    return [...entries].sort((a, b) =>
+      a.workDate === b.workDate ? (b.createdAt || '').localeCompare(a.createdAt || '') : b.workDate.localeCompare(a.workDate)
+    );
   }
 
   static filterEntries(entries: WorkEntry[], filters: FilterState): WorkEntry[] {

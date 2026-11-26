@@ -1,10 +1,10 @@
-﻿import { SimulationMasterItem } from '@/shared/types';
+import { SimulationMasterItem } from '@/shared/types';
 
 export const MASTER_WORKED_SIMULATIONS: SimulationMasterItem[] = [
   {
     id: 'sim-w-1',
     number: 1,
-    title: 'MDI â€“ Manufacturing / Manual Cleaning of Ethanol',
+    title: 'MDI – Manufacturing / Manual Cleaning of Ethanol',
     category: 'WORKED',
     description: 'Ethanol manual cleaning procedures, vessel sterilization, and safety checks.',
     defaultHours: 6.5,
@@ -13,7 +13,7 @@ export const MASTER_WORKED_SIMULATIONS: SimulationMasterItem[] = [
   {
     id: 'sim-w-2',
     number: 2,
-    title: 'FFS â€“ Cleaning of Parisson Area',
+    title: 'FFS – Cleaning of Parisson Area',
     category: 'WORKED',
     description: 'Parisson extrusion station cleaning, vacuum sanitization, and optical inspection.',
     defaultHours: 6.0,
@@ -22,7 +22,7 @@ export const MASTER_WORKED_SIMULATIONS: SimulationMasterItem[] = [
   {
     id: 'sim-w-3',
     number: 3,
-    title: 'MDI â€“ Cleaning of Purified Water',
+    title: 'MDI – Cleaning of Purified Water',
     category: 'WORKED',
     description: 'PW system line flush, sampling ports sanitization, and conductivity logging.',
     defaultHours: 6.0,
@@ -31,7 +31,7 @@ export const MASTER_WORKED_SIMULATIONS: SimulationMasterItem[] = [
   {
     id: 'sim-w-4',
     number: 4,
-    title: 'MDI â€“ Setup and Operations',
+    title: 'MDI – Setup and Operations',
     category: 'WORKED',
     description: 'Metering valve assembly, propellant canister crimping, and aerosol test cycle.',
     defaultHours: 8.0,
@@ -67,7 +67,7 @@ export const MASTER_WORKED_SIMULATIONS: SimulationMasterItem[] = [
   {
     id: 'sim-w-8',
     number: 8,
-    title: 'Cartoner â€“ Setup & Operation',
+    title: 'Cartoner – Setup & Operation',
     category: 'WORKED',
     description: 'Continuous motion cartoner leaflet inserter, blister pack pusher calibration.',
     defaultHours: 7.5,
@@ -76,7 +76,7 @@ export const MASTER_WORKED_SIMULATIONS: SimulationMasterItem[] = [
   {
     id: 'sim-w-9',
     number: 9,
-    title: 'FFS â€“ Setup & Operation',
+    title: 'FFS – Setup & Operation',
     category: 'WORKED',
     description: 'Form-Fill-Seal mold heating, resin extrusion, blow pin needle alignment.',
     defaultHours: 8.0,
@@ -85,7 +85,7 @@ export const MASTER_WORKED_SIMULATIONS: SimulationMasterItem[] = [
   {
     id: 'sim-w-10',
     number: 10,
-    title: 'Bundler â€“ Setup & Operation',
+    title: 'Bundler – Setup & Operation',
     category: 'WORKED',
     description: 'Shrink wrap sleeve heating tunnel, bundle collator, end-seal temperature tuning.',
     defaultHours: 6.5,

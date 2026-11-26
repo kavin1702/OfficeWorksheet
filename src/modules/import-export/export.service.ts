@@ -1,7 +1,8 @@
-﻿import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx';
 import { WorkEntry } from '@/shared/types';
 import { SimulationService } from '@/modules/simulations/simulation.service';
 import { formatDateDisplay } from '@/shared/utils/formatting';
+import { getTodayString } from '@/shared/utils/date';
 
 export class ExportService {
   static exportToExcel(entries: WorkEntry[]): void {
@@ -13,6 +14,7 @@ export class ExportService {
       'Work Date': e.workDate,
       'Simulation / Project': e.projectName,
       'Category': e.simulationCategory || 'GENERAL',
+      'Carried Forward': e.isCarriedForward ? 'Yes' : 'No',
       'Tasks Completed': e.taskDescription,
       'Hours Spent': e.hoursSpent,
       'Status': e.status,
@@ -32,7 +34,7 @@ export class ExportService {
       'Total Hours Logged': m.totalHours,
       'Total Sessions': m.entriesCount,
       'Status': m.isCompleted ? 'COMPLETED' : m.entriesCount > 0 ? 'IN PROGRESS' : 'NOT STARTED',
-      'Last Worked Date': m.lastWorkedDate ? formatDateDisplay(m.lastWorkedDate) : 'â€”'
+      'Last Worked Date': m.lastWorkedDate ? formatDateDisplay(m.lastWorkedDate) : '—'
     }));
     const workedSheet = XLSX.utils.json_to_sheet(workedData);
     XLSX.utils.book_append_sheet(workbook, workedSheet, '12 Worked Simulations');
@@ -44,22 +46,25 @@ export class ExportService {
       'Total Hours Logged': m.totalHours,
       'Total Sessions': m.entriesCount,
       'Status': m.isCompleted ? 'COMPLETED' : m.entriesCount > 0 ? 'IN PROGRESS' : 'NOT STARTED',
-      'Last Tested Date': m.lastWorkedDate ? formatDateDisplay(m.lastWorkedDate) : 'â€”'
+      'Last Tested Date': m.lastWorkedDate ? formatDateDisplay(m.lastWorkedDate) : '—'
     }));
     const testedSheet = XLSX.utils.json_to_sheet(testedData);
     XLSX.utils.book_append_sheet(workbook, testedSheet, '7 Tested Simulations');
 
     // Write file
-    XLSX.writeFile(workbook, `WorkPulse_Report_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    XLSX.writeFile(workbook, `WorkPulse_Report_${getTodayString()}.xlsx`);
   }
 
   static exportToJson(entries: WorkEntry[]): void {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(entries, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `workpulse_backup_${new Date().toISOString().slice(0, 10)}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+    // A Blob URL works for large backups; a data: URL can fail past a few MB.
+    const blob = new Blob([JSON.stringify(entries, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `workpulse_backup_${getTodayString()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 }
