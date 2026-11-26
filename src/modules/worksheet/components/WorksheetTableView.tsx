@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import { WorkEntry } from '@/shared/types';
@@ -28,7 +28,7 @@ export const WorksheetTableView: React.FC<WorksheetTableViewProps> = ({
         </div>
         <h3 className="text-base font-bold text-slate-800 dark:text-white mt-3">No work logs found</h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
-          No tasks match the active filters or date preset. Adjust your filters or click "Add Work Log" to create a new entry.
+          No tasks match the active filters or date preset. Adjust your filters or click &ldquo;Add Work Log&rdquo; to create a new entry.
         </p>
       </div>
     );

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { WorkEntry } from '@/shared/types';
@@ -109,7 +109,7 @@ export const SimulationMatrixView: React.FC<SimulationMatrixViewProps> = ({
           </div>
           <div className="mt-2">
             <span className="inline-flex items-center text-[11px] font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 px-2 py-0.5 rounded-md">
-              âš¡ Excel Export Supported
+              ⚡ Excel Export Supported
             </span>
           </div>
         </div>
@@ -217,7 +217,7 @@ export const SimulationMatrixView: React.FC<SimulationMatrixViewProps> = ({
                   <div>
                     <div className="text-[10px] text-slate-500 font-medium">Last Date</div>
                     <div className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">
-                      {sim.lastWorkedDate ? formatDateDisplay(sim.lastWorkedDate) : 'â€”'}
+                      {sim.lastWorkedDate ? formatDateDisplay(sim.lastWorkedDate) : '—'}
                     </div>
                   </div>
                 </div>

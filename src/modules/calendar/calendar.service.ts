@@ -1,4 +1,4 @@
-﻿import { CalendarDayData, WorkEntry } from '@/shared/types';
+import { CalendarDayData, WorkEntry } from '@/shared/types';
 import { formatDateDisplay } from '@/shared/utils/formatting';
 
 export class CalendarService {

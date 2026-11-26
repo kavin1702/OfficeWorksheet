@@ -1,10 +1,10 @@
-﻿import './globals.css';
+import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { ThemeProvider } from '@/shared/components/ui/ThemeProvider';
 import { ToastProvider } from '@/shared/components/ui/ToastProvider';
 
 export const metadata: Metadata = {
-  title: 'WorkPulse â€” Office Daily Worksheet & Simulation Operations',
+  title: 'WorkPulse — Office Daily Worksheet & Simulation Operations',
   description: 'Enterprise Daily Worksheet, Master Simulation Tracking (12 Worked + 7 Tested), and Analytics Portal.',
   manifest: '/manifest.json',
   icons: {

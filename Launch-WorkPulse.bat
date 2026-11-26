@@ -3,7 +3,7 @@ title WorkPulse - Office Daily Worksheet
 cls
 echo ===================================================
 echo   Starting WorkPulse - Office Daily Worksheet App
-echo   User: Kavin (kavin@8chili.com)
+echo   Opens the WorkPulse web app
 echo ===================================================
 echo.
 

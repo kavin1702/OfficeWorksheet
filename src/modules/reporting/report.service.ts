@@ -1,4 +1,4 @@
-﻿import { WorkEntry } from '@/shared/types';
+import { WorkEntry } from '@/shared/types';
 import { formatDateDisplay } from '@/shared/utils/formatting';
 
 export class ReportService {
@@ -6,7 +6,7 @@ export class ReportService {
     const dayEntries = entries.filter(e => e.workDate === date);
     const totalHours = dayEntries.reduce((acc, curr) => acc + curr.hoursSpent, 0);
 
-    let md = `*Daily Work Status Report â€” ${formatDateDisplay(date)}*\n`;
+    let md = `*Daily Work Status Report — ${formatDateDisplay(date)}*\n`;
     md += `*Engineer:* ${userName}\n`;
     md += `*Total Hours Logged:* ${totalHours} hrs\n\n`;
 
@@ -17,11 +17,11 @@ export class ReportService {
 
     md += `*Key Tasks Completed & Progress:*\n`;
     dayEntries.forEach((entry, idx) => {
-      const statusEmoji = entry.status === 'COMPLETED' ? 'âœ…' : entry.status === 'IN_PROGRESS' ? 'â³' : 'âš ï¸';
+      const statusEmoji = entry.status === 'COMPLETED' ? '✅' : entry.status === 'IN_PROGRESS' ? '⏳' : '⚠️';
       md += `${idx + 1}. *${entry.projectName}* (${entry.hoursSpent}h) - ${statusEmoji} ${entry.status}\n`;
-      md += `   â€¢ ${entry.taskDescription}\n`;
+      md += `   • ${entry.taskDescription}\n`;
       if (entry.remarks) {
-        md += `   â€¢ _Note: ${entry.remarks}_\n`;
+        md += `   • _Note: ${entry.remarks}_\n`;
       }
     });
 

@@ -1,0 +1,69 @@
+/* =========================================================
+   WorkPulse - Responsive Styles (Classic Layout)
+   ========================================================= */
+
+@media (max-width: 991px) {
+  .header-actions .btn-text {
+    display: none;
+  }
+
+  .header-actions .btn {
+    padding: 0.45rem 0.75rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .app-header {
+    padding: 0.5rem 0;
+  }
+
+  .header-inner {
+    flex-wrap: wrap;
+  }
+
+  .header-center-info {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 0.4rem;
+    border-top: 1px dashed var(--border-color);
+  }
+
+  .hero-quote-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-clock-wrap {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .filter-panel {
+    padding: 1rem;
+  }
+
+  .filter-row-primary, .search-and-view-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input-wrap {
+    max-width: 100%;
+  }
+
+  .modal-card {
+    padding: 1.25rem;
+    margin: 1rem;
+  }
+
+  .form-row-2 {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
